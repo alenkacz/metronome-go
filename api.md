@@ -116,58 +116,19 @@ Methods:
 
 # Contracts
 
-## Gets
-
 Response Types:
 
-- <a href="https://pkg.go.dev/github.com/metronome/metronome-go">metronome</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractGetGetContractResponse">ContractGetGetContractResponse</a>
+- <a href="https://pkg.go.dev/github.com/metronome/metronome-go">metronome</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractNewResponse">ContractNewResponse</a>
+- <a href="https://pkg.go.dev/github.com/metronome/metronome-go">metronome</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractListResponse">ContractListResponse</a>
+- <a href="https://pkg.go.dev/github.com/metronome/metronome-go">metronome</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractAmendResponse">ContractAmendResponse</a>
+- <a href="https://pkg.go.dev/github.com/metronome/metronome-go">metronome</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractGetResponse">ContractGetResponse</a>
+- <a href="https://pkg.go.dev/github.com/metronome/metronome-go">metronome</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractUpdateEndDateResponse">ContractUpdateEndDateResponse</a>
 
 Methods:
 
-- <code title="post /contracts/get">client.Contracts.Gets.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractGetService.GetContract">GetContract</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, body <a href="https://pkg.go.dev/github.com/metronome/metronome-go">metronome</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractGetGetContractParams">ContractGetGetContractParams</a>) (<a href="https://pkg.go.dev/github.com/metronome/metronome-go">metronome</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractGetGetContractResponse">ContractGetGetContractResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
-
-## Lists
-
-Response Types:
-
-- <a href="https://pkg.go.dev/github.com/metronome/metronome-go">metronome</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractListListContractsResponse">ContractListListContractsResponse</a>
-
-Methods:
-
-- <code title="post /contracts/list">client.Contracts.Lists.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractListService.ListContracts">ListContracts</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, body <a href="https://pkg.go.dev/github.com/metronome/metronome-go">metronome</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractListListContractsParams">ContractListListContractsParams</a>) (<a href="https://pkg.go.dev/github.com/metronome/metronome-go">metronome</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractListListContractsResponse">ContractListListContractsResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
-
-## Creates
-
-Response Types:
-
-- <a href="https://pkg.go.dev/github.com/metronome/metronome-go">metronome</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractCreateNewContractResponse">ContractCreateNewContractResponse</a>
-
-Methods:
-
-- <code title="post /contracts/create">client.Contracts.Creates.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractCreateService.NewContract">NewContract</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, body <a href="https://pkg.go.dev/github.com/metronome/metronome-go">metronome</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractCreateNewContractParams">ContractCreateNewContractParams</a>) (<a href="https://pkg.go.dev/github.com/metronome/metronome-go">metronome</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractCreateNewContractResponse">ContractCreateNewContractResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
-
-## Amends
-
-Response Types:
-
-- <a href="https://pkg.go.dev/github.com/metronome/metronome-go">metronome</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractAmendAmendContractResponse">ContractAmendAmendContractResponse</a>
-
-Methods:
-
-- <code title="post /contracts/amend">client.Contracts.Amends.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractAmendService.AmendContract">AmendContract</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, body <a href="https://pkg.go.dev/github.com/metronome/metronome-go">metronome</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractAmendAmendContractParams">ContractAmendAmendContractParams</a>) (<a href="https://pkg.go.dev/github.com/metronome/metronome-go">metronome</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractAmendAmendContractResponse">ContractAmendAmendContractResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
-
-## SetUsageFilters
-
-Methods:
-
-- <code title="post /contracts/setUsageFilter">client.Contracts.SetUsageFilters.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractSetUsageFilterService.SetUsageFilter">SetUsageFilter</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, body <a href="https://pkg.go.dev/github.com/metronome/metronome-go">metronome</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractSetUsageFilterSetUsageFilterParams">ContractSetUsageFilterSetUsageFilterParams</a>) <a href="https://pkg.go.dev/builtin#error">error</a></code>
-
-## UpdateEndDates
-
-Response Types:
-
-- <a href="https://pkg.go.dev/github.com/metronome/metronome-go">metronome</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractUpdateEndDateUpdateContractEndDateResponse">ContractUpdateEndDateUpdateContractEndDateResponse</a>
-
-Methods:
-
-- <code title="post /contracts/updateEndDate">client.Contracts.UpdateEndDates.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractUpdateEndDateService.UpdateContractEndDate">UpdateContractEndDate</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, body <a href="https://pkg.go.dev/github.com/metronome/metronome-go">metronome</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractUpdateEndDateUpdateContractEndDateParams">ContractUpdateEndDateUpdateContractEndDateParams</a>) (<a href="https://pkg.go.dev/github.com/metronome/metronome-go">metronome</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractUpdateEndDateUpdateContractEndDateResponse">ContractUpdateEndDateUpdateContractEndDateResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+- <code title="post /contracts/create">client.Contracts.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractService.New">New</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, body <a href="https://pkg.go.dev/github.com/metronome/metronome-go">metronome</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractNewParams">ContractNewParams</a>) (<a href="https://pkg.go.dev/github.com/metronome/metronome-go">metronome</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractNewResponse">ContractNewResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+- <code title="post /contracts/list">client.Contracts.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractService.List">List</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, body <a href="https://pkg.go.dev/github.com/metronome/metronome-go">metronome</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractListParams">ContractListParams</a>) (<a href="https://pkg.go.dev/github.com/metronome/metronome-go">metronome</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractListResponse">ContractListResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+- <code title="post /contracts/amend">client.Contracts.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractService.Amend">Amend</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, body <a href="https://pkg.go.dev/github.com/metronome/metronome-go">metronome</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractAmendParams">ContractAmendParams</a>) (<a href="https://pkg.go.dev/github.com/metronome/metronome-go">metronome</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractAmendResponse">ContractAmendResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+- <code title="post /contracts/get">client.Contracts.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractService.Get">Get</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, body <a href="https://pkg.go.dev/github.com/metronome/metronome-go">metronome</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractGetParams">ContractGetParams</a>) (<a href="https://pkg.go.dev/github.com/metronome/metronome-go">metronome</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractGetResponse">ContractGetResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+- <code title="post /contracts/setUsageFilter">client.Contracts.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractService.SetUsageFilter">SetUsageFilter</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, body <a href="https://pkg.go.dev/github.com/metronome/metronome-go">metronome</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractSetUsageFilterParams">ContractSetUsageFilterParams</a>) <a href="https://pkg.go.dev/builtin#error">error</a></code>
+- <code title="post /contracts/updateEndDate">client.Contracts.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractService.UpdateEndDate">UpdateEndDate</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, body <a href="https://pkg.go.dev/github.com/metronome/metronome-go">metronome</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractUpdateEndDateParams">ContractUpdateEndDateParams</a>) (<a href="https://pkg.go.dev/github.com/metronome/metronome-go">metronome</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractUpdateEndDateResponse">ContractUpdateEndDateResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
