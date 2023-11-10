@@ -5,11 +5,11 @@ package requestconfig
 import (
   "runtime"
   "fmt"
-  "github.com/metronome/metronome-go/internal"
+  "github.com/example/example-go/internal"
   "encoding/json"
   "github.com/google/uuid"
-  "github.com/metronome/metronome-go/internal/apiquery"
-  "github.com/metronome/metronome-go/internal/apiform"
+  "github.com/example/example-go/internal/apiquery"
+  "github.com/example/example-go/internal/apiform"
   "net/url"
   "bytes"
   "io"
@@ -19,7 +19,7 @@ import (
   "strconv"
   "strings"
   "time"
-  "github.com/metronome/metronome-go/internal/apierror"
+  "github.com/example/example-go/internal/apierror"
   "context"
 )
 
@@ -130,7 +130,7 @@ Request *http.Request
 BaseURL *url.URL
 HTTPClient *http.Client
 Middlewares []middleware
-APIKey string
+BearerToken string
 // If ResponseBodyInto not nil, then we will attempt to deserialize into
 // ResponseBodyInto. If Destination is a []byte, then it will return the body as
 // is.

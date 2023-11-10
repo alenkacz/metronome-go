@@ -1,14 +1,14 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package metronome_test
+package example_test
 
 import (
   "testing"
   "context"
   "net/http/httputil"
-  "github.com/metronome/metronome-go"
-  "github.com/metronome/metronome-go/option"
-  "github.com/metronome/metronome-go/internal/testutil"
+  "github.com/example/example-go"
+  "github.com/example/example-go/option"
+  "github.com/example/example-go/internal/testutil"
   "time"
 )
 
@@ -20,963 +20,472 @@ func TestContractNewWithOptionalParams(t *testing.T) {
   if !testutil.CheckTestServer(t, baseURL) {
     return
   }
-  client := metronome.NewClient(
+  client := example.NewClient(
     option.WithBaseURL(baseURL),
-    option.WithAPIKey("My API Key"),
+    option.WithBearerToken("My Bearer Token"),
   )
-  _, err := client.Contracts.New(context.TODO(), metronome.ContractNewParams{
-    CustomerID: metronome.F("13117714-3f05-48e5-a6e9-a66093f13b4d"),
-    StartingAt: metronome.F(time.Now()),
-    Commits: metronome.F([]metronome.ContractNewParamsCommit{metronome.ContractNewParamsCommit{
-      Type: metronome.F(metronome.ContractNewParamsCommitsTypePrepaid),
-      Name: metronome.F("x"),
-      ProductID: metronome.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-      AccessSchedule: metronome.F(metronome.ContractNewParamsCommitsAccessSchedule{
-        ScheduleItems: metronome.F([]metronome.ContractNewParamsCommitsAccessScheduleScheduleItem{metronome.ContractNewParamsCommitsAccessScheduleScheduleItem{
-          Amount: metronome.F(0.000000),
-          StartingAt: metronome.F(time.Now()),
-          EndingBefore: metronome.F(time.Now()),
-        }, metronome.ContractNewParamsCommitsAccessScheduleScheduleItem{
-          Amount: metronome.F(0.000000),
-          StartingAt: metronome.F(time.Now()),
-          EndingBefore: metronome.F(time.Now()),
-        }, metronome.ContractNewParamsCommitsAccessScheduleScheduleItem{
-          Amount: metronome.F(0.000000),
-          StartingAt: metronome.F(time.Now()),
-          EndingBefore: metronome.F(time.Now()),
+  _, err := client.Contracts.New(context.TODO(), example.ContractNewParams{
+    CustomerID: example.F("13117714-3f05-48e5-a6e9-a66093f13b4d"),
+    StartingAt: example.F(time.Now()),
+    Commits: example.F([]example.ContractNewParamsCommit{example.ContractNewParamsCommit{
+      Type: example.F(example.ContractNewParamsCommitsTypePrepaid),
+      Name: example.F("x"),
+      ProductID: example.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+      AccessSchedule: example.F(example.ContractNewParamsCommitsAccessSchedule{
+        ScheduleItems: example.F([]example.ContractNewParamsCommitsAccessScheduleScheduleItem{example.ContractNewParamsCommitsAccessScheduleScheduleItem{
+          Amount: example.F(0.000000),
+          StartingAt: example.F(time.Now()),
+          EndingBefore: example.F(time.Now()),
+        }, example.ContractNewParamsCommitsAccessScheduleScheduleItem{
+          Amount: example.F(0.000000),
+          StartingAt: example.F(time.Now()),
+          EndingBefore: example.F(time.Now()),
+        }, example.ContractNewParamsCommitsAccessScheduleScheduleItem{
+          Amount: example.F(0.000000),
+          StartingAt: example.F(time.Now()),
+          EndingBefore: example.F(time.Now()),
         }}),
       }),
-      InvoiceSchedule: metronome.F(metronome.ContractNewParamsCommitsInvoiceSchedule{
-        ScheduleItems: metronome.F([]metronome.ContractNewParamsCommitsInvoiceScheduleScheduleItem{metronome.ContractNewParamsCommitsInvoiceScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }, metronome.ContractNewParamsCommitsInvoiceScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }, metronome.ContractNewParamsCommitsInvoiceScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
+      InvoiceSchedule: example.F(example.ContractNewParamsCommitsInvoiceSchedule{
+        ScheduleItems: example.F([]example.ContractNewParamsCommitsInvoiceScheduleScheduleItem{example.ContractNewParamsCommitsInvoiceScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }, example.ContractNewParamsCommitsInvoiceScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }, example.ContractNewParamsCommitsInvoiceScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
         }}),
-        RecurringSchedule: metronome.F(metronome.ContractNewParamsCommitsInvoiceScheduleRecurringSchedule{
-          StartingAt: metronome.F(time.Now()),
-          EndingBefore: metronome.F(time.Now()),
-          Frequency: metronome.F(metronome.ContractNewParamsCommitsInvoiceScheduleRecurringScheduleFrequencyMonthly),
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          AmountDistribution: metronome.F(metronome.ContractNewParamsCommitsInvoiceScheduleRecurringScheduleAmountDistributionDivided),
+        RecurringSchedule: example.F(example.ContractNewParamsCommitsInvoiceScheduleRecurringSchedule{
+          StartingAt: example.F(time.Now()),
+          EndingBefore: example.F(time.Now()),
+          Frequency: example.F(example.ContractNewParamsCommitsInvoiceScheduleRecurringScheduleFrequencyMonthly),
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          AmountDistribution: example.F(example.ContractNewParamsCommitsInvoiceScheduleRecurringScheduleAmountDistributionDivided),
         }),
       }),
-      Amount: metronome.F(0.000000),
-      Description: metronome.F("string"),
-      RolloverFraction: metronome.F(0.000000),
-      ApplicableProductIDs: metronome.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
-      ApplicableTags: metronome.F([]string{"string", "string", "string"}),
-      NetsuiteSalesOrderID: metronome.F("string"),
-    }, metronome.ContractNewParamsCommit{
-      Type: metronome.F(metronome.ContractNewParamsCommitsTypePrepaid),
-      Name: metronome.F("x"),
-      ProductID: metronome.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-      AccessSchedule: metronome.F(metronome.ContractNewParamsCommitsAccessSchedule{
-        ScheduleItems: metronome.F([]metronome.ContractNewParamsCommitsAccessScheduleScheduleItem{metronome.ContractNewParamsCommitsAccessScheduleScheduleItem{
-          Amount: metronome.F(0.000000),
-          StartingAt: metronome.F(time.Now()),
-          EndingBefore: metronome.F(time.Now()),
-        }, metronome.ContractNewParamsCommitsAccessScheduleScheduleItem{
-          Amount: metronome.F(0.000000),
-          StartingAt: metronome.F(time.Now()),
-          EndingBefore: metronome.F(time.Now()),
-        }, metronome.ContractNewParamsCommitsAccessScheduleScheduleItem{
-          Amount: metronome.F(0.000000),
-          StartingAt: metronome.F(time.Now()),
-          EndingBefore: metronome.F(time.Now()),
+      Amount: example.F(0.000000),
+      Description: example.F("string"),
+      RolloverFraction: example.F(0.000000),
+      ApplicableProductIDs: example.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
+      ApplicableTags: example.F([]string{"string", "string", "string"}),
+      NetsuiteSalesOrderID: example.F("string"),
+    }, example.ContractNewParamsCommit{
+      Type: example.F(example.ContractNewParamsCommitsTypePrepaid),
+      Name: example.F("x"),
+      ProductID: example.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+      AccessSchedule: example.F(example.ContractNewParamsCommitsAccessSchedule{
+        ScheduleItems: example.F([]example.ContractNewParamsCommitsAccessScheduleScheduleItem{example.ContractNewParamsCommitsAccessScheduleScheduleItem{
+          Amount: example.F(0.000000),
+          StartingAt: example.F(time.Now()),
+          EndingBefore: example.F(time.Now()),
+        }, example.ContractNewParamsCommitsAccessScheduleScheduleItem{
+          Amount: example.F(0.000000),
+          StartingAt: example.F(time.Now()),
+          EndingBefore: example.F(time.Now()),
+        }, example.ContractNewParamsCommitsAccessScheduleScheduleItem{
+          Amount: example.F(0.000000),
+          StartingAt: example.F(time.Now()),
+          EndingBefore: example.F(time.Now()),
         }}),
       }),
-      InvoiceSchedule: metronome.F(metronome.ContractNewParamsCommitsInvoiceSchedule{
-        ScheduleItems: metronome.F([]metronome.ContractNewParamsCommitsInvoiceScheduleScheduleItem{metronome.ContractNewParamsCommitsInvoiceScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }, metronome.ContractNewParamsCommitsInvoiceScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }, metronome.ContractNewParamsCommitsInvoiceScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
+      InvoiceSchedule: example.F(example.ContractNewParamsCommitsInvoiceSchedule{
+        ScheduleItems: example.F([]example.ContractNewParamsCommitsInvoiceScheduleScheduleItem{example.ContractNewParamsCommitsInvoiceScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }, example.ContractNewParamsCommitsInvoiceScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }, example.ContractNewParamsCommitsInvoiceScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
         }}),
-        RecurringSchedule: metronome.F(metronome.ContractNewParamsCommitsInvoiceScheduleRecurringSchedule{
-          StartingAt: metronome.F(time.Now()),
-          EndingBefore: metronome.F(time.Now()),
-          Frequency: metronome.F(metronome.ContractNewParamsCommitsInvoiceScheduleRecurringScheduleFrequencyMonthly),
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          AmountDistribution: metronome.F(metronome.ContractNewParamsCommitsInvoiceScheduleRecurringScheduleAmountDistributionDivided),
+        RecurringSchedule: example.F(example.ContractNewParamsCommitsInvoiceScheduleRecurringSchedule{
+          StartingAt: example.F(time.Now()),
+          EndingBefore: example.F(time.Now()),
+          Frequency: example.F(example.ContractNewParamsCommitsInvoiceScheduleRecurringScheduleFrequencyMonthly),
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          AmountDistribution: example.F(example.ContractNewParamsCommitsInvoiceScheduleRecurringScheduleAmountDistributionDivided),
         }),
       }),
-      Amount: metronome.F(0.000000),
-      Description: metronome.F("string"),
-      RolloverFraction: metronome.F(0.000000),
-      ApplicableProductIDs: metronome.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
-      ApplicableTags: metronome.F([]string{"string", "string", "string"}),
-      NetsuiteSalesOrderID: metronome.F("string"),
-    }, metronome.ContractNewParamsCommit{
-      Type: metronome.F(metronome.ContractNewParamsCommitsTypePrepaid),
-      Name: metronome.F("x"),
-      ProductID: metronome.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-      AccessSchedule: metronome.F(metronome.ContractNewParamsCommitsAccessSchedule{
-        ScheduleItems: metronome.F([]metronome.ContractNewParamsCommitsAccessScheduleScheduleItem{metronome.ContractNewParamsCommitsAccessScheduleScheduleItem{
-          Amount: metronome.F(0.000000),
-          StartingAt: metronome.F(time.Now()),
-          EndingBefore: metronome.F(time.Now()),
-        }, metronome.ContractNewParamsCommitsAccessScheduleScheduleItem{
-          Amount: metronome.F(0.000000),
-          StartingAt: metronome.F(time.Now()),
-          EndingBefore: metronome.F(time.Now()),
-        }, metronome.ContractNewParamsCommitsAccessScheduleScheduleItem{
-          Amount: metronome.F(0.000000),
-          StartingAt: metronome.F(time.Now()),
-          EndingBefore: metronome.F(time.Now()),
+      Amount: example.F(0.000000),
+      Description: example.F("string"),
+      RolloverFraction: example.F(0.000000),
+      ApplicableProductIDs: example.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
+      ApplicableTags: example.F([]string{"string", "string", "string"}),
+      NetsuiteSalesOrderID: example.F("string"),
+    }, example.ContractNewParamsCommit{
+      Type: example.F(example.ContractNewParamsCommitsTypePrepaid),
+      Name: example.F("x"),
+      ProductID: example.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+      AccessSchedule: example.F(example.ContractNewParamsCommitsAccessSchedule{
+        ScheduleItems: example.F([]example.ContractNewParamsCommitsAccessScheduleScheduleItem{example.ContractNewParamsCommitsAccessScheduleScheduleItem{
+          Amount: example.F(0.000000),
+          StartingAt: example.F(time.Now()),
+          EndingBefore: example.F(time.Now()),
+        }, example.ContractNewParamsCommitsAccessScheduleScheduleItem{
+          Amount: example.F(0.000000),
+          StartingAt: example.F(time.Now()),
+          EndingBefore: example.F(time.Now()),
+        }, example.ContractNewParamsCommitsAccessScheduleScheduleItem{
+          Amount: example.F(0.000000),
+          StartingAt: example.F(time.Now()),
+          EndingBefore: example.F(time.Now()),
         }}),
       }),
-      InvoiceSchedule: metronome.F(metronome.ContractNewParamsCommitsInvoiceSchedule{
-        ScheduleItems: metronome.F([]metronome.ContractNewParamsCommitsInvoiceScheduleScheduleItem{metronome.ContractNewParamsCommitsInvoiceScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }, metronome.ContractNewParamsCommitsInvoiceScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }, metronome.ContractNewParamsCommitsInvoiceScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
+      InvoiceSchedule: example.F(example.ContractNewParamsCommitsInvoiceSchedule{
+        ScheduleItems: example.F([]example.ContractNewParamsCommitsInvoiceScheduleScheduleItem{example.ContractNewParamsCommitsInvoiceScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }, example.ContractNewParamsCommitsInvoiceScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }, example.ContractNewParamsCommitsInvoiceScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
         }}),
-        RecurringSchedule: metronome.F(metronome.ContractNewParamsCommitsInvoiceScheduleRecurringSchedule{
-          StartingAt: metronome.F(time.Now()),
-          EndingBefore: metronome.F(time.Now()),
-          Frequency: metronome.F(metronome.ContractNewParamsCommitsInvoiceScheduleRecurringScheduleFrequencyMonthly),
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          AmountDistribution: metronome.F(metronome.ContractNewParamsCommitsInvoiceScheduleRecurringScheduleAmountDistributionDivided),
+        RecurringSchedule: example.F(example.ContractNewParamsCommitsInvoiceScheduleRecurringSchedule{
+          StartingAt: example.F(time.Now()),
+          EndingBefore: example.F(time.Now()),
+          Frequency: example.F(example.ContractNewParamsCommitsInvoiceScheduleRecurringScheduleFrequencyMonthly),
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          AmountDistribution: example.F(example.ContractNewParamsCommitsInvoiceScheduleRecurringScheduleAmountDistributionDivided),
         }),
       }),
-      Amount: metronome.F(0.000000),
-      Description: metronome.F("string"),
-      RolloverFraction: metronome.F(0.000000),
-      ApplicableProductIDs: metronome.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
-      ApplicableTags: metronome.F([]string{"string", "string", "string"}),
-      NetsuiteSalesOrderID: metronome.F("string"),
+      Amount: example.F(0.000000),
+      Description: example.F("string"),
+      RolloverFraction: example.F(0.000000),
+      ApplicableProductIDs: example.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
+      ApplicableTags: example.F([]string{"string", "string", "string"}),
+      NetsuiteSalesOrderID: example.F("string"),
     }}),
-    Discounts: metronome.F([]metronome.ContractNewParamsDiscount{metronome.ContractNewParamsDiscount{
-      ProductID: metronome.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-      Name: metronome.F("x"),
-      Schedule: metronome.F(metronome.ContractNewParamsDiscountsSchedule{
-        ScheduleItems: metronome.F([]metronome.ContractNewParamsDiscountsScheduleScheduleItem{metronome.ContractNewParamsDiscountsScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }, metronome.ContractNewParamsDiscountsScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }, metronome.ContractNewParamsDiscountsScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
+    Discounts: example.F([]example.ContractNewParamsDiscount{example.ContractNewParamsDiscount{
+      ProductID: example.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+      Name: example.F("x"),
+      Schedule: example.F(example.ContractNewParamsDiscountsSchedule{
+        ScheduleItems: example.F([]example.ContractNewParamsDiscountsScheduleScheduleItem{example.ContractNewParamsDiscountsScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }, example.ContractNewParamsDiscountsScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }, example.ContractNewParamsDiscountsScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
         }}),
-        RecurringSchedule: metronome.F(metronome.ContractNewParamsDiscountsScheduleRecurringSchedule{
-          StartingAt: metronome.F(time.Now()),
-          EndingBefore: metronome.F(time.Now()),
-          Frequency: metronome.F(metronome.ContractNewParamsDiscountsScheduleRecurringScheduleFrequencyMonthly),
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          AmountDistribution: metronome.F(metronome.ContractNewParamsDiscountsScheduleRecurringScheduleAmountDistributionDivided),
+        RecurringSchedule: example.F(example.ContractNewParamsDiscountsScheduleRecurringSchedule{
+          StartingAt: example.F(time.Now()),
+          EndingBefore: example.F(time.Now()),
+          Frequency: example.F(example.ContractNewParamsDiscountsScheduleRecurringScheduleFrequencyMonthly),
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          AmountDistribution: example.F(example.ContractNewParamsDiscountsScheduleRecurringScheduleAmountDistributionDivided),
         }),
       }),
-      NetsuiteSalesOrderID: metronome.F("string"),
-    }, metronome.ContractNewParamsDiscount{
-      ProductID: metronome.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-      Name: metronome.F("x"),
-      Schedule: metronome.F(metronome.ContractNewParamsDiscountsSchedule{
-        ScheduleItems: metronome.F([]metronome.ContractNewParamsDiscountsScheduleScheduleItem{metronome.ContractNewParamsDiscountsScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }, metronome.ContractNewParamsDiscountsScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }, metronome.ContractNewParamsDiscountsScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
+      NetsuiteSalesOrderID: example.F("string"),
+    }, example.ContractNewParamsDiscount{
+      ProductID: example.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+      Name: example.F("x"),
+      Schedule: example.F(example.ContractNewParamsDiscountsSchedule{
+        ScheduleItems: example.F([]example.ContractNewParamsDiscountsScheduleScheduleItem{example.ContractNewParamsDiscountsScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }, example.ContractNewParamsDiscountsScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }, example.ContractNewParamsDiscountsScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
         }}),
-        RecurringSchedule: metronome.F(metronome.ContractNewParamsDiscountsScheduleRecurringSchedule{
-          StartingAt: metronome.F(time.Now()),
-          EndingBefore: metronome.F(time.Now()),
-          Frequency: metronome.F(metronome.ContractNewParamsDiscountsScheduleRecurringScheduleFrequencyMonthly),
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          AmountDistribution: metronome.F(metronome.ContractNewParamsDiscountsScheduleRecurringScheduleAmountDistributionDivided),
+        RecurringSchedule: example.F(example.ContractNewParamsDiscountsScheduleRecurringSchedule{
+          StartingAt: example.F(time.Now()),
+          EndingBefore: example.F(time.Now()),
+          Frequency: example.F(example.ContractNewParamsDiscountsScheduleRecurringScheduleFrequencyMonthly),
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          AmountDistribution: example.F(example.ContractNewParamsDiscountsScheduleRecurringScheduleAmountDistributionDivided),
         }),
       }),
-      NetsuiteSalesOrderID: metronome.F("string"),
-    }, metronome.ContractNewParamsDiscount{
-      ProductID: metronome.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-      Name: metronome.F("x"),
-      Schedule: metronome.F(metronome.ContractNewParamsDiscountsSchedule{
-        ScheduleItems: metronome.F([]metronome.ContractNewParamsDiscountsScheduleScheduleItem{metronome.ContractNewParamsDiscountsScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }, metronome.ContractNewParamsDiscountsScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }, metronome.ContractNewParamsDiscountsScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
+      NetsuiteSalesOrderID: example.F("string"),
+    }, example.ContractNewParamsDiscount{
+      ProductID: example.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+      Name: example.F("x"),
+      Schedule: example.F(example.ContractNewParamsDiscountsSchedule{
+        ScheduleItems: example.F([]example.ContractNewParamsDiscountsScheduleScheduleItem{example.ContractNewParamsDiscountsScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }, example.ContractNewParamsDiscountsScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }, example.ContractNewParamsDiscountsScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
         }}),
-        RecurringSchedule: metronome.F(metronome.ContractNewParamsDiscountsScheduleRecurringSchedule{
-          StartingAt: metronome.F(time.Now()),
-          EndingBefore: metronome.F(time.Now()),
-          Frequency: metronome.F(metronome.ContractNewParamsDiscountsScheduleRecurringScheduleFrequencyMonthly),
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          AmountDistribution: metronome.F(metronome.ContractNewParamsDiscountsScheduleRecurringScheduleAmountDistributionDivided),
+        RecurringSchedule: example.F(example.ContractNewParamsDiscountsScheduleRecurringSchedule{
+          StartingAt: example.F(time.Now()),
+          EndingBefore: example.F(time.Now()),
+          Frequency: example.F(example.ContractNewParamsDiscountsScheduleRecurringScheduleFrequencyMonthly),
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          AmountDistribution: example.F(example.ContractNewParamsDiscountsScheduleRecurringScheduleAmountDistributionDivided),
         }),
       }),
-      NetsuiteSalesOrderID: metronome.F("string"),
+      NetsuiteSalesOrderID: example.F("string"),
     }}),
-    EndingBefore: metronome.F(time.Now()),
-    Name: metronome.F("string"),
-    NetPaymentTermsDays: metronome.F(0.000000),
-    NetsuiteSalesOrderID: metronome.F("1234"),
-    Overrides: metronome.F([]metronome.ContractNewParamsOverride{metronome.ContractNewParamsOverride{
-      ProductID: metronome.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-      Tags: metronome.F([]string{"string", "string", "string"}),
-      StartingAt: metronome.F(time.Now()),
-      EndingBefore: metronome.F(time.Now()),
-      Entitled: metronome.F(true),
-      Type: metronome.F(metronome.ContractNewParamsOverridesTypeOverwrite),
-      Multiplier: metronome.F(0.000000),
-      OverwriteRate: metronome.F(metronome.ContractNewParamsOverridesOverwriteRate{
-        RateType: metronome.F(metronome.ContractNewParamsOverridesOverwriteRateRateTypeFlat),
-        Price: metronome.F(0.000000),
-        UseListPrices: metronome.F(true),
+    EndingBefore: example.F(time.Now()),
+    Name: example.F("string"),
+    NetPaymentTermsDays: example.F(0.000000),
+    NetsuiteSalesOrderID: example.F("1234"),
+    Overrides: example.F([]example.ContractNewParamsOverride{example.ContractNewParamsOverride{
+      ProductID: example.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+      Tags: example.F([]string{"string", "string", "string"}),
+      StartingAt: example.F(time.Now()),
+      EndingBefore: example.F(time.Now()),
+      Entitled: example.F(true),
+      Type: example.F(example.ContractNewParamsOverridesTypeOverwrite),
+      Multiplier: example.F(0.000000),
+      OverwriteRate: example.F(example.RateParam{
+        RateType: example.F(example.RateRateTypeFlat),
+        Price: example.F(0.000000),
+        UseListPrices: example.F(true),
       }),
-    }, metronome.ContractNewParamsOverride{
-      ProductID: metronome.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-      Tags: metronome.F([]string{"string", "string", "string"}),
-      StartingAt: metronome.F(time.Now()),
-      EndingBefore: metronome.F(time.Now()),
-      Entitled: metronome.F(true),
-      Type: metronome.F(metronome.ContractNewParamsOverridesTypeOverwrite),
-      Multiplier: metronome.F(0.000000),
-      OverwriteRate: metronome.F(metronome.ContractNewParamsOverridesOverwriteRate{
-        RateType: metronome.F(metronome.ContractNewParamsOverridesOverwriteRateRateTypeFlat),
-        Price: metronome.F(0.000000),
-        UseListPrices: metronome.F(true),
+    }, example.ContractNewParamsOverride{
+      ProductID: example.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+      Tags: example.F([]string{"string", "string", "string"}),
+      StartingAt: example.F(time.Now()),
+      EndingBefore: example.F(time.Now()),
+      Entitled: example.F(true),
+      Type: example.F(example.ContractNewParamsOverridesTypeOverwrite),
+      Multiplier: example.F(0.000000),
+      OverwriteRate: example.F(example.RateParam{
+        RateType: example.F(example.RateRateTypeFlat),
+        Price: example.F(0.000000),
+        UseListPrices: example.F(true),
       }),
-    }, metronome.ContractNewParamsOverride{
-      ProductID: metronome.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-      Tags: metronome.F([]string{"string", "string", "string"}),
-      StartingAt: metronome.F(time.Now()),
-      EndingBefore: metronome.F(time.Now()),
-      Entitled: metronome.F(true),
-      Type: metronome.F(metronome.ContractNewParamsOverridesTypeOverwrite),
-      Multiplier: metronome.F(0.000000),
-      OverwriteRate: metronome.F(metronome.ContractNewParamsOverridesOverwriteRate{
-        RateType: metronome.F(metronome.ContractNewParamsOverridesOverwriteRateRateTypeFlat),
-        Price: metronome.F(0.000000),
-        UseListPrices: metronome.F(true),
-      }),
-    }}),
-    RateCardID: metronome.F("d7abd0cd-4ae9-4db7-8676-e986a4ebd8dc"),
-    ResellerRoyalties: metronome.F([]metronome.ContractNewParamsResellerRoyalty{metronome.ContractNewParamsResellerRoyalty{
-      ResellerType: metronome.F(metronome.ContractNewParamsResellerRoyaltiesResellerTypeAws),
-      Fraction: metronome.F(0.000000),
-      NetsuiteResellerID: metronome.F("string"),
-      ApplicableProductIDs: metronome.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
-      StartingAt: metronome.F(time.Now()),
-      EndingBefore: metronome.F(time.Now()),
-      ResellerContractValue: metronome.F(0.000000),
-      AwsOptions: metronome.F(metronome.ContractNewParamsResellerRoyaltiesAwsOptions{
-        AwsAccountNumber: metronome.F("string"),
-        AwsPayerReferenceID: metronome.F("string"),
-        AwsOfferID: metronome.F("string"),
-      }),
-      GcpOptions: metronome.F(metronome.ContractNewParamsResellerRoyaltiesGcpOptions{
-        GcpAccountID: metronome.F("string"),
-        GcpOfferID: metronome.F("string"),
-      }),
-    }, metronome.ContractNewParamsResellerRoyalty{
-      ResellerType: metronome.F(metronome.ContractNewParamsResellerRoyaltiesResellerTypeAws),
-      Fraction: metronome.F(0.000000),
-      NetsuiteResellerID: metronome.F("string"),
-      ApplicableProductIDs: metronome.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
-      StartingAt: metronome.F(time.Now()),
-      EndingBefore: metronome.F(time.Now()),
-      ResellerContractValue: metronome.F(0.000000),
-      AwsOptions: metronome.F(metronome.ContractNewParamsResellerRoyaltiesAwsOptions{
-        AwsAccountNumber: metronome.F("string"),
-        AwsPayerReferenceID: metronome.F("string"),
-        AwsOfferID: metronome.F("string"),
-      }),
-      GcpOptions: metronome.F(metronome.ContractNewParamsResellerRoyaltiesGcpOptions{
-        GcpAccountID: metronome.F("string"),
-        GcpOfferID: metronome.F("string"),
-      }),
-    }, metronome.ContractNewParamsResellerRoyalty{
-      ResellerType: metronome.F(metronome.ContractNewParamsResellerRoyaltiesResellerTypeAws),
-      Fraction: metronome.F(0.000000),
-      NetsuiteResellerID: metronome.F("string"),
-      ApplicableProductIDs: metronome.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
-      StartingAt: metronome.F(time.Now()),
-      EndingBefore: metronome.F(time.Now()),
-      ResellerContractValue: metronome.F(0.000000),
-      AwsOptions: metronome.F(metronome.ContractNewParamsResellerRoyaltiesAwsOptions{
-        AwsAccountNumber: metronome.F("string"),
-        AwsPayerReferenceID: metronome.F("string"),
-        AwsOfferID: metronome.F("string"),
-      }),
-      GcpOptions: metronome.F(metronome.ContractNewParamsResellerRoyaltiesGcpOptions{
-        GcpAccountID: metronome.F("string"),
-        GcpOfferID: metronome.F("string"),
+    }, example.ContractNewParamsOverride{
+      ProductID: example.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+      Tags: example.F([]string{"string", "string", "string"}),
+      StartingAt: example.F(time.Now()),
+      EndingBefore: example.F(time.Now()),
+      Entitled: example.F(true),
+      Type: example.F(example.ContractNewParamsOverridesTypeOverwrite),
+      Multiplier: example.F(0.000000),
+      OverwriteRate: example.F(example.RateParam{
+        RateType: example.F(example.RateRateTypeFlat),
+        Price: example.F(0.000000),
+        UseListPrices: example.F(true),
       }),
     }}),
-    SalesforceOpportunityID: metronome.F("006opportunity1"),
-    ScheduledCharges: metronome.F([]metronome.ContractNewParamsScheduledCharge{metronome.ContractNewParamsScheduledCharge{
-      ProductID: metronome.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-      Name: metronome.F("x"),
-      Schedule: metronome.F(metronome.ContractNewParamsScheduledChargesSchedule{
-        ScheduleItems: metronome.F([]metronome.ContractNewParamsScheduledChargesScheduleScheduleItem{metronome.ContractNewParamsScheduledChargesScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }, metronome.ContractNewParamsScheduledChargesScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }, metronome.ContractNewParamsScheduledChargesScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }}),
-        RecurringSchedule: metronome.F(metronome.ContractNewParamsScheduledChargesScheduleRecurringSchedule{
-          StartingAt: metronome.F(time.Now()),
-          EndingBefore: metronome.F(time.Now()),
-          Frequency: metronome.F(metronome.ContractNewParamsScheduledChargesScheduleRecurringScheduleFrequencyMonthly),
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          AmountDistribution: metronome.F(metronome.ContractNewParamsScheduledChargesScheduleRecurringScheduleAmountDistributionDivided),
-        }),
+    RateCardID: example.F("d7abd0cd-4ae9-4db7-8676-e986a4ebd8dc"),
+    ResellerRoyalties: example.F([]example.ContractNewParamsResellerRoyalty{example.ContractNewParamsResellerRoyalty{
+      ResellerType: example.F(example.ContractNewParamsResellerRoyaltiesResellerTypeAws),
+      Fraction: example.F(0.000000),
+      NetsuiteResellerID: example.F("string"),
+      ApplicableProductIDs: example.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
+      StartingAt: example.F(time.Now()),
+      EndingBefore: example.F(time.Now()),
+      ResellerContractValue: example.F(0.000000),
+      AwsOptions: example.F(example.ContractNewParamsResellerRoyaltiesAwsOptions{
+        AwsAccountNumber: example.F("string"),
+        AwsPayerReferenceID: example.F("string"),
+        AwsOfferID: example.F("string"),
       }),
-      NetsuiteSalesOrderID: metronome.F("string"),
-    }, metronome.ContractNewParamsScheduledCharge{
-      ProductID: metronome.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-      Name: metronome.F("x"),
-      Schedule: metronome.F(metronome.ContractNewParamsScheduledChargesSchedule{
-        ScheduleItems: metronome.F([]metronome.ContractNewParamsScheduledChargesScheduleScheduleItem{metronome.ContractNewParamsScheduledChargesScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }, metronome.ContractNewParamsScheduledChargesScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }, metronome.ContractNewParamsScheduledChargesScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }}),
-        RecurringSchedule: metronome.F(metronome.ContractNewParamsScheduledChargesScheduleRecurringSchedule{
-          StartingAt: metronome.F(time.Now()),
-          EndingBefore: metronome.F(time.Now()),
-          Frequency: metronome.F(metronome.ContractNewParamsScheduledChargesScheduleRecurringScheduleFrequencyMonthly),
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          AmountDistribution: metronome.F(metronome.ContractNewParamsScheduledChargesScheduleRecurringScheduleAmountDistributionDivided),
-        }),
+      GcpOptions: example.F(example.ContractNewParamsResellerRoyaltiesGcpOptions{
+        GcpAccountID: example.F("string"),
+        GcpOfferID: example.F("string"),
       }),
-      NetsuiteSalesOrderID: metronome.F("string"),
-    }, metronome.ContractNewParamsScheduledCharge{
-      ProductID: metronome.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-      Name: metronome.F("x"),
-      Schedule: metronome.F(metronome.ContractNewParamsScheduledChargesSchedule{
-        ScheduleItems: metronome.F([]metronome.ContractNewParamsScheduledChargesScheduleScheduleItem{metronome.ContractNewParamsScheduledChargesScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }, metronome.ContractNewParamsScheduledChargesScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }, metronome.ContractNewParamsScheduledChargesScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }}),
-        RecurringSchedule: metronome.F(metronome.ContractNewParamsScheduledChargesScheduleRecurringSchedule{
-          StartingAt: metronome.F(time.Now()),
-          EndingBefore: metronome.F(time.Now()),
-          Frequency: metronome.F(metronome.ContractNewParamsScheduledChargesScheduleRecurringScheduleFrequencyMonthly),
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          AmountDistribution: metronome.F(metronome.ContractNewParamsScheduledChargesScheduleRecurringScheduleAmountDistributionDivided),
-        }),
+    }, example.ContractNewParamsResellerRoyalty{
+      ResellerType: example.F(example.ContractNewParamsResellerRoyaltiesResellerTypeAws),
+      Fraction: example.F(0.000000),
+      NetsuiteResellerID: example.F("string"),
+      ApplicableProductIDs: example.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
+      StartingAt: example.F(time.Now()),
+      EndingBefore: example.F(time.Now()),
+      ResellerContractValue: example.F(0.000000),
+      AwsOptions: example.F(example.ContractNewParamsResellerRoyaltiesAwsOptions{
+        AwsAccountNumber: example.F("string"),
+        AwsPayerReferenceID: example.F("string"),
+        AwsOfferID: example.F("string"),
       }),
-      NetsuiteSalesOrderID: metronome.F("string"),
+      GcpOptions: example.F(example.ContractNewParamsResellerRoyaltiesGcpOptions{
+        GcpAccountID: example.F("string"),
+        GcpOfferID: example.F("string"),
+      }),
+    }, example.ContractNewParamsResellerRoyalty{
+      ResellerType: example.F(example.ContractNewParamsResellerRoyaltiesResellerTypeAws),
+      Fraction: example.F(0.000000),
+      NetsuiteResellerID: example.F("string"),
+      ApplicableProductIDs: example.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
+      StartingAt: example.F(time.Now()),
+      EndingBefore: example.F(time.Now()),
+      ResellerContractValue: example.F(0.000000),
+      AwsOptions: example.F(example.ContractNewParamsResellerRoyaltiesAwsOptions{
+        AwsAccountNumber: example.F("string"),
+        AwsPayerReferenceID: example.F("string"),
+        AwsOfferID: example.F("string"),
+      }),
+      GcpOptions: example.F(example.ContractNewParamsResellerRoyaltiesGcpOptions{
+        GcpAccountID: example.F("string"),
+        GcpOfferID: example.F("string"),
+      }),
     }}),
-    TotalContractValue: metronome.F(0.000000),
-    Transition: metronome.F(metronome.ContractNewParamsTransition{
-      Type: metronome.F(metronome.ContractNewParamsTransitionTypeSupersede),
-      FromContractID: metronome.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+    SalesforceOpportunityID: example.F("006opportunity1"),
+    ScheduledCharges: example.F([]example.ContractNewParamsScheduledCharge{example.ContractNewParamsScheduledCharge{
+      ProductID: example.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+      Name: example.F("x"),
+      Schedule: example.F(example.ContractNewParamsScheduledChargesSchedule{
+        ScheduleItems: example.F([]example.ContractNewParamsScheduledChargesScheduleScheduleItem{example.ContractNewParamsScheduledChargesScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }, example.ContractNewParamsScheduledChargesScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }, example.ContractNewParamsScheduledChargesScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }}),
+        RecurringSchedule: example.F(example.ContractNewParamsScheduledChargesScheduleRecurringSchedule{
+          StartingAt: example.F(time.Now()),
+          EndingBefore: example.F(time.Now()),
+          Frequency: example.F(example.ContractNewParamsScheduledChargesScheduleRecurringScheduleFrequencyMonthly),
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          AmountDistribution: example.F(example.ContractNewParamsScheduledChargesScheduleRecurringScheduleAmountDistributionDivided),
+        }),
+      }),
+      NetsuiteSalesOrderID: example.F("string"),
+    }, example.ContractNewParamsScheduledCharge{
+      ProductID: example.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+      Name: example.F("x"),
+      Schedule: example.F(example.ContractNewParamsScheduledChargesSchedule{
+        ScheduleItems: example.F([]example.ContractNewParamsScheduledChargesScheduleScheduleItem{example.ContractNewParamsScheduledChargesScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }, example.ContractNewParamsScheduledChargesScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }, example.ContractNewParamsScheduledChargesScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }}),
+        RecurringSchedule: example.F(example.ContractNewParamsScheduledChargesScheduleRecurringSchedule{
+          StartingAt: example.F(time.Now()),
+          EndingBefore: example.F(time.Now()),
+          Frequency: example.F(example.ContractNewParamsScheduledChargesScheduleRecurringScheduleFrequencyMonthly),
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          AmountDistribution: example.F(example.ContractNewParamsScheduledChargesScheduleRecurringScheduleAmountDistributionDivided),
+        }),
+      }),
+      NetsuiteSalesOrderID: example.F("string"),
+    }, example.ContractNewParamsScheduledCharge{
+      ProductID: example.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+      Name: example.F("x"),
+      Schedule: example.F(example.ContractNewParamsScheduledChargesSchedule{
+        ScheduleItems: example.F([]example.ContractNewParamsScheduledChargesScheduleScheduleItem{example.ContractNewParamsScheduledChargesScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }, example.ContractNewParamsScheduledChargesScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }, example.ContractNewParamsScheduledChargesScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }}),
+        RecurringSchedule: example.F(example.ContractNewParamsScheduledChargesScheduleRecurringSchedule{
+          StartingAt: example.F(time.Now()),
+          EndingBefore: example.F(time.Now()),
+          Frequency: example.F(example.ContractNewParamsScheduledChargesScheduleRecurringScheduleFrequencyMonthly),
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          AmountDistribution: example.F(example.ContractNewParamsScheduledChargesScheduleRecurringScheduleAmountDistributionDivided),
+        }),
+      }),
+      NetsuiteSalesOrderID: example.F("string"),
+    }}),
+    TotalContractValue: example.F(0.000000),
+    Transition: example.F(example.ContractNewParamsTransition{
+      Type: example.F(example.ContractNewParamsTransitionTypeSupersede),
+      FromContractID: example.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
     }),
-    UsageFilter: metronome.F(metronome.ContractNewParamsUsageFilter{
-      GroupKey: metronome.F("string"),
-      GroupValues: metronome.F([]string{"string", "string", "string"}),
-      StartingAt: metronome.F(time.Now()),
+    UsageFilter: example.F(example.ContractNewParamsUsageFilter{
+      GroupKey: example.F("string"),
+      GroupValues: example.F([]string{"string", "string", "string"}),
+      StartingAt: example.F(time.Now()),
     }),
-    UsageInvoiceSchedule: metronome.F(metronome.ContractNewParamsUsageInvoiceSchedule{
-      Frequency: metronome.F(metronome.ContractNewParamsUsageInvoiceScheduleFrequencyMonthly),
+    UsageInvoiceSchedule: example.F(example.ContractNewParamsUsageInvoiceSchedule{
+      Frequency: example.F(example.ContractNewParamsUsageInvoiceScheduleFrequencyMonthly),
     }),
   })
   if err != nil {
-    var apierr *metronome.Error
-    if errors.As(err, &apierr) {
-      t.Log(string(apierr.DumpRequest(true)))
-    }
-    t.Fatalf("err should be nil: %s", err.Error())
-  }
-}
-
-func TestContractListWithOptionalParams(t *testing.T) {
-  baseURL := "http://localhost:4010"
-  if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
-    baseURL = envURL
-  }
-  if !testutil.CheckTestServer(t, baseURL) {
-    return
-  }
-  client := metronome.NewClient(
-    option.WithBaseURL(baseURL),
-    option.WithAPIKey("My API Key"),
-  )
-  _, err := client.Contracts.List(context.TODO(), metronome.ContractListParams{
-    CustomerID: metronome.F("9b85c1c1-5238-4f2a-a409-61412905e1e1"),
-    IncludeLedgers: metronome.F(true),
-  })
-  if err != nil {
-    var apierr *metronome.Error
-    if errors.As(err, &apierr) {
-      t.Log(string(apierr.DumpRequest(true)))
-    }
-    t.Fatalf("err should be nil: %s", err.Error())
-  }
-}
-
-func TestContractAmendWithOptionalParams(t *testing.T) {
-  baseURL := "http://localhost:4010"
-  if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
-    baseURL = envURL
-  }
-  if !testutil.CheckTestServer(t, baseURL) {
-    return
-  }
-  client := metronome.NewClient(
-    option.WithBaseURL(baseURL),
-    option.WithAPIKey("My API Key"),
-  )
-  _, err := client.Contracts.Amend(context.TODO(), metronome.ContractAmendParams{
-    ContractID: metronome.F("d7abd0cd-4ae9-4db7-8676-e986a4ebd8dc"),
-    CustomerID: metronome.F("13117714-3f05-48e5-a6e9-a66093f13b4d"),
-    StartingAt: metronome.F(time.Now()),
-    Commits: metronome.F([]metronome.ContractAmendParamsCommit{metronome.ContractAmendParamsCommit{
-      Type: metronome.F(metronome.ContractAmendParamsCommitsTypePrepaid),
-      Name: metronome.F("x"),
-      ProductID: metronome.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-      AccessSchedule: metronome.F(metronome.ContractAmendParamsCommitsAccessSchedule{
-        ScheduleItems: metronome.F([]metronome.ContractAmendParamsCommitsAccessScheduleScheduleItem{metronome.ContractAmendParamsCommitsAccessScheduleScheduleItem{
-          Amount: metronome.F(0.000000),
-          StartingAt: metronome.F(time.Now()),
-          EndingBefore: metronome.F(time.Now()),
-        }, metronome.ContractAmendParamsCommitsAccessScheduleScheduleItem{
-          Amount: metronome.F(0.000000),
-          StartingAt: metronome.F(time.Now()),
-          EndingBefore: metronome.F(time.Now()),
-        }, metronome.ContractAmendParamsCommitsAccessScheduleScheduleItem{
-          Amount: metronome.F(0.000000),
-          StartingAt: metronome.F(time.Now()),
-          EndingBefore: metronome.F(time.Now()),
-        }}),
-      }),
-      InvoiceSchedule: metronome.F(metronome.ContractAmendParamsCommitsInvoiceSchedule{
-        ScheduleItems: metronome.F([]metronome.ContractAmendParamsCommitsInvoiceScheduleScheduleItem{metronome.ContractAmendParamsCommitsInvoiceScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }, metronome.ContractAmendParamsCommitsInvoiceScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }, metronome.ContractAmendParamsCommitsInvoiceScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }}),
-        RecurringSchedule: metronome.F(metronome.ContractAmendParamsCommitsInvoiceScheduleRecurringSchedule{
-          StartingAt: metronome.F(time.Now()),
-          EndingBefore: metronome.F(time.Now()),
-          Frequency: metronome.F(metronome.ContractAmendParamsCommitsInvoiceScheduleRecurringScheduleFrequencyMonthly),
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          AmountDistribution: metronome.F(metronome.ContractAmendParamsCommitsInvoiceScheduleRecurringScheduleAmountDistributionDivided),
-        }),
-      }),
-      Amount: metronome.F(0.000000),
-      Description: metronome.F("string"),
-      RolloverFraction: metronome.F(0.000000),
-      ApplicableProductIDs: metronome.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
-      ApplicableTags: metronome.F([]string{"string", "string", "string"}),
-      NetsuiteSalesOrderID: metronome.F("string"),
-    }, metronome.ContractAmendParamsCommit{
-      Type: metronome.F(metronome.ContractAmendParamsCommitsTypePrepaid),
-      Name: metronome.F("x"),
-      ProductID: metronome.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-      AccessSchedule: metronome.F(metronome.ContractAmendParamsCommitsAccessSchedule{
-        ScheduleItems: metronome.F([]metronome.ContractAmendParamsCommitsAccessScheduleScheduleItem{metronome.ContractAmendParamsCommitsAccessScheduleScheduleItem{
-          Amount: metronome.F(0.000000),
-          StartingAt: metronome.F(time.Now()),
-          EndingBefore: metronome.F(time.Now()),
-        }, metronome.ContractAmendParamsCommitsAccessScheduleScheduleItem{
-          Amount: metronome.F(0.000000),
-          StartingAt: metronome.F(time.Now()),
-          EndingBefore: metronome.F(time.Now()),
-        }, metronome.ContractAmendParamsCommitsAccessScheduleScheduleItem{
-          Amount: metronome.F(0.000000),
-          StartingAt: metronome.F(time.Now()),
-          EndingBefore: metronome.F(time.Now()),
-        }}),
-      }),
-      InvoiceSchedule: metronome.F(metronome.ContractAmendParamsCommitsInvoiceSchedule{
-        ScheduleItems: metronome.F([]metronome.ContractAmendParamsCommitsInvoiceScheduleScheduleItem{metronome.ContractAmendParamsCommitsInvoiceScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }, metronome.ContractAmendParamsCommitsInvoiceScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }, metronome.ContractAmendParamsCommitsInvoiceScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }}),
-        RecurringSchedule: metronome.F(metronome.ContractAmendParamsCommitsInvoiceScheduleRecurringSchedule{
-          StartingAt: metronome.F(time.Now()),
-          EndingBefore: metronome.F(time.Now()),
-          Frequency: metronome.F(metronome.ContractAmendParamsCommitsInvoiceScheduleRecurringScheduleFrequencyMonthly),
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          AmountDistribution: metronome.F(metronome.ContractAmendParamsCommitsInvoiceScheduleRecurringScheduleAmountDistributionDivided),
-        }),
-      }),
-      Amount: metronome.F(0.000000),
-      Description: metronome.F("string"),
-      RolloverFraction: metronome.F(0.000000),
-      ApplicableProductIDs: metronome.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
-      ApplicableTags: metronome.F([]string{"string", "string", "string"}),
-      NetsuiteSalesOrderID: metronome.F("string"),
-    }, metronome.ContractAmendParamsCommit{
-      Type: metronome.F(metronome.ContractAmendParamsCommitsTypePrepaid),
-      Name: metronome.F("x"),
-      ProductID: metronome.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-      AccessSchedule: metronome.F(metronome.ContractAmendParamsCommitsAccessSchedule{
-        ScheduleItems: metronome.F([]metronome.ContractAmendParamsCommitsAccessScheduleScheduleItem{metronome.ContractAmendParamsCommitsAccessScheduleScheduleItem{
-          Amount: metronome.F(0.000000),
-          StartingAt: metronome.F(time.Now()),
-          EndingBefore: metronome.F(time.Now()),
-        }, metronome.ContractAmendParamsCommitsAccessScheduleScheduleItem{
-          Amount: metronome.F(0.000000),
-          StartingAt: metronome.F(time.Now()),
-          EndingBefore: metronome.F(time.Now()),
-        }, metronome.ContractAmendParamsCommitsAccessScheduleScheduleItem{
-          Amount: metronome.F(0.000000),
-          StartingAt: metronome.F(time.Now()),
-          EndingBefore: metronome.F(time.Now()),
-        }}),
-      }),
-      InvoiceSchedule: metronome.F(metronome.ContractAmendParamsCommitsInvoiceSchedule{
-        ScheduleItems: metronome.F([]metronome.ContractAmendParamsCommitsInvoiceScheduleScheduleItem{metronome.ContractAmendParamsCommitsInvoiceScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }, metronome.ContractAmendParamsCommitsInvoiceScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }, metronome.ContractAmendParamsCommitsInvoiceScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }}),
-        RecurringSchedule: metronome.F(metronome.ContractAmendParamsCommitsInvoiceScheduleRecurringSchedule{
-          StartingAt: metronome.F(time.Now()),
-          EndingBefore: metronome.F(time.Now()),
-          Frequency: metronome.F(metronome.ContractAmendParamsCommitsInvoiceScheduleRecurringScheduleFrequencyMonthly),
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          AmountDistribution: metronome.F(metronome.ContractAmendParamsCommitsInvoiceScheduleRecurringScheduleAmountDistributionDivided),
-        }),
-      }),
-      Amount: metronome.F(0.000000),
-      Description: metronome.F("string"),
-      RolloverFraction: metronome.F(0.000000),
-      ApplicableProductIDs: metronome.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
-      ApplicableTags: metronome.F([]string{"string", "string", "string"}),
-      NetsuiteSalesOrderID: metronome.F("string"),
-    }}),
-    Discounts: metronome.F([]metronome.ContractAmendParamsDiscount{metronome.ContractAmendParamsDiscount{
-      ProductID: metronome.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-      Name: metronome.F("x"),
-      Schedule: metronome.F(metronome.ContractAmendParamsDiscountsSchedule{
-        ScheduleItems: metronome.F([]metronome.ContractAmendParamsDiscountsScheduleScheduleItem{metronome.ContractAmendParamsDiscountsScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }, metronome.ContractAmendParamsDiscountsScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }, metronome.ContractAmendParamsDiscountsScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }}),
-        RecurringSchedule: metronome.F(metronome.ContractAmendParamsDiscountsScheduleRecurringSchedule{
-          StartingAt: metronome.F(time.Now()),
-          EndingBefore: metronome.F(time.Now()),
-          Frequency: metronome.F(metronome.ContractAmendParamsDiscountsScheduleRecurringScheduleFrequencyMonthly),
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          AmountDistribution: metronome.F(metronome.ContractAmendParamsDiscountsScheduleRecurringScheduleAmountDistributionDivided),
-        }),
-      }),
-      NetsuiteSalesOrderID: metronome.F("string"),
-    }, metronome.ContractAmendParamsDiscount{
-      ProductID: metronome.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-      Name: metronome.F("x"),
-      Schedule: metronome.F(metronome.ContractAmendParamsDiscountsSchedule{
-        ScheduleItems: metronome.F([]metronome.ContractAmendParamsDiscountsScheduleScheduleItem{metronome.ContractAmendParamsDiscountsScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }, metronome.ContractAmendParamsDiscountsScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }, metronome.ContractAmendParamsDiscountsScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }}),
-        RecurringSchedule: metronome.F(metronome.ContractAmendParamsDiscountsScheduleRecurringSchedule{
-          StartingAt: metronome.F(time.Now()),
-          EndingBefore: metronome.F(time.Now()),
-          Frequency: metronome.F(metronome.ContractAmendParamsDiscountsScheduleRecurringScheduleFrequencyMonthly),
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          AmountDistribution: metronome.F(metronome.ContractAmendParamsDiscountsScheduleRecurringScheduleAmountDistributionDivided),
-        }),
-      }),
-      NetsuiteSalesOrderID: metronome.F("string"),
-    }, metronome.ContractAmendParamsDiscount{
-      ProductID: metronome.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-      Name: metronome.F("x"),
-      Schedule: metronome.F(metronome.ContractAmendParamsDiscountsSchedule{
-        ScheduleItems: metronome.F([]metronome.ContractAmendParamsDiscountsScheduleScheduleItem{metronome.ContractAmendParamsDiscountsScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }, metronome.ContractAmendParamsDiscountsScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }, metronome.ContractAmendParamsDiscountsScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }}),
-        RecurringSchedule: metronome.F(metronome.ContractAmendParamsDiscountsScheduleRecurringSchedule{
-          StartingAt: metronome.F(time.Now()),
-          EndingBefore: metronome.F(time.Now()),
-          Frequency: metronome.F(metronome.ContractAmendParamsDiscountsScheduleRecurringScheduleFrequencyMonthly),
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          AmountDistribution: metronome.F(metronome.ContractAmendParamsDiscountsScheduleRecurringScheduleAmountDistributionDivided),
-        }),
-      }),
-      NetsuiteSalesOrderID: metronome.F("string"),
-    }}),
-    NetsuiteSalesOrderID: metronome.F("1234"),
-    Overrides: metronome.F([]metronome.ContractAmendParamsOverride{metronome.ContractAmendParamsOverride{
-      ProductID: metronome.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-      Tags: metronome.F([]string{"string", "string", "string"}),
-      StartingAt: metronome.F(time.Now()),
-      EndingBefore: metronome.F(time.Now()),
-      Entitled: metronome.F(true),
-      Type: metronome.F(metronome.ContractAmendParamsOverridesTypeOverwrite),
-      Multiplier: metronome.F(0.000000),
-      OverwriteRate: metronome.F(metronome.ContractAmendParamsOverridesOverwriteRate{
-        RateType: metronome.F(metronome.ContractAmendParamsOverridesOverwriteRateRateTypeFlat),
-        Price: metronome.F(0.000000),
-        UseListPrices: metronome.F(true),
-      }),
-    }, metronome.ContractAmendParamsOverride{
-      ProductID: metronome.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-      Tags: metronome.F([]string{"string", "string", "string"}),
-      StartingAt: metronome.F(time.Now()),
-      EndingBefore: metronome.F(time.Now()),
-      Entitled: metronome.F(true),
-      Type: metronome.F(metronome.ContractAmendParamsOverridesTypeOverwrite),
-      Multiplier: metronome.F(0.000000),
-      OverwriteRate: metronome.F(metronome.ContractAmendParamsOverridesOverwriteRate{
-        RateType: metronome.F(metronome.ContractAmendParamsOverridesOverwriteRateRateTypeFlat),
-        Price: metronome.F(0.000000),
-        UseListPrices: metronome.F(true),
-      }),
-    }, metronome.ContractAmendParamsOverride{
-      ProductID: metronome.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-      Tags: metronome.F([]string{"string", "string", "string"}),
-      StartingAt: metronome.F(time.Now()),
-      EndingBefore: metronome.F(time.Now()),
-      Entitled: metronome.F(true),
-      Type: metronome.F(metronome.ContractAmendParamsOverridesTypeOverwrite),
-      Multiplier: metronome.F(0.000000),
-      OverwriteRate: metronome.F(metronome.ContractAmendParamsOverridesOverwriteRate{
-        RateType: metronome.F(metronome.ContractAmendParamsOverridesOverwriteRateRateTypeFlat),
-        Price: metronome.F(0.000000),
-        UseListPrices: metronome.F(true),
-      }),
-    }}),
-    ResellerRoyalties: metronome.F([]metronome.ContractAmendParamsResellerRoyalty{metronome.ContractAmendParamsResellerRoyalty{
-      ResellerType: metronome.F(metronome.ContractAmendParamsResellerRoyaltiesResellerTypeAws),
-      Fraction: metronome.F(0.000000),
-      NetsuiteResellerID: metronome.F("string"),
-      ApplicableProductIDs: metronome.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
-      StartingAt: metronome.F(time.Now()),
-      EndingBefore: metronome.F(time.Now()),
-      ResellerContractValue: metronome.F(0.000000),
-      AwsOptions: metronome.F(metronome.ContractAmendParamsResellerRoyaltiesAwsOptions{
-        AwsAccountNumber: metronome.F("string"),
-        AwsPayerReferenceID: metronome.F("string"),
-        AwsOfferID: metronome.F("string"),
-      }),
-      GcpOptions: metronome.F(metronome.ContractAmendParamsResellerRoyaltiesGcpOptions{
-        GcpAccountID: metronome.F("string"),
-        GcpOfferID: metronome.F("string"),
-      }),
-    }, metronome.ContractAmendParamsResellerRoyalty{
-      ResellerType: metronome.F(metronome.ContractAmendParamsResellerRoyaltiesResellerTypeAws),
-      Fraction: metronome.F(0.000000),
-      NetsuiteResellerID: metronome.F("string"),
-      ApplicableProductIDs: metronome.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
-      StartingAt: metronome.F(time.Now()),
-      EndingBefore: metronome.F(time.Now()),
-      ResellerContractValue: metronome.F(0.000000),
-      AwsOptions: metronome.F(metronome.ContractAmendParamsResellerRoyaltiesAwsOptions{
-        AwsAccountNumber: metronome.F("string"),
-        AwsPayerReferenceID: metronome.F("string"),
-        AwsOfferID: metronome.F("string"),
-      }),
-      GcpOptions: metronome.F(metronome.ContractAmendParamsResellerRoyaltiesGcpOptions{
-        GcpAccountID: metronome.F("string"),
-        GcpOfferID: metronome.F("string"),
-      }),
-    }, metronome.ContractAmendParamsResellerRoyalty{
-      ResellerType: metronome.F(metronome.ContractAmendParamsResellerRoyaltiesResellerTypeAws),
-      Fraction: metronome.F(0.000000),
-      NetsuiteResellerID: metronome.F("string"),
-      ApplicableProductIDs: metronome.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
-      StartingAt: metronome.F(time.Now()),
-      EndingBefore: metronome.F(time.Now()),
-      ResellerContractValue: metronome.F(0.000000),
-      AwsOptions: metronome.F(metronome.ContractAmendParamsResellerRoyaltiesAwsOptions{
-        AwsAccountNumber: metronome.F("string"),
-        AwsPayerReferenceID: metronome.F("string"),
-        AwsOfferID: metronome.F("string"),
-      }),
-      GcpOptions: metronome.F(metronome.ContractAmendParamsResellerRoyaltiesGcpOptions{
-        GcpAccountID: metronome.F("string"),
-        GcpOfferID: metronome.F("string"),
-      }),
-    }}),
-    SalesforceOpportunityID: metronome.F("006opportunity1"),
-    ScheduledCharges: metronome.F([]metronome.ContractAmendParamsScheduledCharge{metronome.ContractAmendParamsScheduledCharge{
-      ProductID: metronome.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-      Name: metronome.F("x"),
-      Schedule: metronome.F(metronome.ContractAmendParamsScheduledChargesSchedule{
-        ScheduleItems: metronome.F([]metronome.ContractAmendParamsScheduledChargesScheduleScheduleItem{metronome.ContractAmendParamsScheduledChargesScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }, metronome.ContractAmendParamsScheduledChargesScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }, metronome.ContractAmendParamsScheduledChargesScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }}),
-        RecurringSchedule: metronome.F(metronome.ContractAmendParamsScheduledChargesScheduleRecurringSchedule{
-          StartingAt: metronome.F(time.Now()),
-          EndingBefore: metronome.F(time.Now()),
-          Frequency: metronome.F(metronome.ContractAmendParamsScheduledChargesScheduleRecurringScheduleFrequencyMonthly),
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          AmountDistribution: metronome.F(metronome.ContractAmendParamsScheduledChargesScheduleRecurringScheduleAmountDistributionDivided),
-        }),
-      }),
-      NetsuiteSalesOrderID: metronome.F("string"),
-    }, metronome.ContractAmendParamsScheduledCharge{
-      ProductID: metronome.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-      Name: metronome.F("x"),
-      Schedule: metronome.F(metronome.ContractAmendParamsScheduledChargesSchedule{
-        ScheduleItems: metronome.F([]metronome.ContractAmendParamsScheduledChargesScheduleScheduleItem{metronome.ContractAmendParamsScheduledChargesScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }, metronome.ContractAmendParamsScheduledChargesScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }, metronome.ContractAmendParamsScheduledChargesScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }}),
-        RecurringSchedule: metronome.F(metronome.ContractAmendParamsScheduledChargesScheduleRecurringSchedule{
-          StartingAt: metronome.F(time.Now()),
-          EndingBefore: metronome.F(time.Now()),
-          Frequency: metronome.F(metronome.ContractAmendParamsScheduledChargesScheduleRecurringScheduleFrequencyMonthly),
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          AmountDistribution: metronome.F(metronome.ContractAmendParamsScheduledChargesScheduleRecurringScheduleAmountDistributionDivided),
-        }),
-      }),
-      NetsuiteSalesOrderID: metronome.F("string"),
-    }, metronome.ContractAmendParamsScheduledCharge{
-      ProductID: metronome.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-      Name: metronome.F("x"),
-      Schedule: metronome.F(metronome.ContractAmendParamsScheduledChargesSchedule{
-        ScheduleItems: metronome.F([]metronome.ContractAmendParamsScheduledChargesScheduleScheduleItem{metronome.ContractAmendParamsScheduledChargesScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }, metronome.ContractAmendParamsScheduledChargesScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }, metronome.ContractAmendParamsScheduledChargesScheduleScheduleItem{
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          Timestamp: metronome.F(time.Now()),
-        }}),
-        RecurringSchedule: metronome.F(metronome.ContractAmendParamsScheduledChargesScheduleRecurringSchedule{
-          StartingAt: metronome.F(time.Now()),
-          EndingBefore: metronome.F(time.Now()),
-          Frequency: metronome.F(metronome.ContractAmendParamsScheduledChargesScheduleRecurringScheduleFrequencyMonthly),
-          UnitPrice: metronome.F(0.000000),
-          Quantity: metronome.F(0.000000),
-          Amount: metronome.F(0.000000),
-          AmountDistribution: metronome.F(metronome.ContractAmendParamsScheduledChargesScheduleRecurringScheduleAmountDistributionDivided),
-        }),
-      }),
-      NetsuiteSalesOrderID: metronome.F("string"),
-    }}),
-    TotalContractValue: metronome.F(0.000000),
-  })
-  if err != nil {
-    var apierr *metronome.Error
+    var apierr *example.Error
     if errors.As(err, &apierr) {
       t.Log(string(apierr.DumpRequest(true)))
     }
@@ -992,17 +501,508 @@ func TestContractGetWithOptionalParams(t *testing.T) {
   if !testutil.CheckTestServer(t, baseURL) {
     return
   }
-  client := metronome.NewClient(
+  client := example.NewClient(
     option.WithBaseURL(baseURL),
-    option.WithAPIKey("My API Key"),
+    option.WithBearerToken("My Bearer Token"),
   )
-  _, err := client.Contracts.Get(context.TODO(), metronome.ContractGetParams{
-    ContractID: metronome.F("d7abd0cd-4ae9-4db7-8676-e986a4ebd8dc"),
-    CustomerID: metronome.F("13117714-3f05-48e5-a6e9-a66093f13b4d"),
-    IncludeLedgers: metronome.F(true),
+  _, err := client.Contracts.Get(context.TODO(), example.ContractGetParams{
+    ContractID: example.F("d7abd0cd-4ae9-4db7-8676-e986a4ebd8dc"),
+    CustomerID: example.F("13117714-3f05-48e5-a6e9-a66093f13b4d"),
+    IncludeLedgers: example.F(true),
   })
   if err != nil {
-    var apierr *metronome.Error
+    var apierr *example.Error
+    if errors.As(err, &apierr) {
+      t.Log(string(apierr.DumpRequest(true)))
+    }
+    t.Fatalf("err should be nil: %s", err.Error())
+  }
+}
+
+func TestContractListWithOptionalParams(t *testing.T) {
+  baseURL := "http://localhost:4010"
+  if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
+    baseURL = envURL
+  }
+  if !testutil.CheckTestServer(t, baseURL) {
+    return
+  }
+  client := example.NewClient(
+    option.WithBaseURL(baseURL),
+    option.WithBearerToken("My Bearer Token"),
+  )
+  _, err := client.Contracts.List(context.TODO(), example.ContractListParams{
+    CustomerID: example.F("9b85c1c1-5238-4f2a-a409-61412905e1e1"),
+    IncludeLedgers: example.F(true),
+  })
+  if err != nil {
+    var apierr *example.Error
+    if errors.As(err, &apierr) {
+      t.Log(string(apierr.DumpRequest(true)))
+    }
+    t.Fatalf("err should be nil: %s", err.Error())
+  }
+}
+
+func TestContractAmendWithOptionalParams(t *testing.T) {
+  baseURL := "http://localhost:4010"
+  if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
+    baseURL = envURL
+  }
+  if !testutil.CheckTestServer(t, baseURL) {
+    return
+  }
+  client := example.NewClient(
+    option.WithBaseURL(baseURL),
+    option.WithBearerToken("My Bearer Token"),
+  )
+  _, err := client.Contracts.Amend(context.TODO(), example.ContractAmendParams{
+    ContractID: example.F("d7abd0cd-4ae9-4db7-8676-e986a4ebd8dc"),
+    CustomerID: example.F("13117714-3f05-48e5-a6e9-a66093f13b4d"),
+    StartingAt: example.F(time.Now()),
+    Commits: example.F([]example.ContractAmendParamsCommit{example.ContractAmendParamsCommit{
+      Type: example.F(example.ContractAmendParamsCommitsTypePrepaid),
+      Name: example.F("x"),
+      ProductID: example.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+      AccessSchedule: example.F(example.ContractAmendParamsCommitsAccessSchedule{
+        ScheduleItems: example.F([]example.ContractAmendParamsCommitsAccessScheduleScheduleItem{example.ContractAmendParamsCommitsAccessScheduleScheduleItem{
+          Amount: example.F(0.000000),
+          StartingAt: example.F(time.Now()),
+          EndingBefore: example.F(time.Now()),
+        }, example.ContractAmendParamsCommitsAccessScheduleScheduleItem{
+          Amount: example.F(0.000000),
+          StartingAt: example.F(time.Now()),
+          EndingBefore: example.F(time.Now()),
+        }, example.ContractAmendParamsCommitsAccessScheduleScheduleItem{
+          Amount: example.F(0.000000),
+          StartingAt: example.F(time.Now()),
+          EndingBefore: example.F(time.Now()),
+        }}),
+      }),
+      InvoiceSchedule: example.F(example.ContractAmendParamsCommitsInvoiceSchedule{
+        ScheduleItems: example.F([]example.ContractAmendParamsCommitsInvoiceScheduleScheduleItem{example.ContractAmendParamsCommitsInvoiceScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }, example.ContractAmendParamsCommitsInvoiceScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }, example.ContractAmendParamsCommitsInvoiceScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }}),
+        RecurringSchedule: example.F(example.ContractAmendParamsCommitsInvoiceScheduleRecurringSchedule{
+          StartingAt: example.F(time.Now()),
+          EndingBefore: example.F(time.Now()),
+          Frequency: example.F(example.ContractAmendParamsCommitsInvoiceScheduleRecurringScheduleFrequencyMonthly),
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          AmountDistribution: example.F(example.ContractAmendParamsCommitsInvoiceScheduleRecurringScheduleAmountDistributionDivided),
+        }),
+      }),
+      Amount: example.F(0.000000),
+      Description: example.F("string"),
+      RolloverFraction: example.F(0.000000),
+      ApplicableProductIDs: example.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
+      ApplicableTags: example.F([]string{"string", "string", "string"}),
+      NetsuiteSalesOrderID: example.F("string"),
+    }, example.ContractAmendParamsCommit{
+      Type: example.F(example.ContractAmendParamsCommitsTypePrepaid),
+      Name: example.F("x"),
+      ProductID: example.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+      AccessSchedule: example.F(example.ContractAmendParamsCommitsAccessSchedule{
+        ScheduleItems: example.F([]example.ContractAmendParamsCommitsAccessScheduleScheduleItem{example.ContractAmendParamsCommitsAccessScheduleScheduleItem{
+          Amount: example.F(0.000000),
+          StartingAt: example.F(time.Now()),
+          EndingBefore: example.F(time.Now()),
+        }, example.ContractAmendParamsCommitsAccessScheduleScheduleItem{
+          Amount: example.F(0.000000),
+          StartingAt: example.F(time.Now()),
+          EndingBefore: example.F(time.Now()),
+        }, example.ContractAmendParamsCommitsAccessScheduleScheduleItem{
+          Amount: example.F(0.000000),
+          StartingAt: example.F(time.Now()),
+          EndingBefore: example.F(time.Now()),
+        }}),
+      }),
+      InvoiceSchedule: example.F(example.ContractAmendParamsCommitsInvoiceSchedule{
+        ScheduleItems: example.F([]example.ContractAmendParamsCommitsInvoiceScheduleScheduleItem{example.ContractAmendParamsCommitsInvoiceScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }, example.ContractAmendParamsCommitsInvoiceScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }, example.ContractAmendParamsCommitsInvoiceScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }}),
+        RecurringSchedule: example.F(example.ContractAmendParamsCommitsInvoiceScheduleRecurringSchedule{
+          StartingAt: example.F(time.Now()),
+          EndingBefore: example.F(time.Now()),
+          Frequency: example.F(example.ContractAmendParamsCommitsInvoiceScheduleRecurringScheduleFrequencyMonthly),
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          AmountDistribution: example.F(example.ContractAmendParamsCommitsInvoiceScheduleRecurringScheduleAmountDistributionDivided),
+        }),
+      }),
+      Amount: example.F(0.000000),
+      Description: example.F("string"),
+      RolloverFraction: example.F(0.000000),
+      ApplicableProductIDs: example.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
+      ApplicableTags: example.F([]string{"string", "string", "string"}),
+      NetsuiteSalesOrderID: example.F("string"),
+    }, example.ContractAmendParamsCommit{
+      Type: example.F(example.ContractAmendParamsCommitsTypePrepaid),
+      Name: example.F("x"),
+      ProductID: example.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+      AccessSchedule: example.F(example.ContractAmendParamsCommitsAccessSchedule{
+        ScheduleItems: example.F([]example.ContractAmendParamsCommitsAccessScheduleScheduleItem{example.ContractAmendParamsCommitsAccessScheduleScheduleItem{
+          Amount: example.F(0.000000),
+          StartingAt: example.F(time.Now()),
+          EndingBefore: example.F(time.Now()),
+        }, example.ContractAmendParamsCommitsAccessScheduleScheduleItem{
+          Amount: example.F(0.000000),
+          StartingAt: example.F(time.Now()),
+          EndingBefore: example.F(time.Now()),
+        }, example.ContractAmendParamsCommitsAccessScheduleScheduleItem{
+          Amount: example.F(0.000000),
+          StartingAt: example.F(time.Now()),
+          EndingBefore: example.F(time.Now()),
+        }}),
+      }),
+      InvoiceSchedule: example.F(example.ContractAmendParamsCommitsInvoiceSchedule{
+        ScheduleItems: example.F([]example.ContractAmendParamsCommitsInvoiceScheduleScheduleItem{example.ContractAmendParamsCommitsInvoiceScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }, example.ContractAmendParamsCommitsInvoiceScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }, example.ContractAmendParamsCommitsInvoiceScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }}),
+        RecurringSchedule: example.F(example.ContractAmendParamsCommitsInvoiceScheduleRecurringSchedule{
+          StartingAt: example.F(time.Now()),
+          EndingBefore: example.F(time.Now()),
+          Frequency: example.F(example.ContractAmendParamsCommitsInvoiceScheduleRecurringScheduleFrequencyMonthly),
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          AmountDistribution: example.F(example.ContractAmendParamsCommitsInvoiceScheduleRecurringScheduleAmountDistributionDivided),
+        }),
+      }),
+      Amount: example.F(0.000000),
+      Description: example.F("string"),
+      RolloverFraction: example.F(0.000000),
+      ApplicableProductIDs: example.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
+      ApplicableTags: example.F([]string{"string", "string", "string"}),
+      NetsuiteSalesOrderID: example.F("string"),
+    }}),
+    Discounts: example.F([]example.ContractAmendParamsDiscount{example.ContractAmendParamsDiscount{
+      ProductID: example.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+      Name: example.F("x"),
+      Schedule: example.F(example.ContractAmendParamsDiscountsSchedule{
+        ScheduleItems: example.F([]example.ContractAmendParamsDiscountsScheduleScheduleItem{example.ContractAmendParamsDiscountsScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }, example.ContractAmendParamsDiscountsScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }, example.ContractAmendParamsDiscountsScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }}),
+        RecurringSchedule: example.F(example.ContractAmendParamsDiscountsScheduleRecurringSchedule{
+          StartingAt: example.F(time.Now()),
+          EndingBefore: example.F(time.Now()),
+          Frequency: example.F(example.ContractAmendParamsDiscountsScheduleRecurringScheduleFrequencyMonthly),
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          AmountDistribution: example.F(example.ContractAmendParamsDiscountsScheduleRecurringScheduleAmountDistributionDivided),
+        }),
+      }),
+      NetsuiteSalesOrderID: example.F("string"),
+    }, example.ContractAmendParamsDiscount{
+      ProductID: example.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+      Name: example.F("x"),
+      Schedule: example.F(example.ContractAmendParamsDiscountsSchedule{
+        ScheduleItems: example.F([]example.ContractAmendParamsDiscountsScheduleScheduleItem{example.ContractAmendParamsDiscountsScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }, example.ContractAmendParamsDiscountsScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }, example.ContractAmendParamsDiscountsScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }}),
+        RecurringSchedule: example.F(example.ContractAmendParamsDiscountsScheduleRecurringSchedule{
+          StartingAt: example.F(time.Now()),
+          EndingBefore: example.F(time.Now()),
+          Frequency: example.F(example.ContractAmendParamsDiscountsScheduleRecurringScheduleFrequencyMonthly),
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          AmountDistribution: example.F(example.ContractAmendParamsDiscountsScheduleRecurringScheduleAmountDistributionDivided),
+        }),
+      }),
+      NetsuiteSalesOrderID: example.F("string"),
+    }, example.ContractAmendParamsDiscount{
+      ProductID: example.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+      Name: example.F("x"),
+      Schedule: example.F(example.ContractAmendParamsDiscountsSchedule{
+        ScheduleItems: example.F([]example.ContractAmendParamsDiscountsScheduleScheduleItem{example.ContractAmendParamsDiscountsScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }, example.ContractAmendParamsDiscountsScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }, example.ContractAmendParamsDiscountsScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }}),
+        RecurringSchedule: example.F(example.ContractAmendParamsDiscountsScheduleRecurringSchedule{
+          StartingAt: example.F(time.Now()),
+          EndingBefore: example.F(time.Now()),
+          Frequency: example.F(example.ContractAmendParamsDiscountsScheduleRecurringScheduleFrequencyMonthly),
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          AmountDistribution: example.F(example.ContractAmendParamsDiscountsScheduleRecurringScheduleAmountDistributionDivided),
+        }),
+      }),
+      NetsuiteSalesOrderID: example.F("string"),
+    }}),
+    NetsuiteSalesOrderID: example.F("1234"),
+    Overrides: example.F([]example.ContractAmendParamsOverride{example.ContractAmendParamsOverride{
+      ProductID: example.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+      Tags: example.F([]string{"string", "string", "string"}),
+      StartingAt: example.F(time.Now()),
+      EndingBefore: example.F(time.Now()),
+      Entitled: example.F(true),
+      Type: example.F(example.ContractAmendParamsOverridesTypeOverwrite),
+      Multiplier: example.F(0.000000),
+      OverwriteRate: example.F(example.RateParam{
+        RateType: example.F(example.RateRateTypeFlat),
+        Price: example.F(0.000000),
+        UseListPrices: example.F(true),
+      }),
+    }, example.ContractAmendParamsOverride{
+      ProductID: example.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+      Tags: example.F([]string{"string", "string", "string"}),
+      StartingAt: example.F(time.Now()),
+      EndingBefore: example.F(time.Now()),
+      Entitled: example.F(true),
+      Type: example.F(example.ContractAmendParamsOverridesTypeOverwrite),
+      Multiplier: example.F(0.000000),
+      OverwriteRate: example.F(example.RateParam{
+        RateType: example.F(example.RateRateTypeFlat),
+        Price: example.F(0.000000),
+        UseListPrices: example.F(true),
+      }),
+    }, example.ContractAmendParamsOverride{
+      ProductID: example.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+      Tags: example.F([]string{"string", "string", "string"}),
+      StartingAt: example.F(time.Now()),
+      EndingBefore: example.F(time.Now()),
+      Entitled: example.F(true),
+      Type: example.F(example.ContractAmendParamsOverridesTypeOverwrite),
+      Multiplier: example.F(0.000000),
+      OverwriteRate: example.F(example.RateParam{
+        RateType: example.F(example.RateRateTypeFlat),
+        Price: example.F(0.000000),
+        UseListPrices: example.F(true),
+      }),
+    }}),
+    ResellerRoyalties: example.F([]example.ContractAmendParamsResellerRoyalty{example.ContractAmendParamsResellerRoyalty{
+      ResellerType: example.F(example.ContractAmendParamsResellerRoyaltiesResellerTypeAws),
+      Fraction: example.F(0.000000),
+      NetsuiteResellerID: example.F("string"),
+      ApplicableProductIDs: example.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
+      StartingAt: example.F(time.Now()),
+      EndingBefore: example.F(time.Now()),
+      ResellerContractValue: example.F(0.000000),
+      AwsOptions: example.F(example.ContractAmendParamsResellerRoyaltiesAwsOptions{
+        AwsAccountNumber: example.F("string"),
+        AwsPayerReferenceID: example.F("string"),
+        AwsOfferID: example.F("string"),
+      }),
+      GcpOptions: example.F(example.ContractAmendParamsResellerRoyaltiesGcpOptions{
+        GcpAccountID: example.F("string"),
+        GcpOfferID: example.F("string"),
+      }),
+    }, example.ContractAmendParamsResellerRoyalty{
+      ResellerType: example.F(example.ContractAmendParamsResellerRoyaltiesResellerTypeAws),
+      Fraction: example.F(0.000000),
+      NetsuiteResellerID: example.F("string"),
+      ApplicableProductIDs: example.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
+      StartingAt: example.F(time.Now()),
+      EndingBefore: example.F(time.Now()),
+      ResellerContractValue: example.F(0.000000),
+      AwsOptions: example.F(example.ContractAmendParamsResellerRoyaltiesAwsOptions{
+        AwsAccountNumber: example.F("string"),
+        AwsPayerReferenceID: example.F("string"),
+        AwsOfferID: example.F("string"),
+      }),
+      GcpOptions: example.F(example.ContractAmendParamsResellerRoyaltiesGcpOptions{
+        GcpAccountID: example.F("string"),
+        GcpOfferID: example.F("string"),
+      }),
+    }, example.ContractAmendParamsResellerRoyalty{
+      ResellerType: example.F(example.ContractAmendParamsResellerRoyaltiesResellerTypeAws),
+      Fraction: example.F(0.000000),
+      NetsuiteResellerID: example.F("string"),
+      ApplicableProductIDs: example.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
+      StartingAt: example.F(time.Now()),
+      EndingBefore: example.F(time.Now()),
+      ResellerContractValue: example.F(0.000000),
+      AwsOptions: example.F(example.ContractAmendParamsResellerRoyaltiesAwsOptions{
+        AwsAccountNumber: example.F("string"),
+        AwsPayerReferenceID: example.F("string"),
+        AwsOfferID: example.F("string"),
+      }),
+      GcpOptions: example.F(example.ContractAmendParamsResellerRoyaltiesGcpOptions{
+        GcpAccountID: example.F("string"),
+        GcpOfferID: example.F("string"),
+      }),
+    }}),
+    SalesforceOpportunityID: example.F("006opportunity1"),
+    ScheduledCharges: example.F([]example.ContractAmendParamsScheduledCharge{example.ContractAmendParamsScheduledCharge{
+      ProductID: example.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+      Name: example.F("x"),
+      Schedule: example.F(example.ContractAmendParamsScheduledChargesSchedule{
+        ScheduleItems: example.F([]example.ContractAmendParamsScheduledChargesScheduleScheduleItem{example.ContractAmendParamsScheduledChargesScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }, example.ContractAmendParamsScheduledChargesScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }, example.ContractAmendParamsScheduledChargesScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }}),
+        RecurringSchedule: example.F(example.ContractAmendParamsScheduledChargesScheduleRecurringSchedule{
+          StartingAt: example.F(time.Now()),
+          EndingBefore: example.F(time.Now()),
+          Frequency: example.F(example.ContractAmendParamsScheduledChargesScheduleRecurringScheduleFrequencyMonthly),
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          AmountDistribution: example.F(example.ContractAmendParamsScheduledChargesScheduleRecurringScheduleAmountDistributionDivided),
+        }),
+      }),
+      NetsuiteSalesOrderID: example.F("string"),
+    }, example.ContractAmendParamsScheduledCharge{
+      ProductID: example.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+      Name: example.F("x"),
+      Schedule: example.F(example.ContractAmendParamsScheduledChargesSchedule{
+        ScheduleItems: example.F([]example.ContractAmendParamsScheduledChargesScheduleScheduleItem{example.ContractAmendParamsScheduledChargesScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }, example.ContractAmendParamsScheduledChargesScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }, example.ContractAmendParamsScheduledChargesScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }}),
+        RecurringSchedule: example.F(example.ContractAmendParamsScheduledChargesScheduleRecurringSchedule{
+          StartingAt: example.F(time.Now()),
+          EndingBefore: example.F(time.Now()),
+          Frequency: example.F(example.ContractAmendParamsScheduledChargesScheduleRecurringScheduleFrequencyMonthly),
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          AmountDistribution: example.F(example.ContractAmendParamsScheduledChargesScheduleRecurringScheduleAmountDistributionDivided),
+        }),
+      }),
+      NetsuiteSalesOrderID: example.F("string"),
+    }, example.ContractAmendParamsScheduledCharge{
+      ProductID: example.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+      Name: example.F("x"),
+      Schedule: example.F(example.ContractAmendParamsScheduledChargesSchedule{
+        ScheduleItems: example.F([]example.ContractAmendParamsScheduledChargesScheduleScheduleItem{example.ContractAmendParamsScheduledChargesScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }, example.ContractAmendParamsScheduledChargesScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }, example.ContractAmendParamsScheduledChargesScheduleScheduleItem{
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          Timestamp: example.F(time.Now()),
+        }}),
+        RecurringSchedule: example.F(example.ContractAmendParamsScheduledChargesScheduleRecurringSchedule{
+          StartingAt: example.F(time.Now()),
+          EndingBefore: example.F(time.Now()),
+          Frequency: example.F(example.ContractAmendParamsScheduledChargesScheduleRecurringScheduleFrequencyMonthly),
+          UnitPrice: example.F(0.000000),
+          Quantity: example.F(0.000000),
+          Amount: example.F(0.000000),
+          AmountDistribution: example.F(example.ContractAmendParamsScheduledChargesScheduleRecurringScheduleAmountDistributionDivided),
+        }),
+      }),
+      NetsuiteSalesOrderID: example.F("string"),
+    }}),
+    TotalContractValue: example.F(0.000000),
+  })
+  if err != nil {
+    var apierr *example.Error
     if errors.As(err, &apierr) {
       t.Log(string(apierr.DumpRequest(true)))
     }
@@ -1018,19 +1018,19 @@ func TestContractSetUsageFilter(t *testing.T) {
   if !testutil.CheckTestServer(t, baseURL) {
     return
   }
-  client := metronome.NewClient(
+  client := example.NewClient(
     option.WithBaseURL(baseURL),
-    option.WithAPIKey("My API Key"),
+    option.WithBearerToken("My Bearer Token"),
   )
-  err := client.Contracts.SetUsageFilter(context.TODO(), metronome.ContractSetUsageFilterParams{
-    ContractID: metronome.F("d7abd0cd-4ae9-4db7-8676-e986a4ebd8dc"),
-    CustomerID: metronome.F("13117714-3f05-48e5-a6e9-a66093f13b4d"),
-    GroupKey: metronome.F("business_subscription_id"),
-    GroupValues: metronome.F([]string{"ID-1", "ID-2"}),
-    StartingAt: metronome.F(time.Now()),
+  err := client.Contracts.SetUsageFilter(context.TODO(), example.ContractSetUsageFilterParams{
+    ContractID: example.F("d7abd0cd-4ae9-4db7-8676-e986a4ebd8dc"),
+    CustomerID: example.F("13117714-3f05-48e5-a6e9-a66093f13b4d"),
+    GroupKey: example.F("business_subscription_id"),
+    GroupValues: example.F([]string{"ID-1", "ID-2"}),
+    StartingAt: example.F(time.Now()),
   })
   if err != nil {
-    var apierr *metronome.Error
+    var apierr *example.Error
     if errors.As(err, &apierr) {
       t.Log(string(apierr.DumpRequest(true)))
     }
@@ -1046,17 +1046,17 @@ func TestContractUpdateEndDateWithOptionalParams(t *testing.T) {
   if !testutil.CheckTestServer(t, baseURL) {
     return
   }
-  client := metronome.NewClient(
+  client := example.NewClient(
     option.WithBaseURL(baseURL),
-    option.WithAPIKey("My API Key"),
+    option.WithBearerToken("My Bearer Token"),
   )
-  _, err := client.Contracts.UpdateEndDate(context.TODO(), metronome.ContractUpdateEndDateParams{
-    ContractID: metronome.F("d7abd0cd-4ae9-4db7-8676-e986a4ebd8dc"),
-    CustomerID: metronome.F("13117714-3f05-48e5-a6e9-a66093f13b4d"),
-    EndingBefore: metronome.F(time.Now()),
+  _, err := client.Contracts.UpdateEndDate(context.TODO(), example.ContractUpdateEndDateParams{
+    ContractID: example.F("d7abd0cd-4ae9-4db7-8676-e986a4ebd8dc"),
+    CustomerID: example.F("13117714-3f05-48e5-a6e9-a66093f13b4d"),
+    EndingBefore: example.F(time.Now()),
   })
   if err != nil {
-    var apierr *metronome.Error
+    var apierr *example.Error
     if errors.As(err, &apierr) {
       t.Log(string(apierr.DumpRequest(true)))
     }

@@ -1,15 +1,15 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package metronome_test
+package example_test
 
 import (
   "testing"
   "context"
   "net/http/httputil"
   "time"
-  "github.com/metronome/metronome-go"
-  "github.com/metronome/metronome-go/option"
-  "github.com/metronome/metronome-go/internal/testutil"
+  "github.com/example/example-go"
+  "github.com/example/example-go/option"
+  "github.com/example/example-go/internal/testutil"
 )
 
 func TestContextCancel(t *testing.T) {
@@ -20,14 +20,15 @@ func TestContextCancel(t *testing.T) {
   if !testutil.CheckTestServer(t, baseURL) {
     return
   }
-  client := metronome.NewClient(
+  client := example.NewClient(
     option.WithBaseURL(baseURL),
-    option.WithAPIKey("My API Key"),
+    option.WithBearerToken("My Bearer Token"),
   )
   cancelCtx, cancel := context.WithCancel(context.Background())
   cancel()
-  res, err := client.ContractPricings.Products.Gets.GetProduct(cancelCtx, metronome.ContractPricingProductGetGetProductParams{
-    ID: metronome.F("REPLACE_ME"),
+  res, err := client.Contracts.New(cancelCtx, example.ContractNewParams{
+    CustomerID: example.F("13117714-3f05-48e5-a6e9-a66093f13b4d"),
+    StartingAt: example.F(time.Now()),
   })
   if err == nil || res != nil {
     t.Error("Expected there to be a cancel error and for the response to be nil")
@@ -50,9 +51,9 @@ func TestContextCancelDelay(t *testing.T) {
   if !testutil.CheckTestServer(t, baseURL) {
     return
   }
-  client := metronome.NewClient(
+  client := example.NewClient(
     option.WithBaseURL(baseURL),
-    option.WithAPIKey("My API Key"),
+    option.WithBearerToken("My Bearer Token"),
     option.WithHTTPClient(&http.Client{ Transport: &neverTransport{} }),
   )
   cancelCtx, cancel := context.WithCancel(context.Background())
@@ -60,8 +61,9 @@ func TestContextCancelDelay(t *testing.T) {
     time.Sleep(time.Millisecond * time.Duration(2))
     cancel()
   }()
-  res, err := client.ContractPricings.Products.Gets.GetProduct(cancelCtx, metronome.ContractPricingProductGetGetProductParams{
-    ID: metronome.F("REPLACE_ME"),
+  res, err := client.Contracts.New(cancelCtx, example.ContractNewParams{
+    CustomerID: example.F("13117714-3f05-48e5-a6e9-a66093f13b4d"),
+    StartingAt: example.F(time.Now()),
   })
   if err == nil || res != nil {
     t.Error("expected there to be a cancel error and for the response to be nil")
@@ -85,13 +87,14 @@ func TestContextDeadline(t *testing.T) {
   defer cancel()
 
   go func() {
-    client := metronome.NewClient(
+    client := example.NewClient(
       option.WithBaseURL(baseURL),
-      option.WithAPIKey("My API Key"),
+      option.WithBearerToken("My Bearer Token"),
       option.WithHTTPClient(&http.Client{ Transport: &neverTransport{} }),
     )
-    res, err := client.ContractPricings.Products.Gets.GetProduct(deadlineCtx, metronome.ContractPricingProductGetGetProductParams{
-      ID: metronome.F("REPLACE_ME"),
+    res, err := client.Contracts.New(deadlineCtx, example.ContractNewParams{
+      CustomerID: example.F("13117714-3f05-48e5-a6e9-a66093f13b4d"),
+      StartingAt: example.F(time.Now()),
     })
     if err == nil || res != nil {
       t.Error("expected there to be a deadline error and for the response to be nil")

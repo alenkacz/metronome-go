@@ -1,14 +1,14 @@
-package metronome
+package example
 
 import (
-	"github.com/metronome/metronome-go/internal/param"
+	"github.com/example/example-go/internal/param"
 )
 
 // F is a param field helper used to initialize a [param.Field] generic struct.
 // This helps specify null, zero values, and overrides, as well as normal values.
 // You can read more about this in our [README].
 //
-// [README]: https://pkg.go.dev/github.com/metronome/metronome-go#readme-request-fields
+// [README]: https://pkg.go.dev/github.com/example/example-go#readme-request-fields
 func F[T any](value T) param.Field[T] { return param.Field[T]{Value: value, Present: true} }
 
 // Null is a param field helper which explciitly sends null to the API.

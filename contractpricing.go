@@ -1,14 +1,14 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package metronome
+package example
 
 import (
   "context"
-  "github.com/metronome/metronome-go/option"
+  "github.com/example/example-go/option"
 )
 
 // ContractPricingService contains methods and other services that help with
-// interacting with the metronome API. Note, unlike clients, this service does not
+// interacting with the example API. Note, unlike clients, this service does not
 // read variables from the environment automatically. You should not instantiate
 // this service directly, and instead use the [NewContractPricingService] method
 // instead.

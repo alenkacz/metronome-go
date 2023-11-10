@@ -1,20 +1,21 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package metronome
+package example
 
 import (
-  "github.com/metronome/metronome-go/internal/apijson"
-  "github.com/metronome/metronome-go/internal/param"
+  "github.com/example/example-go/internal/shared"
+  "github.com/example/example-go/internal/apijson"
+  "github.com/example/example-go/internal/param"
   "context"
-  "github.com/metronome/metronome-go/option"
-  "github.com/metronome/metronome-go/internal/requestconfig"
+  "github.com/example/example-go/option"
+  "github.com/example/example-go/internal/requestconfig"
 )
 
 // ContractPricingRateCardMoveRateCardProductService contains methods and other
-// services that help with interacting with the metronome API. Note, unlike
-// clients, this service does not read variables from the environment
-// automatically. You should not instantiate this service directly, and instead use
-// the [NewContractPricingRateCardMoveRateCardProductService] method instead.
+// services that help with interacting with the example API. Note, unlike clients,
+// this service does not read variables from the environment automatically. You
+// should not instantiate this service directly, and instead use the
+// [NewContractPricingRateCardMoveRateCardProductService] method instead.
 type ContractPricingRateCardMoveRateCardProductService struct {
 Options []option.RequestOption
 }
@@ -30,66 +31,48 @@ func NewContractPricingRateCardMoveRateCardProductService(opts ...option.Request
 }
 
 // Updates ordering of specified products
-func (r *ContractPricingRateCardMoveRateCardProductService) MoveRateCardProducts(ctx context.Context, body ContractPricingRateCardMoveRateCardProductMoveRateCardProductsParams, opts ...option.RequestOption) (res *ContractPricingRateCardMoveRateCardProductMoveRateCardProductsResponse, err error) {
+func (r *ContractPricingRateCardMoveRateCardProductService) Update(ctx context.Context, body ContractPricingRateCardMoveRateCardProductUpdateParams, opts ...option.RequestOption) (res *ContractPricingRateCardMoveRateCardProductUpdateResponse, err error) {
   opts = append(r.Options[:], opts...)
   path := "contract-pricing/rate-cards/moveRateCardProducts"
   err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
   return
 }
 
-type ContractPricingRateCardMoveRateCardProductMoveRateCardProductsResponse struct {
-Data ContractPricingRateCardMoveRateCardProductMoveRateCardProductsResponseData `json:"data,required"`
-JSON contractPricingRateCardMoveRateCardProductMoveRateCardProductsResponseJSON
+type ContractPricingRateCardMoveRateCardProductUpdateResponse struct {
+Data shared.ID `json:"data,required"`
+JSON contractPricingRateCardMoveRateCardProductUpdateResponseJSON
 }
 
-// contractPricingRateCardMoveRateCardProductMoveRateCardProductsResponseJSON
-// contains the JSON metadata for the struct
-// [ContractPricingRateCardMoveRateCardProductMoveRateCardProductsResponse]
-type contractPricingRateCardMoveRateCardProductMoveRateCardProductsResponseJSON struct {
+// contractPricingRateCardMoveRateCardProductUpdateResponseJSON contains the JSON
+// metadata for the struct
+// [ContractPricingRateCardMoveRateCardProductUpdateResponse]
+type contractPricingRateCardMoveRateCardProductUpdateResponseJSON struct {
 Data apijson.Field
 raw string
 ExtraFields map[string]apijson.Field
 }
 
-func (r *ContractPricingRateCardMoveRateCardProductMoveRateCardProductsResponse) UnmarshalJSON(data []byte) (err error) {
+func (r *ContractPricingRateCardMoveRateCardProductUpdateResponse) UnmarshalJSON(data []byte) (err error) {
   return apijson.UnmarshalRoot(data, r)
 }
 
-type ContractPricingRateCardMoveRateCardProductMoveRateCardProductsResponseData struct {
-ID string `json:"id,required" format:"uuid"`
-JSON contractPricingRateCardMoveRateCardProductMoveRateCardProductsResponseDataJSON
-}
-
-// contractPricingRateCardMoveRateCardProductMoveRateCardProductsResponseDataJSON
-// contains the JSON metadata for the struct
-// [ContractPricingRateCardMoveRateCardProductMoveRateCardProductsResponseData]
-type contractPricingRateCardMoveRateCardProductMoveRateCardProductsResponseDataJSON struct {
-ID apijson.Field
-raw string
-ExtraFields map[string]apijson.Field
-}
-
-func (r *ContractPricingRateCardMoveRateCardProductMoveRateCardProductsResponseData) UnmarshalJSON(data []byte) (err error) {
-  return apijson.UnmarshalRoot(data, r)
-}
-
-type ContractPricingRateCardMoveRateCardProductMoveRateCardProductsParams struct {
-ProductMoves param.Field[[]ContractPricingRateCardMoveRateCardProductMoveRateCardProductsParamsProductMove] `json:"product_moves,required"`
+type ContractPricingRateCardMoveRateCardProductUpdateParams struct {
+ProductMoves param.Field[[]ContractPricingRateCardMoveRateCardProductUpdateParamsProductMove] `json:"product_moves,required"`
 // ID of the rate card to update
 RateCardID param.Field[string] `json:"rate_card_id,required" format:"uuid"`
 }
 
-func (r ContractPricingRateCardMoveRateCardProductMoveRateCardProductsParams) MarshalJSON() (data []byte, err error) {
+func (r ContractPricingRateCardMoveRateCardProductUpdateParams) MarshalJSON() (data []byte, err error) {
   return apijson.MarshalRoot(r)
 }
 
-type ContractPricingRateCardMoveRateCardProductMoveRateCardProductsParamsProductMove struct {
+type ContractPricingRateCardMoveRateCardProductUpdateParamsProductMove struct {
 // 0-based index of the new position of the product
 Position param.Field[float64] `json:"position,required"`
 // ID of the product to move
 ProductID param.Field[string] `json:"product_id,required" format:"uuid"`
 }
 
-func (r ContractPricingRateCardMoveRateCardProductMoveRateCardProductsParamsProductMove) MarshalJSON() (data []byte, err error) {
+func (r ContractPricingRateCardMoveRateCardProductUpdateParamsProductMove) MarshalJSON() (data []byte, err error) {
   return apijson.MarshalRoot(r)
 }

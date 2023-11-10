@@ -11,7 +11,7 @@ jobs:
   lint:
     name: lint
     runs-on: ubuntu-latest
-    if: github.repository == 'metronome/metronome-go'
+    if: github.repository == 'example/example-go'
 
     steps:
       - uses: actions/checkout@v3

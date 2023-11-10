@@ -1,22 +1,22 @@
-# Metronome Go API Library
+# Example Go API Library
 
-<a href="https://pkg.go.dev/github.com/metronome/metronome-go"><img src="https://pkg.go.dev/badge/github.com/metronome/metronome-go.svg" alt="Go Reference"></a>
+<a href="https://pkg.go.dev/github.com/example/example-go"><img src="https://pkg.go.dev/badge/github.com/example/example-go.svg" alt="Go Reference"></a>
 
-The Metronome Go library provides convenient access to [the Metronome REST
-API](https://docs.metronome.com) from applications written in Go.
+The Example Go library provides convenient access to [the Example REST
+API](https://docs.example.com) from applications written in Go.
 
 ## Installation
 
 ```go
 import (
-	"github.com/metronome/metronome-go" // imported as metronome
+	"github.com/example/example-go" // imported as example
 )
 ```
 
 Or to pin the version:
 
 ```sh
-go get -u 'github.com/metronome/metronome-go@v0.0.1'
+go get -u 'github.com/example/example-go@v0.0.1'
 ```
 
 ## Requirements
@@ -25,7 +25,7 @@ This library requires Go 1.18+.
 
 ## Usage
 
-The full API of this library can be found in [api.md](https://www.github.com/metronome/metronome-go/blob/main/api.md).
+The full API of this library can be found in [api.md](https://www.github.com/example/example-go/blob/main/api.md).
 
 ```go
 package main
@@ -33,21 +33,23 @@ package main
 import (
 	"context"
 	"fmt"
-	"github.com/metronome/metronome-go"
-	"github.com/metronome/metronome-go/option"
+	"github.com/example/example-go"
+	"github.com/example/example-go/option"
+	"time"
 )
 
 func main() {
-	client := metronome.NewClient(
-		option.WithAPIKey("My API Key"), // defaults to os.LookupEnv("METRONOME_API_KEY")
+	client := example.NewClient(
+		option.WithBearerToken("My Bearer Token"), // defaults to os.LookupEnv("EXAMPLE_BEARER_TOKEN")
 	)
-	contractPricingProductGetGetProductResponse, err := client.ContractPricings.Products.Gets.GetProduct(context.TODO(), metronome.ContractPricingProductGetGetProductParams{
-		ID: metronome.F("REPLACE_ME"),
+	contractNewResponse, err := client.Contracts.New(context.TODO(), example.ContractNewParams{
+		CustomerID: example.F("13117714-3f05-48e5-a6e9-a66093f13b4d"),
+		StartingAt: example.F(time.Now()),
 	})
 	if err != nil {
 		panic(err.Error())
 	}
-	fmt.Printf("%+v\n", contractPricingProductGetGetProductResponse.Data)
+	fmt.Printf("%+v\n", contractNewResponse.Data)
 }
 
 ```
@@ -66,18 +68,18 @@ To send a null, use `Null[T]()`, and to send a nonconforming value, use `Raw[T](
 
 ```go
 params := FooParams{
-	Name: metronome.F("hello"),
+	Name: example.F("hello"),
 
 	// Explicitly send `"description": null`
-	Description: metronome.Null[string](),
+	Description: example.Null[string](),
 
-	Point: metronome.F(metronome.Point{
-		X: metronome.Int(0),
-		Y: metronome.Int(1),
+	Point: example.F(example.Point{
+		X: example.Int(0),
+		Y: example.Int(1),
 
 		// In cases where the API specifies a given type,
 		// but you want to send something else, use `Raw`:
-		Z: metronome.Raw[int64](0.01), // sends a float
+		Z: example.Raw[int64](0.01), // sends a float
 	}),
 }
 ```
@@ -131,12 +133,12 @@ This library uses the functional options pattern. Functions defined in the
 requests. For example:
 
 ```go
-client := metronome.NewClient(
+client := example.NewClient(
 	// Adds a header to every request made by the client
 	option.WithHeader("X-Some-Header", "custom_header_info"),
 )
 
-client.ContractPricings.Products.Gets.GetProduct(context.TODO(), ...,
+client.Contracts.New(context.TODO(), ...,
 	// Override the header
 	option.WithHeader("X-Some-Header", "some_other_custom_header_info"),
 	// Add an undocumented field to the request body, using sjson syntax
@@ -144,7 +146,7 @@ client.ContractPricings.Products.Gets.GetProduct(context.TODO(), ...,
 )
 ```
 
-The full list of request options is [here](https://pkg.go.dev/github.com/metronome/metronome-go/option).
+The full list of request options is [here](https://pkg.go.dev/github.com/example/example-go/option).
 
 ### Pagination
 
@@ -166,23 +168,24 @@ with additional helper methods like `.GetNextPage()`, e.g.:
 ### Errors
 
 When the API returns a non-success status code, we return an error with type
-`*metronome.Error`. This contains the `StatusCode`, `*http.Request`, and
+`*example.Error`. This contains the `StatusCode`, `*http.Request`, and
 `*http.Response` values of the request, as well as the JSON of the error body
 (much like other response objects in the SDK).
 
 To handle errors, we recommend that you use the `errors.As` pattern:
 
 ```go
-_, err := client.ContractPricings.Products.Gets.GetProduct(context.TODO(), metronome.ContractPricingProductGetGetProductParams{
-	ID: metronome.F("REPLACE_ME"),
+_, err := client.Contracts.New(context.TODO(), example.ContractNewParams{
+	CustomerID: example.F("13117714-3f05-48e5-a6e9-a66093f13b4d"),
+	StartingAt: example.F(time.Now()),
 })
 if err != nil {
-	var apierr *metronome.Error
+	var apierr *example.Error
 	if errors.As(err, &apierr) {
 		println(string(apierr.DumpRequest(true)))  // Prints the serialized HTTP request
 		println(string(apierr.DumpResponse(true))) // Prints the serialized HTTP response
 	}
-	panic(err.Error()) // GET "/contract-pricing/products/get": 400 Bad Request { ... }
+	panic(err.Error()) // GET "/contracts/create": 400 Bad Request { ... }
 }
 ```
 
@@ -200,10 +203,11 @@ To set a per-retry timeout, use `option.WithRequestTimeout()`.
 // This sets the timeout for the request, including all the retries.
 ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 defer cancel()
-client.ContractPricings.Products.Gets.GetProduct(
+client.Contracts.New(
 	ctx,
-	metronome.ContractPricingProductGetGetProductParams{
-		ID: metronome.F("REPLACE_ME"),
+	example.ContractNewParams{
+		CustomerID: example.F("13117714-3f05-48e5-a6e9-a66093f13b4d"),
+		StartingAt: example.F(time.Now()),
 	},
 	// This sets the per-retry timeout
 	option.WithRequestTimeout(20*time.Second),
@@ -220,15 +224,16 @@ You can use the `WithMaxRetries` option to configure or disable this:
 
 ```go
 // Configure the default for all requests:
-client := metronome.NewClient(
+client := example.NewClient(
 	option.WithMaxRetries(0), // default is 2
 )
 
 // Override per-request:
-client.ContractPricings.Products.Gets.GetProduct(
+client.Contracts.New(
 	context.TODO(),
-	metronome.ContractPricingProductGetGetProductParams{
-		ID: metronome.F("REPLACE_ME"),
+	example.ContractNewParams{
+		CustomerID: example.F("13117714-3f05-48e5-a6e9-a66093f13b4d"),
+		StartingAt: example.F(time.Now()),
 	},
 	option.WithMaxRetries(5),
 )
@@ -255,7 +260,7 @@ func Logger(req *http.Request, next option.MiddlewareNext) (res *http.Response, 
     return res, err
 }
 
-client := metronome.NewClient(
+client := example.NewClient(
 	option.WithMiddleware(Logger),
 )
 ```
@@ -280,4 +285,4 @@ This package generally follows [SemVer](https://semver.org/spec/v2.0.0.html) con
 
 We take backwards-compatibility seriously and work hard to ensure you can rely on a smooth upgrade experience.
 
-We are keen for your feedback; please open an [issue](https://www.github.com/metronome/metronome-go/issues) with questions, bugs, or suggestions.
+We are keen for your feedback; please open an [issue](https://www.github.com/example/example-go/issues) with questions, bugs, or suggestions.

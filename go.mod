@@ -1,4 +1,4 @@
-module github.com/metronome/metronome-go
+module github.com/example/example-go
 
 go 1.19
 

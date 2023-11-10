@@ -1,13 +1,14 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package metronome_test
+package example_test
 
 import (
   "testing"
-  "github.com/metronome/metronome-go/internal/testutil"
-  "github.com/metronome/metronome-go"
-  "github.com/metronome/metronome-go/option"
+  "github.com/example/example-go/internal/testutil"
+  "github.com/example/example-go"
+  "github.com/example/example-go/option"
   "context"
+  "time"
 )
 
 func TestUsage(t *testing.T) {
@@ -18,15 +19,16 @@ func TestUsage(t *testing.T) {
   if !testutil.CheckTestServer(t, baseURL) {
     return
   }
-  client := metronome.NewClient(
+  client := example.NewClient(
     option.WithBaseURL(baseURL),
-    option.WithAPIKey("My API Key"),
+    option.WithBearerToken("My Bearer Token"),
   )
-  contractPricingProductGetGetProductResponse, err := client.ContractPricings.Products.Gets.GetProduct(context.TODO(), metronome.ContractPricingProductGetGetProductParams{
-    ID: metronome.F("REPLACE_ME"),
+  contractNewResponse, err := client.Contracts.New(context.TODO(), example.ContractNewParams{
+    CustomerID: example.F("13117714-3f05-48e5-a6e9-a66093f13b4d"),
+    StartingAt: example.F(time.Now()),
   })
   if err != nil {
     t.Error(err)
   }
-  t.Logf("%+v\n", contractPricingProductGetGetProductResponse.Data)
+  t.Logf("%+v\n", contractNewResponse.Data)
 }

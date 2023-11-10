@@ -7,10 +7,10 @@ import (
   "net/url"
   "net/http"
   "log"
-  "github.com/metronome/metronome-go/internal/requestconfig"
+  "github.com/example/example-go/internal/requestconfig"
 )
 
-// RequestOption is an option for the requests made by the metronome API Client
+// RequestOption is an option for the requests made by the example API Client
 // which can be supplied to clients, services, and methods. You can read more about this functional
 // options pattern in our [README].
 //
@@ -185,10 +185,10 @@ func WithEnvironmentProduction() RequestOption {
   return WithBaseURL("https://api.metronome.com/v1/")
 }
 
-// WithAPIKey returns a RequestOption that sets the client setting "api_key".
-func WithAPIKey(value string) RequestOption {
+// WithBearerToken returns a RequestOption that sets the client setting "bearer_token".
+func WithBearerToken(value string) RequestOption {
   return func (r *requestconfig.RequestConfig) error {
-    r.APIKey = value
-    return r.Apply(WithHeader("authorization", fmt.Sprintf("Bearer %s", r.APIKey)))
+    r.BearerToken = value
+    return r.Apply(WithHeader("authorization", fmt.Sprintf("Bearer %s", r.BearerToken)))
   }
 }
