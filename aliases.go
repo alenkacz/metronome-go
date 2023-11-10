@@ -3,7 +3,7 @@
 package metronome
 
 import (
-	"github.com/metronome/metronome-go/internal/apierror"
+  "github.com/metronome/metronome-go/internal/apierror"
 )
 
 type Error = apierror.Error

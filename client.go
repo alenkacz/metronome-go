@@ -3,18 +3,18 @@
 package metronome
 
 import (
-	"os"
-
-	"github.com/metronome/metronome-go/option"
+  "context"
+  "github.com/metronome/metronome-go/option"
+  "github.com/metronome/metronome-go/internal/shared"
 )
 
 // Client creates a struct with services and top level methods that help with
 // interacting with the metronome API. You should not instantiate this client
 // directly, and instead use the [NewClient] method instead.
 type Client struct {
-	Options          []option.RequestOption
-	ContractPricings *ContractPricingService
-	Contracts        *ContractService
+Options []option.RequestOption
+ContractPricings *ContractPricingService
+Contracts *ContractService
 }
 
 // NewClient generates a new client with the default option read from the
@@ -22,16 +22,16 @@ type Client struct {
 // after these default arguments, and all option will be passed down to the
 // services and requests that this client makes.
 func NewClient(opts ...option.RequestOption) (r *Client) {
-	defaults := []option.RequestOption{option.WithEnvironmentProduction()}
-	if o, ok := os.LookupEnv("METRONOME_API_KEY"); ok {
-		defaults = append(defaults, option.WithAPIKey(o))
-	}
-	opts = append(defaults, opts...)
+  defaults := []option.RequestOption{option.WithEnvironmentProduction()}
+  if o, ok := os.LookupEnv("METRONOME_API_KEY"); ok {
+    defaults = append(defaults, option.WithAPIKey(o))
+  }
+  opts = append(defaults, opts...)
 
-	r = &Client{Options: opts}
+  r = &Client{Options: opts}
 
-	r.ContractPricings = NewContractPricingService(opts...)
-	r.Contracts = NewContractService(opts...)
+  r.ContractPricings = NewContractPricingService(opts...)
+  r.Contracts = NewContractService(opts...)
 
-	return
+  return
 }

@@ -2,4 +2,8 @@
 
 package metronome_test
 
+import (
+  "testing"
+)
+
 // TODO
