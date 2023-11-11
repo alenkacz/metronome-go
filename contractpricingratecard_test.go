@@ -37,30 +37,6 @@ func TestContractPricingRateCardNewWithOptionalParams(t *testing.T) {
   }
 }
 
-func TestContractPricingRateCardGet(t *testing.T) {
-  baseURL := "http://localhost:4010"
-  if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
-    baseURL = envURL
-  }
-  if !testutil.CheckTestServer(t, baseURL) {
-    return
-  }
-  client := example.NewClient(
-    option.WithBaseURL(baseURL),
-    option.WithBearerToken("My Bearer Token"),
-  )
-  _, err := client.ContractPricing.RateCards.Get(context.TODO(), example.ContractPricingRateCardGetParams{
-    ID: example.F("f3d51ae8-f283-44e1-9933-a3cf9ad7a6fe"),
-  })
-  if err != nil {
-    var apierr *example.Error
-    if errors.As(err, &apierr) {
-      t.Log(string(apierr.DumpRequest(true)))
-    }
-    t.Fatalf("err should be nil: %s", err.Error())
-  }
-}
-
 func TestContractPricingRateCardUpdateWithOptionalParams(t *testing.T) {
   baseURL := "http://localhost:4010"
   if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
@@ -134,6 +110,61 @@ func TestContractPricingRateCardAddRateWithOptionalParams(t *testing.T) {
     StartingAt: example.F(time.Now()),
     EndingBefore: example.F(time.Now()),
     UseListPrices: example.F(true),
+  })
+  if err != nil {
+    var apierr *example.Error
+    if errors.As(err, &apierr) {
+      t.Log(string(apierr.DumpRequest(true)))
+    }
+    t.Fatalf("err should be nil: %s", err.Error())
+  }
+}
+
+func TestContractPricingRateCardGet(t *testing.T) {
+  baseURL := "http://localhost:4010"
+  if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
+    baseURL = envURL
+  }
+  if !testutil.CheckTestServer(t, baseURL) {
+    return
+  }
+  client := example.NewClient(
+    option.WithBaseURL(baseURL),
+    option.WithBearerToken("My Bearer Token"),
+  )
+  _, err := client.ContractPricing.RateCards.Get(context.TODO(), example.ContractPricingRateCardGetParams{
+    ID: example.F("f3d51ae8-f283-44e1-9933-a3cf9ad7a6fe"),
+  })
+  if err != nil {
+    var apierr *example.Error
+    if errors.As(err, &apierr) {
+      t.Log(string(apierr.DumpRequest(true)))
+    }
+    t.Fatalf("err should be nil: %s", err.Error())
+  }
+}
+
+func TestContractPricingRateCardMoveRateCardProducts(t *testing.T) {
+  baseURL := "http://localhost:4010"
+  if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
+    baseURL = envURL
+  }
+  if !testutil.CheckTestServer(t, baseURL) {
+    return
+  }
+  client := example.NewClient(
+    option.WithBaseURL(baseURL),
+    option.WithBearerToken("My Bearer Token"),
+  )
+  _, err := client.ContractPricing.RateCards.MoveRateCardProducts(context.TODO(), example.ContractPricingRateCardMoveRateCardProductsParams{
+    ProductMoves: example.F([]example.ContractPricingRateCardMoveRateCardProductsParamsProductMove{example.ContractPricingRateCardMoveRateCardProductsParamsProductMove{
+      ProductID: example.F("13117714-3f05-48e5-a6e9-a66093f13b4d"),
+      Position: example.F(0.000000),
+    }, example.ContractPricingRateCardMoveRateCardProductsParamsProductMove{
+      ProductID: example.F("b086f2f4-9851-4466-9ca0-30d53e6a42ac"),
+      Position: example.F(1.000000),
+    }}),
+    RateCardID: example.F("d7abd0cd-4ae9-4db7-8676-e986a4ebd8dc"),
   })
   if err != nil {
     var apierr *example.Error

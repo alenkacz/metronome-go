@@ -449,6 +449,239 @@ func (r *CommitRolledOverFrom) UnmarshalJSON(data []byte) (err error) {
   return apijson.UnmarshalRoot(data, r)
 }
 
+type ContractWithoutAmendments struct {
+Commits []Commit `json:"commits,required"`
+CreatedAt time.Time `json:"created_at,required" format:"date-time"`
+CreatedBy string `json:"created_by,required"`
+Discounts []Discount `json:"discounts,required"`
+Overrides []Override `json:"overrides,required"`
+ResellerRoyalties []ContractWithoutAmendmentsResellerRoyalty `json:"reseller_royalties,required"`
+ScheduledCharges []ScheduledCharge `json:"scheduled_charges,required"`
+StartingAt time.Time `json:"starting_at,required" format:"date-time"`
+Transitions []ContractWithoutAmendmentsTransition `json:"transitions,required"`
+UsageInvoiceSchedule ContractWithoutAmendmentsUsageInvoiceSchedule `json:"usage_invoice_schedule,required"`
+EndingBefore time.Time `json:"ending_before" format:"date-time"`
+Name string `json:"name"`
+NetPaymentTermsDays float64 `json:"net_payment_terms_days"`
+NetsuiteSalesOrderID string `json:"netsuite_sales_order_id"`
+RateCardID string `json:"rate_card_id" format:"uuid"`
+SalesforceOpportunityID string `json:"salesforce_opportunity_id"`
+TotalContractValue float64 `json:"total_contract_value"`
+UsageFilter ContractWithoutAmendmentsUsageFilter `json:"usage_filter"`
+JSON contractWithoutAmendmentsJSON
+}
+
+// contractWithoutAmendmentsJSON contains the JSON metadata for the struct
+// [ContractWithoutAmendments]
+type contractWithoutAmendmentsJSON struct {
+Commits apijson.Field
+CreatedAt apijson.Field
+CreatedBy apijson.Field
+Discounts apijson.Field
+Overrides apijson.Field
+ResellerRoyalties apijson.Field
+ScheduledCharges apijson.Field
+StartingAt apijson.Field
+Transitions apijson.Field
+UsageInvoiceSchedule apijson.Field
+EndingBefore apijson.Field
+Name apijson.Field
+NetPaymentTermsDays apijson.Field
+NetsuiteSalesOrderID apijson.Field
+RateCardID apijson.Field
+SalesforceOpportunityID apijson.Field
+TotalContractValue apijson.Field
+UsageFilter apijson.Field
+raw string
+ExtraFields map[string]apijson.Field
+}
+
+func (r *ContractWithoutAmendments) UnmarshalJSON(data []byte) (err error) {
+  return apijson.UnmarshalRoot(data, r)
+}
+
+type ContractWithoutAmendmentsResellerRoyalty struct {
+Fraction float64 `json:"fraction,required"`
+NetsuiteResellerID string `json:"netsuite_reseller_id,required"`
+ResellerType ContractWithoutAmendmentsResellerRoyaltiesResellerType `json:"reseller_type,required"`
+StartingAt time.Time `json:"starting_at,required" format:"date-time"`
+AwsAccountNumber string `json:"aws_account_number"`
+AwsOfferID string `json:"aws_offer_id"`
+AwsPayerReferenceID string `json:"aws_payer_reference_id"`
+EndingBefore time.Time `json:"ending_before" format:"date-time"`
+GcpAccountID string `json:"gcp_account_id"`
+GcpOfferID string `json:"gcp_offer_id"`
+ResellerContractValue float64 `json:"reseller_contract_value"`
+JSON contractWithoutAmendmentsResellerRoyaltyJSON
+}
+
+// contractWithoutAmendmentsResellerRoyaltyJSON contains the JSON metadata for the
+// struct [ContractWithoutAmendmentsResellerRoyalty]
+type contractWithoutAmendmentsResellerRoyaltyJSON struct {
+Fraction apijson.Field
+NetsuiteResellerID apijson.Field
+ResellerType apijson.Field
+StartingAt apijson.Field
+AwsAccountNumber apijson.Field
+AwsOfferID apijson.Field
+AwsPayerReferenceID apijson.Field
+EndingBefore apijson.Field
+GcpAccountID apijson.Field
+GcpOfferID apijson.Field
+ResellerContractValue apijson.Field
+raw string
+ExtraFields map[string]apijson.Field
+}
+
+func (r *ContractWithoutAmendmentsResellerRoyalty) UnmarshalJSON(data []byte) (err error) {
+  return apijson.UnmarshalRoot(data, r)
+}
+
+type ContractWithoutAmendmentsResellerRoyaltiesResellerType string
+
+const (
+  ContractWithoutAmendmentsResellerRoyaltiesResellerTypeAws ContractWithoutAmendmentsResellerRoyaltiesResellerType = "AWS"
+  ContractWithoutAmendmentsResellerRoyaltiesResellerTypeGcp ContractWithoutAmendmentsResellerRoyaltiesResellerType = "GCP"
+)
+
+type ContractWithoutAmendmentsTransition struct {
+FromContractID string `json:"from_contract_id,required" format:"uuid"`
+ToContractID string `json:"to_contract_id,required" format:"uuid"`
+Type ContractWithoutAmendmentsTransitionsType `json:"type,required"`
+JSON contractWithoutAmendmentsTransitionJSON
+}
+
+// contractWithoutAmendmentsTransitionJSON contains the JSON metadata for the
+// struct [ContractWithoutAmendmentsTransition]
+type contractWithoutAmendmentsTransitionJSON struct {
+FromContractID apijson.Field
+ToContractID apijson.Field
+Type apijson.Field
+raw string
+ExtraFields map[string]apijson.Field
+}
+
+func (r *ContractWithoutAmendmentsTransition) UnmarshalJSON(data []byte) (err error) {
+  return apijson.UnmarshalRoot(data, r)
+}
+
+type ContractWithoutAmendmentsTransitionsType string
+
+const (
+  ContractWithoutAmendmentsTransitionsTypeSupersede ContractWithoutAmendmentsTransitionsType = "SUPERSEDE"
+  ContractWithoutAmendmentsTransitionsTypeRenewal ContractWithoutAmendmentsTransitionsType = "RENEWAL"
+)
+
+type ContractWithoutAmendmentsUsageInvoiceSchedule struct {
+Frequency ContractWithoutAmendmentsUsageInvoiceScheduleFrequency `json:"frequency,required"`
+JSON contractWithoutAmendmentsUsageInvoiceScheduleJSON
+}
+
+// contractWithoutAmendmentsUsageInvoiceScheduleJSON contains the JSON metadata for
+// the struct [ContractWithoutAmendmentsUsageInvoiceSchedule]
+type contractWithoutAmendmentsUsageInvoiceScheduleJSON struct {
+Frequency apijson.Field
+raw string
+ExtraFields map[string]apijson.Field
+}
+
+func (r *ContractWithoutAmendmentsUsageInvoiceSchedule) UnmarshalJSON(data []byte) (err error) {
+  return apijson.UnmarshalRoot(data, r)
+}
+
+type ContractWithoutAmendmentsUsageInvoiceScheduleFrequency string
+
+const (
+  ContractWithoutAmendmentsUsageInvoiceScheduleFrequencyMonthly ContractWithoutAmendmentsUsageInvoiceScheduleFrequency = "MONTHLY"
+  ContractWithoutAmendmentsUsageInvoiceScheduleFrequencyMonthly ContractWithoutAmendmentsUsageInvoiceScheduleFrequency = "monthly"
+  ContractWithoutAmendmentsUsageInvoiceScheduleFrequencyQuarterly ContractWithoutAmendmentsUsageInvoiceScheduleFrequency = "QUARTERLY"
+  ContractWithoutAmendmentsUsageInvoiceScheduleFrequencyQuarterly ContractWithoutAmendmentsUsageInvoiceScheduleFrequency = "quarterly"
+)
+
+type ContractWithoutAmendmentsUsageFilter struct {
+Current ContractWithoutAmendmentsUsageFilterCurrent `json:"current,required"`
+Initial ContractWithoutAmendmentsUsageFilterInitial `json:"initial,required"`
+Updates []ContractWithoutAmendmentsUsageFilterUpdate `json:"updates,required"`
+JSON contractWithoutAmendmentsUsageFilterJSON
+}
+
+// contractWithoutAmendmentsUsageFilterJSON contains the JSON metadata for the
+// struct [ContractWithoutAmendmentsUsageFilter]
+type contractWithoutAmendmentsUsageFilterJSON struct {
+Current apijson.Field
+Initial apijson.Field
+Updates apijson.Field
+raw string
+ExtraFields map[string]apijson.Field
+}
+
+func (r *ContractWithoutAmendmentsUsageFilter) UnmarshalJSON(data []byte) (err error) {
+  return apijson.UnmarshalRoot(data, r)
+}
+
+type ContractWithoutAmendmentsUsageFilterCurrent struct {
+GroupKey string `json:"group_key,required"`
+GroupValues []string `json:"group_values,required"`
+StartingAt time.Time `json:"starting_at" format:"date-time"`
+JSON contractWithoutAmendmentsUsageFilterCurrentJSON
+}
+
+// contractWithoutAmendmentsUsageFilterCurrentJSON contains the JSON metadata for
+// the struct [ContractWithoutAmendmentsUsageFilterCurrent]
+type contractWithoutAmendmentsUsageFilterCurrentJSON struct {
+GroupKey apijson.Field
+GroupValues apijson.Field
+StartingAt apijson.Field
+raw string
+ExtraFields map[string]apijson.Field
+}
+
+func (r *ContractWithoutAmendmentsUsageFilterCurrent) UnmarshalJSON(data []byte) (err error) {
+  return apijson.UnmarshalRoot(data, r)
+}
+
+type ContractWithoutAmendmentsUsageFilterInitial struct {
+GroupKey string `json:"group_key,required"`
+GroupValues []string `json:"group_values,required"`
+StartingAt time.Time `json:"starting_at" format:"date-time"`
+JSON contractWithoutAmendmentsUsageFilterInitialJSON
+}
+
+// contractWithoutAmendmentsUsageFilterInitialJSON contains the JSON metadata for
+// the struct [ContractWithoutAmendmentsUsageFilterInitial]
+type contractWithoutAmendmentsUsageFilterInitialJSON struct {
+GroupKey apijson.Field
+GroupValues apijson.Field
+StartingAt apijson.Field
+raw string
+ExtraFields map[string]apijson.Field
+}
+
+func (r *ContractWithoutAmendmentsUsageFilterInitial) UnmarshalJSON(data []byte) (err error) {
+  return apijson.UnmarshalRoot(data, r)
+}
+
+type ContractWithoutAmendmentsUsageFilterUpdate struct {
+GroupKey string `json:"group_key,required"`
+GroupValues []string `json:"group_values,required"`
+StartingAt time.Time `json:"starting_at,required" format:"date-time"`
+JSON contractWithoutAmendmentsUsageFilterUpdateJSON
+}
+
+// contractWithoutAmendmentsUsageFilterUpdateJSON contains the JSON metadata for
+// the struct [ContractWithoutAmendmentsUsageFilterUpdate]
+type contractWithoutAmendmentsUsageFilterUpdateJSON struct {
+GroupKey apijson.Field
+GroupValues apijson.Field
+StartingAt apijson.Field
+raw string
+ExtraFields map[string]apijson.Field
+}
+
+func (r *ContractWithoutAmendmentsUsageFilterUpdate) UnmarshalJSON(data []byte) (err error) {
+  return apijson.UnmarshalRoot(data, r)
+}
+
 type Discount struct {
 ID string `json:"id,required" format:"uuid"`
 Product DiscountProduct `json:"product,required"`
@@ -605,5 +838,49 @@ ExtraFields map[string]apijson.Field
 }
 
 func (r *SchedulePointInTimeScheduleItem) UnmarshalJSON(data []byte) (err error) {
+  return apijson.UnmarshalRoot(data, r)
+}
+
+type ScheduledCharge struct {
+ID string `json:"id,required" format:"uuid"`
+Product ScheduledChargeProduct `json:"product,required"`
+Schedule SchedulePointInTime `json:"schedule,required"`
+// displayed on invoices
+Name string `json:"name"`
+NetsuiteSalesOrderID string `json:"netsuite_sales_order_id"`
+JSON scheduledChargeJSON
+}
+
+// scheduledChargeJSON contains the JSON metadata for the struct [ScheduledCharge]
+type scheduledChargeJSON struct {
+ID apijson.Field
+Product apijson.Field
+Schedule apijson.Field
+Name apijson.Field
+NetsuiteSalesOrderID apijson.Field
+raw string
+ExtraFields map[string]apijson.Field
+}
+
+func (r *ScheduledCharge) UnmarshalJSON(data []byte) (err error) {
+  return apijson.UnmarshalRoot(data, r)
+}
+
+type ScheduledChargeProduct struct {
+ID string `json:"id,required" format:"uuid"`
+Name string `json:"name,required"`
+JSON scheduledChargeProductJSON
+}
+
+// scheduledChargeProductJSON contains the JSON metadata for the struct
+// [ScheduledChargeProduct]
+type scheduledChargeProductJSON struct {
+ID apijson.Field
+Name apijson.Field
+raw string
+ExtraFields map[string]apijson.Field
+}
+
+func (r *ScheduledChargeProduct) UnmarshalJSON(data []byte) (err error) {
   return apijson.UnmarshalRoot(data, r)
 }

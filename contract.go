@@ -3,8 +3,8 @@
 package example
 
 import (
-  "github.com/example/example-go/internal/apijson"
   "github.com/example/example-go/internal/shared"
+  "github.com/example/example-go/internal/apijson"
   "time"
   "github.com/example/example-go/internal/param"
   "context"
@@ -37,14 +37,6 @@ func (r *ContractService) New(ctx context.Context, body ContractNewParams, opts 
   return
 }
 
-// Get a specific contract
-func (r *ContractService) Get(ctx context.Context, body ContractGetParams, opts ...option.RequestOption) (res *ContractGetResponse, err error) {
-  opts = append(r.Options[:], opts...)
-  path := "contracts/get"
-  err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-  return
-}
-
 // List all contracts for a customer
 func (r *ContractService) List(ctx context.Context, body ContractListParams, opts ...option.RequestOption) (res *ContractListResponse, err error) {
   opts = append(r.Options[:], opts...)
@@ -57,6 +49,14 @@ func (r *ContractService) List(ctx context.Context, body ContractListParams, opt
 func (r *ContractService) Amend(ctx context.Context, body ContractAmendParams, opts ...option.RequestOption) (res *ContractAmendResponse, err error) {
   opts = append(r.Options[:], opts...)
   path := "contracts/amend"
+  err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
+  return
+}
+
+// Get a specific contract
+func (r *ContractService) Get(ctx context.Context, body ContractGetParams, opts ...option.RequestOption) (res *ContractGetResponse, err error) {
+  opts = append(r.Options[:], opts...)
+  path := "contracts/get"
   err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
   return
 }
@@ -81,9 +81,9 @@ func (r *ContractService) UpdateEndDate(ctx context.Context, body ContractUpdate
 type Contract struct {
 ID string `json:"id,required" format:"uuid"`
 Amendments []ContractAmendment `json:"amendments,required"`
-Current ContractCurrent `json:"current,required"`
+Current shared.ContractWithoutAmendments `json:"current,required"`
 CustomerID string `json:"customer_id,required" format:"uuid"`
-Initial ContractInitial `json:"initial,required"`
+Initial shared.ContractWithoutAmendments `json:"initial,required"`
 JSON contractJSON
 }
 
@@ -110,7 +110,7 @@ CreatedBy string `json:"created_by,required"`
 Discounts []shared.Discount `json:"discounts,required"`
 Overrides []shared.Override `json:"overrides,required"`
 ResellerRoyalties []ContractAmendmentsResellerRoyalty `json:"reseller_royalties,required"`
-ScheduledCharges []ContractAmendmentsScheduledCharge `json:"scheduled_charges,required"`
+ScheduledCharges []shared.ScheduledCharge `json:"scheduled_charges,required"`
 StartingAt time.Time `json:"starting_at,required" format:"date-time"`
 NetsuiteSalesOrderID string `json:"netsuite_sales_order_id"`
 SalesforceOpportunityID string `json:"salesforce_opportunity_id"`
@@ -183,605 +183,6 @@ const (
   ContractAmendmentsResellerRoyaltiesResellerTypeGcp ContractAmendmentsResellerRoyaltiesResellerType = "GCP"
 )
 
-type ContractAmendmentsScheduledCharge struct {
-ID string `json:"id,required" format:"uuid"`
-Product ContractAmendmentsScheduledChargesProduct `json:"product,required"`
-Schedule shared.SchedulePointInTime `json:"schedule,required"`
-// displayed on invoices
-Name string `json:"name"`
-NetsuiteSalesOrderID string `json:"netsuite_sales_order_id"`
-JSON contractAmendmentsScheduledChargeJSON
-}
-
-// contractAmendmentsScheduledChargeJSON contains the JSON metadata for the struct
-// [ContractAmendmentsScheduledCharge]
-type contractAmendmentsScheduledChargeJSON struct {
-ID apijson.Field
-Product apijson.Field
-Schedule apijson.Field
-Name apijson.Field
-NetsuiteSalesOrderID apijson.Field
-raw string
-ExtraFields map[string]apijson.Field
-}
-
-func (r *ContractAmendmentsScheduledCharge) UnmarshalJSON(data []byte) (err error) {
-  return apijson.UnmarshalRoot(data, r)
-}
-
-type ContractAmendmentsScheduledChargesProduct struct {
-ID string `json:"id,required" format:"uuid"`
-Name string `json:"name,required"`
-JSON contractAmendmentsScheduledChargesProductJSON
-}
-
-// contractAmendmentsScheduledChargesProductJSON contains the JSON metadata for the
-// struct [ContractAmendmentsScheduledChargesProduct]
-type contractAmendmentsScheduledChargesProductJSON struct {
-ID apijson.Field
-Name apijson.Field
-raw string
-ExtraFields map[string]apijson.Field
-}
-
-func (r *ContractAmendmentsScheduledChargesProduct) UnmarshalJSON(data []byte) (err error) {
-  return apijson.UnmarshalRoot(data, r)
-}
-
-type ContractCurrent struct {
-Commits []shared.Commit `json:"commits,required"`
-CreatedAt time.Time `json:"created_at,required" format:"date-time"`
-CreatedBy string `json:"created_by,required"`
-Discounts []shared.Discount `json:"discounts,required"`
-Overrides []shared.Override `json:"overrides,required"`
-ResellerRoyalties []ContractCurrentResellerRoyalty `json:"reseller_royalties,required"`
-ScheduledCharges []ContractCurrentScheduledCharge `json:"scheduled_charges,required"`
-StartingAt time.Time `json:"starting_at,required" format:"date-time"`
-Transitions []ContractCurrentTransition `json:"transitions,required"`
-UsageInvoiceSchedule ContractCurrentUsageInvoiceSchedule `json:"usage_invoice_schedule,required"`
-EndingBefore time.Time `json:"ending_before" format:"date-time"`
-Name string `json:"name"`
-NetPaymentTermsDays float64 `json:"net_payment_terms_days"`
-NetsuiteSalesOrderID string `json:"netsuite_sales_order_id"`
-RateCardID string `json:"rate_card_id" format:"uuid"`
-SalesforceOpportunityID string `json:"salesforce_opportunity_id"`
-TotalContractValue float64 `json:"total_contract_value"`
-UsageFilter ContractCurrentUsageFilter `json:"usage_filter"`
-JSON contractCurrentJSON
-}
-
-// contractCurrentJSON contains the JSON metadata for the struct [ContractCurrent]
-type contractCurrentJSON struct {
-Commits apijson.Field
-CreatedAt apijson.Field
-CreatedBy apijson.Field
-Discounts apijson.Field
-Overrides apijson.Field
-ResellerRoyalties apijson.Field
-ScheduledCharges apijson.Field
-StartingAt apijson.Field
-Transitions apijson.Field
-UsageInvoiceSchedule apijson.Field
-EndingBefore apijson.Field
-Name apijson.Field
-NetPaymentTermsDays apijson.Field
-NetsuiteSalesOrderID apijson.Field
-RateCardID apijson.Field
-SalesforceOpportunityID apijson.Field
-TotalContractValue apijson.Field
-UsageFilter apijson.Field
-raw string
-ExtraFields map[string]apijson.Field
-}
-
-func (r *ContractCurrent) UnmarshalJSON(data []byte) (err error) {
-  return apijson.UnmarshalRoot(data, r)
-}
-
-type ContractCurrentResellerRoyalty struct {
-Fraction float64 `json:"fraction,required"`
-NetsuiteResellerID string `json:"netsuite_reseller_id,required"`
-ResellerType ContractCurrentResellerRoyaltiesResellerType `json:"reseller_type,required"`
-StartingAt time.Time `json:"starting_at,required" format:"date-time"`
-AwsAccountNumber string `json:"aws_account_number"`
-AwsOfferID string `json:"aws_offer_id"`
-AwsPayerReferenceID string `json:"aws_payer_reference_id"`
-EndingBefore time.Time `json:"ending_before" format:"date-time"`
-GcpAccountID string `json:"gcp_account_id"`
-GcpOfferID string `json:"gcp_offer_id"`
-ResellerContractValue float64 `json:"reseller_contract_value"`
-JSON contractCurrentResellerRoyaltyJSON
-}
-
-// contractCurrentResellerRoyaltyJSON contains the JSON metadata for the struct
-// [ContractCurrentResellerRoyalty]
-type contractCurrentResellerRoyaltyJSON struct {
-Fraction apijson.Field
-NetsuiteResellerID apijson.Field
-ResellerType apijson.Field
-StartingAt apijson.Field
-AwsAccountNumber apijson.Field
-AwsOfferID apijson.Field
-AwsPayerReferenceID apijson.Field
-EndingBefore apijson.Field
-GcpAccountID apijson.Field
-GcpOfferID apijson.Field
-ResellerContractValue apijson.Field
-raw string
-ExtraFields map[string]apijson.Field
-}
-
-func (r *ContractCurrentResellerRoyalty) UnmarshalJSON(data []byte) (err error) {
-  return apijson.UnmarshalRoot(data, r)
-}
-
-type ContractCurrentResellerRoyaltiesResellerType string
-
-const (
-  ContractCurrentResellerRoyaltiesResellerTypeAws ContractCurrentResellerRoyaltiesResellerType = "AWS"
-  ContractCurrentResellerRoyaltiesResellerTypeGcp ContractCurrentResellerRoyaltiesResellerType = "GCP"
-)
-
-type ContractCurrentScheduledCharge struct {
-ID string `json:"id,required" format:"uuid"`
-Product ContractCurrentScheduledChargesProduct `json:"product,required"`
-Schedule shared.SchedulePointInTime `json:"schedule,required"`
-// displayed on invoices
-Name string `json:"name"`
-NetsuiteSalesOrderID string `json:"netsuite_sales_order_id"`
-JSON contractCurrentScheduledChargeJSON
-}
-
-// contractCurrentScheduledChargeJSON contains the JSON metadata for the struct
-// [ContractCurrentScheduledCharge]
-type contractCurrentScheduledChargeJSON struct {
-ID apijson.Field
-Product apijson.Field
-Schedule apijson.Field
-Name apijson.Field
-NetsuiteSalesOrderID apijson.Field
-raw string
-ExtraFields map[string]apijson.Field
-}
-
-func (r *ContractCurrentScheduledCharge) UnmarshalJSON(data []byte) (err error) {
-  return apijson.UnmarshalRoot(data, r)
-}
-
-type ContractCurrentScheduledChargesProduct struct {
-ID string `json:"id,required" format:"uuid"`
-Name string `json:"name,required"`
-JSON contractCurrentScheduledChargesProductJSON
-}
-
-// contractCurrentScheduledChargesProductJSON contains the JSON metadata for the
-// struct [ContractCurrentScheduledChargesProduct]
-type contractCurrentScheduledChargesProductJSON struct {
-ID apijson.Field
-Name apijson.Field
-raw string
-ExtraFields map[string]apijson.Field
-}
-
-func (r *ContractCurrentScheduledChargesProduct) UnmarshalJSON(data []byte) (err error) {
-  return apijson.UnmarshalRoot(data, r)
-}
-
-type ContractCurrentTransition struct {
-FromContractID string `json:"from_contract_id,required" format:"uuid"`
-ToContractID string `json:"to_contract_id,required" format:"uuid"`
-Type ContractCurrentTransitionsType `json:"type,required"`
-JSON contractCurrentTransitionJSON
-}
-
-// contractCurrentTransitionJSON contains the JSON metadata for the struct
-// [ContractCurrentTransition]
-type contractCurrentTransitionJSON struct {
-FromContractID apijson.Field
-ToContractID apijson.Field
-Type apijson.Field
-raw string
-ExtraFields map[string]apijson.Field
-}
-
-func (r *ContractCurrentTransition) UnmarshalJSON(data []byte) (err error) {
-  return apijson.UnmarshalRoot(data, r)
-}
-
-type ContractCurrentTransitionsType string
-
-const (
-  ContractCurrentTransitionsTypeSupersede ContractCurrentTransitionsType = "SUPERSEDE"
-  ContractCurrentTransitionsTypeRenewal ContractCurrentTransitionsType = "RENEWAL"
-)
-
-type ContractCurrentUsageInvoiceSchedule struct {
-Frequency ContractCurrentUsageInvoiceScheduleFrequency `json:"frequency,required"`
-JSON contractCurrentUsageInvoiceScheduleJSON
-}
-
-// contractCurrentUsageInvoiceScheduleJSON contains the JSON metadata for the
-// struct [ContractCurrentUsageInvoiceSchedule]
-type contractCurrentUsageInvoiceScheduleJSON struct {
-Frequency apijson.Field
-raw string
-ExtraFields map[string]apijson.Field
-}
-
-func (r *ContractCurrentUsageInvoiceSchedule) UnmarshalJSON(data []byte) (err error) {
-  return apijson.UnmarshalRoot(data, r)
-}
-
-type ContractCurrentUsageInvoiceScheduleFrequency string
-
-const (
-  ContractCurrentUsageInvoiceScheduleFrequencyMonthly ContractCurrentUsageInvoiceScheduleFrequency = "MONTHLY"
-  ContractCurrentUsageInvoiceScheduleFrequencyMonthly ContractCurrentUsageInvoiceScheduleFrequency = "monthly"
-  ContractCurrentUsageInvoiceScheduleFrequencyQuarterly ContractCurrentUsageInvoiceScheduleFrequency = "QUARTERLY"
-  ContractCurrentUsageInvoiceScheduleFrequencyQuarterly ContractCurrentUsageInvoiceScheduleFrequency = "quarterly"
-)
-
-type ContractCurrentUsageFilter struct {
-Current ContractCurrentUsageFilterCurrent `json:"current,required"`
-Initial ContractCurrentUsageFilterInitial `json:"initial,required"`
-Updates []ContractCurrentUsageFilterUpdate `json:"updates,required"`
-JSON contractCurrentUsageFilterJSON
-}
-
-// contractCurrentUsageFilterJSON contains the JSON metadata for the struct
-// [ContractCurrentUsageFilter]
-type contractCurrentUsageFilterJSON struct {
-Current apijson.Field
-Initial apijson.Field
-Updates apijson.Field
-raw string
-ExtraFields map[string]apijson.Field
-}
-
-func (r *ContractCurrentUsageFilter) UnmarshalJSON(data []byte) (err error) {
-  return apijson.UnmarshalRoot(data, r)
-}
-
-type ContractCurrentUsageFilterCurrent struct {
-GroupKey string `json:"group_key,required"`
-GroupValues []string `json:"group_values,required"`
-StartingAt time.Time `json:"starting_at" format:"date-time"`
-JSON contractCurrentUsageFilterCurrentJSON
-}
-
-// contractCurrentUsageFilterCurrentJSON contains the JSON metadata for the struct
-// [ContractCurrentUsageFilterCurrent]
-type contractCurrentUsageFilterCurrentJSON struct {
-GroupKey apijson.Field
-GroupValues apijson.Field
-StartingAt apijson.Field
-raw string
-ExtraFields map[string]apijson.Field
-}
-
-func (r *ContractCurrentUsageFilterCurrent) UnmarshalJSON(data []byte) (err error) {
-  return apijson.UnmarshalRoot(data, r)
-}
-
-type ContractCurrentUsageFilterInitial struct {
-GroupKey string `json:"group_key,required"`
-GroupValues []string `json:"group_values,required"`
-StartingAt time.Time `json:"starting_at" format:"date-time"`
-JSON contractCurrentUsageFilterInitialJSON
-}
-
-// contractCurrentUsageFilterInitialJSON contains the JSON metadata for the struct
-// [ContractCurrentUsageFilterInitial]
-type contractCurrentUsageFilterInitialJSON struct {
-GroupKey apijson.Field
-GroupValues apijson.Field
-StartingAt apijson.Field
-raw string
-ExtraFields map[string]apijson.Field
-}
-
-func (r *ContractCurrentUsageFilterInitial) UnmarshalJSON(data []byte) (err error) {
-  return apijson.UnmarshalRoot(data, r)
-}
-
-type ContractCurrentUsageFilterUpdate struct {
-GroupKey string `json:"group_key,required"`
-GroupValues []string `json:"group_values,required"`
-StartingAt time.Time `json:"starting_at,required" format:"date-time"`
-JSON contractCurrentUsageFilterUpdateJSON
-}
-
-// contractCurrentUsageFilterUpdateJSON contains the JSON metadata for the struct
-// [ContractCurrentUsageFilterUpdate]
-type contractCurrentUsageFilterUpdateJSON struct {
-GroupKey apijson.Field
-GroupValues apijson.Field
-StartingAt apijson.Field
-raw string
-ExtraFields map[string]apijson.Field
-}
-
-func (r *ContractCurrentUsageFilterUpdate) UnmarshalJSON(data []byte) (err error) {
-  return apijson.UnmarshalRoot(data, r)
-}
-
-type ContractInitial struct {
-Commits []shared.Commit `json:"commits,required"`
-CreatedAt time.Time `json:"created_at,required" format:"date-time"`
-CreatedBy string `json:"created_by,required"`
-Discounts []shared.Discount `json:"discounts,required"`
-Overrides []shared.Override `json:"overrides,required"`
-ResellerRoyalties []ContractInitialResellerRoyalty `json:"reseller_royalties,required"`
-ScheduledCharges []ContractInitialScheduledCharge `json:"scheduled_charges,required"`
-StartingAt time.Time `json:"starting_at,required" format:"date-time"`
-Transitions []ContractInitialTransition `json:"transitions,required"`
-UsageInvoiceSchedule ContractInitialUsageInvoiceSchedule `json:"usage_invoice_schedule,required"`
-EndingBefore time.Time `json:"ending_before" format:"date-time"`
-Name string `json:"name"`
-NetPaymentTermsDays float64 `json:"net_payment_terms_days"`
-NetsuiteSalesOrderID string `json:"netsuite_sales_order_id"`
-RateCardID string `json:"rate_card_id" format:"uuid"`
-SalesforceOpportunityID string `json:"salesforce_opportunity_id"`
-TotalContractValue float64 `json:"total_contract_value"`
-UsageFilter ContractInitialUsageFilter `json:"usage_filter"`
-JSON contractInitialJSON
-}
-
-// contractInitialJSON contains the JSON metadata for the struct [ContractInitial]
-type contractInitialJSON struct {
-Commits apijson.Field
-CreatedAt apijson.Field
-CreatedBy apijson.Field
-Discounts apijson.Field
-Overrides apijson.Field
-ResellerRoyalties apijson.Field
-ScheduledCharges apijson.Field
-StartingAt apijson.Field
-Transitions apijson.Field
-UsageInvoiceSchedule apijson.Field
-EndingBefore apijson.Field
-Name apijson.Field
-NetPaymentTermsDays apijson.Field
-NetsuiteSalesOrderID apijson.Field
-RateCardID apijson.Field
-SalesforceOpportunityID apijson.Field
-TotalContractValue apijson.Field
-UsageFilter apijson.Field
-raw string
-ExtraFields map[string]apijson.Field
-}
-
-func (r *ContractInitial) UnmarshalJSON(data []byte) (err error) {
-  return apijson.UnmarshalRoot(data, r)
-}
-
-type ContractInitialResellerRoyalty struct {
-Fraction float64 `json:"fraction,required"`
-NetsuiteResellerID string `json:"netsuite_reseller_id,required"`
-ResellerType ContractInitialResellerRoyaltiesResellerType `json:"reseller_type,required"`
-StartingAt time.Time `json:"starting_at,required" format:"date-time"`
-AwsAccountNumber string `json:"aws_account_number"`
-AwsOfferID string `json:"aws_offer_id"`
-AwsPayerReferenceID string `json:"aws_payer_reference_id"`
-EndingBefore time.Time `json:"ending_before" format:"date-time"`
-GcpAccountID string `json:"gcp_account_id"`
-GcpOfferID string `json:"gcp_offer_id"`
-ResellerContractValue float64 `json:"reseller_contract_value"`
-JSON contractInitialResellerRoyaltyJSON
-}
-
-// contractInitialResellerRoyaltyJSON contains the JSON metadata for the struct
-// [ContractInitialResellerRoyalty]
-type contractInitialResellerRoyaltyJSON struct {
-Fraction apijson.Field
-NetsuiteResellerID apijson.Field
-ResellerType apijson.Field
-StartingAt apijson.Field
-AwsAccountNumber apijson.Field
-AwsOfferID apijson.Field
-AwsPayerReferenceID apijson.Field
-EndingBefore apijson.Field
-GcpAccountID apijson.Field
-GcpOfferID apijson.Field
-ResellerContractValue apijson.Field
-raw string
-ExtraFields map[string]apijson.Field
-}
-
-func (r *ContractInitialResellerRoyalty) UnmarshalJSON(data []byte) (err error) {
-  return apijson.UnmarshalRoot(data, r)
-}
-
-type ContractInitialResellerRoyaltiesResellerType string
-
-const (
-  ContractInitialResellerRoyaltiesResellerTypeAws ContractInitialResellerRoyaltiesResellerType = "AWS"
-  ContractInitialResellerRoyaltiesResellerTypeGcp ContractInitialResellerRoyaltiesResellerType = "GCP"
-)
-
-type ContractInitialScheduledCharge struct {
-ID string `json:"id,required" format:"uuid"`
-Product ContractInitialScheduledChargesProduct `json:"product,required"`
-Schedule shared.SchedulePointInTime `json:"schedule,required"`
-// displayed on invoices
-Name string `json:"name"`
-NetsuiteSalesOrderID string `json:"netsuite_sales_order_id"`
-JSON contractInitialScheduledChargeJSON
-}
-
-// contractInitialScheduledChargeJSON contains the JSON metadata for the struct
-// [ContractInitialScheduledCharge]
-type contractInitialScheduledChargeJSON struct {
-ID apijson.Field
-Product apijson.Field
-Schedule apijson.Field
-Name apijson.Field
-NetsuiteSalesOrderID apijson.Field
-raw string
-ExtraFields map[string]apijson.Field
-}
-
-func (r *ContractInitialScheduledCharge) UnmarshalJSON(data []byte) (err error) {
-  return apijson.UnmarshalRoot(data, r)
-}
-
-type ContractInitialScheduledChargesProduct struct {
-ID string `json:"id,required" format:"uuid"`
-Name string `json:"name,required"`
-JSON contractInitialScheduledChargesProductJSON
-}
-
-// contractInitialScheduledChargesProductJSON contains the JSON metadata for the
-// struct [ContractInitialScheduledChargesProduct]
-type contractInitialScheduledChargesProductJSON struct {
-ID apijson.Field
-Name apijson.Field
-raw string
-ExtraFields map[string]apijson.Field
-}
-
-func (r *ContractInitialScheduledChargesProduct) UnmarshalJSON(data []byte) (err error) {
-  return apijson.UnmarshalRoot(data, r)
-}
-
-type ContractInitialTransition struct {
-FromContractID string `json:"from_contract_id,required" format:"uuid"`
-ToContractID string `json:"to_contract_id,required" format:"uuid"`
-Type ContractInitialTransitionsType `json:"type,required"`
-JSON contractInitialTransitionJSON
-}
-
-// contractInitialTransitionJSON contains the JSON metadata for the struct
-// [ContractInitialTransition]
-type contractInitialTransitionJSON struct {
-FromContractID apijson.Field
-ToContractID apijson.Field
-Type apijson.Field
-raw string
-ExtraFields map[string]apijson.Field
-}
-
-func (r *ContractInitialTransition) UnmarshalJSON(data []byte) (err error) {
-  return apijson.UnmarshalRoot(data, r)
-}
-
-type ContractInitialTransitionsType string
-
-const (
-  ContractInitialTransitionsTypeSupersede ContractInitialTransitionsType = "SUPERSEDE"
-  ContractInitialTransitionsTypeRenewal ContractInitialTransitionsType = "RENEWAL"
-)
-
-type ContractInitialUsageInvoiceSchedule struct {
-Frequency ContractInitialUsageInvoiceScheduleFrequency `json:"frequency,required"`
-JSON contractInitialUsageInvoiceScheduleJSON
-}
-
-// contractInitialUsageInvoiceScheduleJSON contains the JSON metadata for the
-// struct [ContractInitialUsageInvoiceSchedule]
-type contractInitialUsageInvoiceScheduleJSON struct {
-Frequency apijson.Field
-raw string
-ExtraFields map[string]apijson.Field
-}
-
-func (r *ContractInitialUsageInvoiceSchedule) UnmarshalJSON(data []byte) (err error) {
-  return apijson.UnmarshalRoot(data, r)
-}
-
-type ContractInitialUsageInvoiceScheduleFrequency string
-
-const (
-  ContractInitialUsageInvoiceScheduleFrequencyMonthly ContractInitialUsageInvoiceScheduleFrequency = "MONTHLY"
-  ContractInitialUsageInvoiceScheduleFrequencyMonthly ContractInitialUsageInvoiceScheduleFrequency = "monthly"
-  ContractInitialUsageInvoiceScheduleFrequencyQuarterly ContractInitialUsageInvoiceScheduleFrequency = "QUARTERLY"
-  ContractInitialUsageInvoiceScheduleFrequencyQuarterly ContractInitialUsageInvoiceScheduleFrequency = "quarterly"
-)
-
-type ContractInitialUsageFilter struct {
-Current ContractInitialUsageFilterCurrent `json:"current,required"`
-Initial ContractInitialUsageFilterInitial `json:"initial,required"`
-Updates []ContractInitialUsageFilterUpdate `json:"updates,required"`
-JSON contractInitialUsageFilterJSON
-}
-
-// contractInitialUsageFilterJSON contains the JSON metadata for the struct
-// [ContractInitialUsageFilter]
-type contractInitialUsageFilterJSON struct {
-Current apijson.Field
-Initial apijson.Field
-Updates apijson.Field
-raw string
-ExtraFields map[string]apijson.Field
-}
-
-func (r *ContractInitialUsageFilter) UnmarshalJSON(data []byte) (err error) {
-  return apijson.UnmarshalRoot(data, r)
-}
-
-type ContractInitialUsageFilterCurrent struct {
-GroupKey string `json:"group_key,required"`
-GroupValues []string `json:"group_values,required"`
-StartingAt time.Time `json:"starting_at" format:"date-time"`
-JSON contractInitialUsageFilterCurrentJSON
-}
-
-// contractInitialUsageFilterCurrentJSON contains the JSON metadata for the struct
-// [ContractInitialUsageFilterCurrent]
-type contractInitialUsageFilterCurrentJSON struct {
-GroupKey apijson.Field
-GroupValues apijson.Field
-StartingAt apijson.Field
-raw string
-ExtraFields map[string]apijson.Field
-}
-
-func (r *ContractInitialUsageFilterCurrent) UnmarshalJSON(data []byte) (err error) {
-  return apijson.UnmarshalRoot(data, r)
-}
-
-type ContractInitialUsageFilterInitial struct {
-GroupKey string `json:"group_key,required"`
-GroupValues []string `json:"group_values,required"`
-StartingAt time.Time `json:"starting_at" format:"date-time"`
-JSON contractInitialUsageFilterInitialJSON
-}
-
-// contractInitialUsageFilterInitialJSON contains the JSON metadata for the struct
-// [ContractInitialUsageFilterInitial]
-type contractInitialUsageFilterInitialJSON struct {
-GroupKey apijson.Field
-GroupValues apijson.Field
-StartingAt apijson.Field
-raw string
-ExtraFields map[string]apijson.Field
-}
-
-func (r *ContractInitialUsageFilterInitial) UnmarshalJSON(data []byte) (err error) {
-  return apijson.UnmarshalRoot(data, r)
-}
-
-type ContractInitialUsageFilterUpdate struct {
-GroupKey string `json:"group_key,required"`
-GroupValues []string `json:"group_values,required"`
-StartingAt time.Time `json:"starting_at,required" format:"date-time"`
-JSON contractInitialUsageFilterUpdateJSON
-}
-
-// contractInitialUsageFilterUpdateJSON contains the JSON metadata for the struct
-// [ContractInitialUsageFilterUpdate]
-type contractInitialUsageFilterUpdateJSON struct {
-GroupKey apijson.Field
-GroupValues apijson.Field
-StartingAt apijson.Field
-raw string
-ExtraFields map[string]apijson.Field
-}
-
-func (r *ContractInitialUsageFilterUpdate) UnmarshalJSON(data []byte) (err error) {
-  return apijson.UnmarshalRoot(data, r)
-}
-
 type ContractNewResponse struct {
 Data shared.ID `json:"data,required"`
 JSON contractNewResponseJSON
@@ -796,23 +197,6 @@ ExtraFields map[string]apijson.Field
 }
 
 func (r *ContractNewResponse) UnmarshalJSON(data []byte) (err error) {
-  return apijson.UnmarshalRoot(data, r)
-}
-
-type ContractGetResponse struct {
-Data Contract `json:"data,required"`
-JSON contractGetResponseJSON
-}
-
-// contractGetResponseJSON contains the JSON metadata for the struct
-// [ContractGetResponse]
-type contractGetResponseJSON struct {
-Data apijson.Field
-raw string
-ExtraFields map[string]apijson.Field
-}
-
-func (r *ContractGetResponse) UnmarshalJSON(data []byte) (err error) {
   return apijson.UnmarshalRoot(data, r)
 }
 
@@ -847,6 +231,23 @@ ExtraFields map[string]apijson.Field
 }
 
 func (r *ContractAmendResponse) UnmarshalJSON(data []byte) (err error) {
+  return apijson.UnmarshalRoot(data, r)
+}
+
+type ContractGetResponse struct {
+Data Contract `json:"data,required"`
+JSON contractGetResponseJSON
+}
+
+// contractGetResponseJSON contains the JSON metadata for the struct
+// [ContractGetResponse]
+type contractGetResponseJSON struct {
+Data apijson.Field
+raw string
+ExtraFields map[string]apijson.Field
+}
+
+func (r *ContractGetResponse) UnmarshalJSON(data []byte) (err error) {
   return apijson.UnmarshalRoot(data, r)
 }
 
@@ -1312,18 +713,6 @@ const (
   ContractNewParamsUsageInvoiceScheduleFrequencyQuarterly ContractNewParamsUsageInvoiceScheduleFrequency = "quarterly"
 )
 
-type ContractGetParams struct {
-ContractID param.Field[string] `json:"contract_id,required" format:"uuid"`
-CustomerID param.Field[string] `json:"customer_id,required" format:"uuid"`
-// Include commit ledgers in the response. Setting this flag may cause the query to
-// be slower.
-IncludeLedgers param.Field[bool] `json:"include_ledgers"`
-}
-
-func (r ContractGetParams) MarshalJSON() (data []byte, err error) {
-  return apijson.MarshalRoot(r)
-}
-
 type ContractListParams struct {
 CustomerID param.Field[string] `json:"customer_id,required" format:"uuid"`
 // Include commit ledgers in the response. Setting this flag may cause the query to
@@ -1728,6 +1117,18 @@ UnitPrice param.Field[float64] `json:"unit_price"`
 }
 
 func (r ContractAmendParamsScheduledChargesScheduleScheduleItem) MarshalJSON() (data []byte, err error) {
+  return apijson.MarshalRoot(r)
+}
+
+type ContractGetParams struct {
+ContractID param.Field[string] `json:"contract_id,required" format:"uuid"`
+CustomerID param.Field[string] `json:"customer_id,required" format:"uuid"`
+// Include commit ledgers in the response. Setting this flag may cause the query to
+// be slower.
+IncludeLedgers param.Field[bool] `json:"include_ledgers"`
+}
+
+func (r ContractGetParams) MarshalJSON() (data []byte, err error) {
   return apijson.MarshalRoot(r)
 }
 

@@ -84,6 +84,40 @@ const CommitLedgerPostpaidCommitTrueupLedgerEntryTypePostpaidCommitTrueup = shar
 // This is an alias to an internal type.
 type CommitRolledOverFrom = shared.CommitRolledOverFrom
 // This is an alias to an internal type.
+type ContractWithoutAmendments = shared.ContractWithoutAmendments
+// This is an alias to an internal type.
+type ContractWithoutAmendmentsResellerRoyalty = shared.ContractWithoutAmendmentsResellerRoyalty
+// This is an alias to an internal type.
+type ContractWithoutAmendmentsResellerRoyaltiesResellerType = shared.ContractWithoutAmendmentsResellerRoyaltiesResellerType
+// This is an alias to an internal value.
+const ContractWithoutAmendmentsResellerRoyaltiesResellerTypeAws = shared.ContractWithoutAmendmentsResellerRoyaltiesResellerTypeAws
+// This is an alias to an internal value.
+const ContractWithoutAmendmentsResellerRoyaltiesResellerTypeGcp = shared.ContractWithoutAmendmentsResellerRoyaltiesResellerTypeGcp
+// This is an alias to an internal type.
+type ContractWithoutAmendmentsTransition = shared.ContractWithoutAmendmentsTransition
+// This is an alias to an internal type.
+type ContractWithoutAmendmentsTransitionsType = shared.ContractWithoutAmendmentsTransitionsType
+// This is an alias to an internal value.
+const ContractWithoutAmendmentsTransitionsTypeSupersede = shared.ContractWithoutAmendmentsTransitionsTypeSupersede
+// This is an alias to an internal value.
+const ContractWithoutAmendmentsTransitionsTypeRenewal = shared.ContractWithoutAmendmentsTransitionsTypeRenewal
+// This is an alias to an internal type.
+type ContractWithoutAmendmentsUsageInvoiceSchedule = shared.ContractWithoutAmendmentsUsageInvoiceSchedule
+// This is an alias to an internal type.
+type ContractWithoutAmendmentsUsageInvoiceScheduleFrequency = shared.ContractWithoutAmendmentsUsageInvoiceScheduleFrequency
+// This is an alias to an internal value.
+const ContractWithoutAmendmentsUsageInvoiceScheduleFrequencyMonthly = shared.ContractWithoutAmendmentsUsageInvoiceScheduleFrequencyMonthly
+// This is an alias to an internal value.
+const ContractWithoutAmendmentsUsageInvoiceScheduleFrequencyQuarterly = shared.ContractWithoutAmendmentsUsageInvoiceScheduleFrequencyQuarterly
+// This is an alias to an internal type.
+type ContractWithoutAmendmentsUsageFilter = shared.ContractWithoutAmendmentsUsageFilter
+// This is an alias to an internal type.
+type ContractWithoutAmendmentsUsageFilterCurrent = shared.ContractWithoutAmendmentsUsageFilterCurrent
+// This is an alias to an internal type.
+type ContractWithoutAmendmentsUsageFilterInitial = shared.ContractWithoutAmendmentsUsageFilterInitial
+// This is an alias to an internal type.
+type ContractWithoutAmendmentsUsageFilterUpdate = shared.ContractWithoutAmendmentsUsageFilterUpdate
+// This is an alias to an internal type.
 type Discount = shared.Discount
 // This is an alias to an internal type.
 type DiscountProduct = shared.DiscountProduct
@@ -103,3 +137,7 @@ type OverrideProduct = shared.OverrideProduct
 type SchedulePointInTime = shared.SchedulePointInTime
 // This is an alias to an internal type.
 type SchedulePointInTimeScheduleItem = shared.SchedulePointInTimeScheduleItem
+// This is an alias to an internal type.
+type ScheduledCharge = shared.ScheduledCharge
+// This is an alias to an internal type.
+type ScheduledChargeProduct = shared.ScheduledChargeProduct

@@ -40,14 +40,6 @@ func (r *ContractPricingProductService) New(ctx context.Context, body ContractPr
   return
 }
 
-// Get a specific product
-func (r *ContractPricingProductService) Get(ctx context.Context, body ContractPricingProductGetParams, opts ...option.RequestOption) (res *ContractPricingProductGetResponse, err error) {
-  opts = append(r.Options[:], opts...)
-  path := "contract-pricing/products/get"
-  err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-  return
-}
-
 // Update a product
 func (r *ContractPricingProductService) Update(ctx context.Context, body ContractPricingProductUpdateParams, opts ...option.RequestOption) (res *ContractPricingProductUpdateResponse, err error) {
   opts = append(r.Options[:], opts...)
@@ -61,6 +53,14 @@ func (r *ContractPricingProductService) List(ctx context.Context, params Contrac
   opts = append(r.Options[:], opts...)
   path := "contract-pricing/products/list"
   err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, params, &res, opts...)
+  return
+}
+
+// Get a specific product
+func (r *ContractPricingProductService) Get(ctx context.Context, body ContractPricingProductGetParams, opts ...option.RequestOption) (res *ContractPricingProductGetResponse, err error) {
+  opts = append(r.Options[:], opts...)
+  path := "contract-pricing/products/get"
+  err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
   return
 }
 
@@ -224,23 +224,6 @@ func (r *ContractPricingProductNewResponse) UnmarshalJSON(data []byte) (err erro
   return apijson.UnmarshalRoot(data, r)
 }
 
-type ContractPricingProductGetResponse struct {
-Data ProductListItem `json:"data,required"`
-JSON contractPricingProductGetResponseJSON
-}
-
-// contractPricingProductGetResponseJSON contains the JSON metadata for the struct
-// [ContractPricingProductGetResponse]
-type contractPricingProductGetResponseJSON struct {
-Data apijson.Field
-raw string
-ExtraFields map[string]apijson.Field
-}
-
-func (r *ContractPricingProductGetResponse) UnmarshalJSON(data []byte) (err error) {
-  return apijson.UnmarshalRoot(data, r)
-}
-
 type ContractPricingProductUpdateResponse struct {
 Data shared.ID `json:"data,required"`
 JSON contractPricingProductUpdateResponseJSON
@@ -274,6 +257,23 @@ ExtraFields map[string]apijson.Field
 }
 
 func (r *ContractPricingProductListResponse) UnmarshalJSON(data []byte) (err error) {
+  return apijson.UnmarshalRoot(data, r)
+}
+
+type ContractPricingProductGetResponse struct {
+Data ProductListItem `json:"data,required"`
+JSON contractPricingProductGetResponseJSON
+}
+
+// contractPricingProductGetResponseJSON contains the JSON metadata for the struct
+// [ContractPricingProductGetResponse]
+type contractPricingProductGetResponseJSON struct {
+Data apijson.Field
+raw string
+ExtraFields map[string]apijson.Field
+}
+
+func (r *ContractPricingProductGetResponse) UnmarshalJSON(data []byte) (err error) {
   return apijson.UnmarshalRoot(data, r)
 }
 
@@ -312,14 +312,6 @@ const (
   ContractPricingProductNewParamsTypeComposite ContractPricingProductNewParamsType = "COMPOSITE"
   ContractPricingProductNewParamsTypeComposite ContractPricingProductNewParamsType = "composite"
 )
-
-type ContractPricingProductGetParams struct {
-ID param.Field[string] `json:"id,required" format:"uuid"`
-}
-
-func (r ContractPricingProductGetParams) MarshalJSON() (data []byte, err error) {
-  return apijson.MarshalRoot(r)
-}
 
 type ContractPricingProductUpdateParams struct {
 // ID of the product to update
@@ -372,4 +364,12 @@ func (r ContractPricingProductListParams) URLQuery() (v url.Values) {
     ArrayFormat: apiquery.ArrayQueryFormatComma,
     NestedFormat: apiquery.NestedQueryFormatBrackets,
   })
+}
+
+type ContractPricingProductGetParams struct {
+ID param.Field[string] `json:"id,required" format:"uuid"`
+}
+
+func (r ContractPricingProductGetParams) MarshalJSON() (data []byte, err error) {
+  return apijson.MarshalRoot(r)
 }

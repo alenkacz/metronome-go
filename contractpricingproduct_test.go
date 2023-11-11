@@ -45,30 +45,6 @@ func TestContractPricingProductNewWithOptionalParams(t *testing.T) {
   }
 }
 
-func TestContractPricingProductGet(t *testing.T) {
-  baseURL := "http://localhost:4010"
-  if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
-    baseURL = envURL
-  }
-  if !testutil.CheckTestServer(t, baseURL) {
-    return
-  }
-  client := example.NewClient(
-    option.WithBaseURL(baseURL),
-    option.WithBearerToken("My Bearer Token"),
-  )
-  _, err := client.ContractPricing.Products.Get(context.TODO(), example.ContractPricingProductGetParams{
-    ID: example.F("d84e7f4e-7a70-4fe4-be02-7a5027beffcc"),
-  })
-  if err != nil {
-    var apierr *example.Error
-    if errors.As(err, &apierr) {
-      t.Log(string(apierr.DumpRequest(true)))
-    }
-    t.Fatalf("err should be nil: %s", err.Error())
-  }
-}
-
 func TestContractPricingProductUpdateWithOptionalParams(t *testing.T) {
   baseURL := "http://localhost:4010"
   if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
@@ -118,6 +94,30 @@ func TestContractPricingProductListWithOptionalParams(t *testing.T) {
     Body: example.F[any](map[string]interface{}{}),
     Limit: example.F(int64(1)),
     NextPage: example.F("string"),
+  })
+  if err != nil {
+    var apierr *example.Error
+    if errors.As(err, &apierr) {
+      t.Log(string(apierr.DumpRequest(true)))
+    }
+    t.Fatalf("err should be nil: %s", err.Error())
+  }
+}
+
+func TestContractPricingProductGet(t *testing.T) {
+  baseURL := "http://localhost:4010"
+  if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
+    baseURL = envURL
+  }
+  if !testutil.CheckTestServer(t, baseURL) {
+    return
+  }
+  client := example.NewClient(
+    option.WithBaseURL(baseURL),
+    option.WithBearerToken("My Bearer Token"),
+  )
+  _, err := client.ContractPricing.Products.Get(context.TODO(), example.ContractPricingProductGetParams{
+    ID: example.F("d84e7f4e-7a70-4fe4-be02-7a5027beffcc"),
   })
   if err != nil {
     var apierr *example.Error

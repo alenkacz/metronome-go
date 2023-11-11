@@ -21,7 +21,6 @@ import (
 // [NewContractPricingRateCardService] method instead.
 type ContractPricingRateCardService struct {
 Options []option.RequestOption
-MoveRateCardProducts *ContractPricingRateCardMoveRateCardProductService
 }
 
 // NewContractPricingRateCardService generates a new service that applies the given
@@ -30,7 +29,6 @@ MoveRateCardProducts *ContractPricingRateCardMoveRateCardProductService
 func NewContractPricingRateCardService(opts ...option.RequestOption) (r *ContractPricingRateCardService) {
   r = &ContractPricingRateCardService{}
   r.Options = opts
-  r.MoveRateCardProducts = NewContractPricingRateCardMoveRateCardProductService(opts...)
   return
 }
 
@@ -38,14 +36,6 @@ func NewContractPricingRateCardService(opts ...option.RequestOption) (r *Contrac
 func (r *ContractPricingRateCardService) New(ctx context.Context, body ContractPricingRateCardNewParams, opts ...option.RequestOption) (res *ContractPricingRateCardNewResponse, err error) {
   opts = append(r.Options[:], opts...)
   path := "contract-pricing/rate-cards/create"
-  err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-  return
-}
-
-// Get a specific rate card
-func (r *ContractPricingRateCardService) Get(ctx context.Context, body ContractPricingRateCardGetParams, opts ...option.RequestOption) (res *ContractPricingRateCardGetResponse, err error) {
-  opts = append(r.Options[:], opts...)
-  path := "contract-pricing/rate-cards/get"
   err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
   return
 }
@@ -70,6 +60,22 @@ func (r *ContractPricingRateCardService) List(ctx context.Context, params Contra
 func (r *ContractPricingRateCardService) AddRate(ctx context.Context, body ContractPricingRateCardAddRateParams, opts ...option.RequestOption) (res *ContractPricingRateCardAddRateResponse, err error) {
   opts = append(r.Options[:], opts...)
   path := "contract-pricing/rate-cards/addRate"
+  err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
+  return
+}
+
+// Get a specific rate card
+func (r *ContractPricingRateCardService) Get(ctx context.Context, body ContractPricingRateCardGetParams, opts ...option.RequestOption) (res *ContractPricingRateCardGetResponse, err error) {
+  opts = append(r.Options[:], opts...)
+  path := "contract-pricing/rate-cards/get"
+  err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
+  return
+}
+
+// Updates ordering of specified products
+func (r *ContractPricingRateCardService) MoveRateCardProducts(ctx context.Context, body ContractPricingRateCardMoveRateCardProductsParams, opts ...option.RequestOption) (res *ContractPricingRateCardMoveRateCardProductsResponse, err error) {
+  opts = append(r.Options[:], opts...)
+  path := "contract-pricing/rate-cards/moveRateCardProducts"
   err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
   return
 }
@@ -273,23 +279,6 @@ func (r *ContractPricingRateCardNewResponse) UnmarshalJSON(data []byte) (err err
   return apijson.UnmarshalRoot(data, r)
 }
 
-type ContractPricingRateCardGetResponse struct {
-Data RateCard `json:"data,required"`
-JSON contractPricingRateCardGetResponseJSON
-}
-
-// contractPricingRateCardGetResponseJSON contains the JSON metadata for the struct
-// [ContractPricingRateCardGetResponse]
-type contractPricingRateCardGetResponseJSON struct {
-Data apijson.Field
-raw string
-ExtraFields map[string]apijson.Field
-}
-
-func (r *ContractPricingRateCardGetResponse) UnmarshalJSON(data []byte) (err error) {
-  return apijson.UnmarshalRoot(data, r)
-}
-
 type ContractPricingRateCardUpdateResponse struct {
 Data shared.ID `json:"data,required"`
 JSON contractPricingRateCardUpdateResponseJSON
@@ -343,6 +332,40 @@ func (r *ContractPricingRateCardAddRateResponse) UnmarshalJSON(data []byte) (err
   return apijson.UnmarshalRoot(data, r)
 }
 
+type ContractPricingRateCardGetResponse struct {
+Data RateCard `json:"data,required"`
+JSON contractPricingRateCardGetResponseJSON
+}
+
+// contractPricingRateCardGetResponseJSON contains the JSON metadata for the struct
+// [ContractPricingRateCardGetResponse]
+type contractPricingRateCardGetResponseJSON struct {
+Data apijson.Field
+raw string
+ExtraFields map[string]apijson.Field
+}
+
+func (r *ContractPricingRateCardGetResponse) UnmarshalJSON(data []byte) (err error) {
+  return apijson.UnmarshalRoot(data, r)
+}
+
+type ContractPricingRateCardMoveRateCardProductsResponse struct {
+Data shared.ID `json:"data,required"`
+JSON contractPricingRateCardMoveRateCardProductsResponseJSON
+}
+
+// contractPricingRateCardMoveRateCardProductsResponseJSON contains the JSON
+// metadata for the struct [ContractPricingRateCardMoveRateCardProductsResponse]
+type contractPricingRateCardMoveRateCardProductsResponseJSON struct {
+Data apijson.Field
+raw string
+ExtraFields map[string]apijson.Field
+}
+
+func (r *ContractPricingRateCardMoveRateCardProductsResponse) UnmarshalJSON(data []byte) (err error) {
+  return apijson.UnmarshalRoot(data, r)
+}
+
 type ContractPricingRateCardSetRateCardProductsOrderResponse struct {
 Data shared.ID `json:"data,required"`
 JSON contractPricingRateCardSetRateCardProductsOrderResponseJSON
@@ -368,14 +391,6 @@ Description param.Field[string] `json:"description"`
 }
 
 func (r ContractPricingRateCardNewParams) MarshalJSON() (data []byte, err error) {
-  return apijson.MarshalRoot(r)
-}
-
-type ContractPricingRateCardGetParams struct {
-ID param.Field[string] `json:"id,required" format:"uuid"`
-}
-
-func (r ContractPricingRateCardGetParams) MarshalJSON() (data []byte, err error) {
   return apijson.MarshalRoot(r)
 }
 
@@ -444,6 +459,35 @@ const (
   ContractPricingRateCardAddRateParamsRateTypePercentage ContractPricingRateCardAddRateParamsRateType = "PERCENTAGE"
   ContractPricingRateCardAddRateParamsRateTypePercentage ContractPricingRateCardAddRateParamsRateType = "percentage"
 )
+
+type ContractPricingRateCardGetParams struct {
+ID param.Field[string] `json:"id,required" format:"uuid"`
+}
+
+func (r ContractPricingRateCardGetParams) MarshalJSON() (data []byte, err error) {
+  return apijson.MarshalRoot(r)
+}
+
+type ContractPricingRateCardMoveRateCardProductsParams struct {
+ProductMoves param.Field[[]ContractPricingRateCardMoveRateCardProductsParamsProductMove] `json:"product_moves,required"`
+// ID of the rate card to update
+RateCardID param.Field[string] `json:"rate_card_id,required" format:"uuid"`
+}
+
+func (r ContractPricingRateCardMoveRateCardProductsParams) MarshalJSON() (data []byte, err error) {
+  return apijson.MarshalRoot(r)
+}
+
+type ContractPricingRateCardMoveRateCardProductsParamsProductMove struct {
+// 0-based index of the new position of the product
+Position param.Field[float64] `json:"position,required"`
+// ID of the product to move
+ProductID param.Field[string] `json:"product_id,required" format:"uuid"`
+}
+
+func (r ContractPricingRateCardMoveRateCardProductsParamsProductMove) MarshalJSON() (data []byte, err error) {
+  return apijson.MarshalRoot(r)
+}
 
 type ContractPricingRateCardSetRateCardProductsOrderParams struct {
 ProductOrder param.Field[[]string] `json:"product_order,required" format:"uuid"`
