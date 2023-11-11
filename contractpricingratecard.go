@@ -3,10 +3,10 @@
 package metronome
 
 import (
-  "github.com/metronome/metronome-go/internal/apijson"
-  "github.com/metronome/metronome-go/internal/param"
   "time"
+  "github.com/metronome/metronome-go/internal/apijson"
   "github.com/metronome/metronome-go/internal/shared"
+  "github.com/metronome/metronome-go/internal/param"
   "net/url"
   "github.com/metronome/metronome-go/internal/apiquery"
   "context"
@@ -86,55 +86,6 @@ func (r *ContractPricingRateCardService) SetRateCardProductsOrder(ctx context.Co
   path := "contract-pricing/rate-cards/setRateCardProductsOrder"
   err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
   return
-}
-
-type Rate struct {
-// Default price. For FLAT rate_type, this must be >=0. For PERCENTAGE rate_type,
-// this is a decimal fraction, e.g. use 0.1 for 10%; this must be >=0 and <=1.
-Price float64 `json:"price,required"`
-RateType RateRateType `json:"rate_type,required"`
-// Only set for PERCENTAGE rate_type. Defaults to false. If true, rate is computed
-// using list prices rather than the standard rates for this product on the
-// contract.
-UseListPrices bool `json:"use_list_prices"`
-JSON rateJSON
-}
-
-// rateJSON contains the JSON metadata for the struct [Rate]
-type rateJSON struct {
-Price apijson.Field
-RateType apijson.Field
-UseListPrices apijson.Field
-raw string
-ExtraFields map[string]apijson.Field
-}
-
-func (r *Rate) UnmarshalJSON(data []byte) (err error) {
-  return apijson.UnmarshalRoot(data, r)
-}
-
-type RateRateType string
-
-const (
-  RateRateTypeFlat RateRateType = "FLAT"
-  RateRateTypeFlat RateRateType = "flat"
-  RateRateTypePercentage RateRateType = "PERCENTAGE"
-  RateRateTypePercentage RateRateType = "percentage"
-)
-
-type RateParam struct {
-// Default price. For FLAT rate_type, this must be >=0. For PERCENTAGE rate_type,
-// this is a decimal fraction, e.g. use 0.1 for 10%; this must be >=0 and <=1.
-Price param.Field[float64] `json:"price,required"`
-RateType param.Field[RateRateType] `json:"rate_type,required"`
-// Only set for PERCENTAGE rate_type. Defaults to false. If true, rate is computed
-// using list prices rather than the standard rates for this product on the
-// contract.
-UseListPrices param.Field[bool] `json:"use_list_prices"`
-}
-
-func (r RateParam) MarshalJSON() (data []byte, err error) {
-  return apijson.MarshalRoot(r)
 }
 
 type RateCard struct {
@@ -333,7 +284,7 @@ func (r *ContractPricingRateCardListResponse) UnmarshalJSON(data []byte) (err er
 }
 
 type ContractPricingRateCardAddRateResponse struct {
-Data Rate `json:"data,required"`
+Data shared.Rate `json:"data,required"`
 JSON contractPricingRateCardAddRateResponseJSON
 }
 

@@ -522,7 +522,7 @@ Entitled param.Field[bool] `json:"entitled"`
 // Required for MULTIPLIER type. Must be >=0.
 Multiplier param.Field[float64] `json:"multiplier"`
 // Required for OVERWRITE type.
-OverwriteRate param.Field[RateParam] `json:"overwrite_rate"`
+OverwriteRate param.Field[shared.RateParam] `json:"overwrite_rate"`
 // ID of the product whose rate is being overridden
 ProductID param.Field[string] `json:"product_id" format:"uuid"`
 // tags identifying products whose rates are being overridden
@@ -985,7 +985,7 @@ Entitled param.Field[bool] `json:"entitled"`
 // Required for MULTIPLIER type. Must be >=0.
 Multiplier param.Field[float64] `json:"multiplier"`
 // Required for OVERWRITE type.
-OverwriteRate param.Field[RateParam] `json:"overwrite_rate"`
+OverwriteRate param.Field[shared.RateParam] `json:"overwrite_rate"`
 // ID of the product whose rate is being overridden
 ProductID param.Field[string] `json:"product_id" format:"uuid"`
 // tags identifying products whose rates are being overridden

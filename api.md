@@ -1,3 +1,7 @@
+# Shared Params Types
+
+- <a href="https://pkg.go.dev/github.com/metronome/metronome-go/internal/shared">shared</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go/internal/shared#RateParam">RateParam</a>
+
 # Shared Response Types
 
 - <a href="https://pkg.go.dev/github.com/metronome/metronome-go/internal/shared">shared</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go/internal/shared#Commit">Commit</a>
@@ -5,6 +9,7 @@
 - <a href="https://pkg.go.dev/github.com/metronome/metronome-go/internal/shared">shared</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go/internal/shared#Discount">Discount</a>
 - <a href="https://pkg.go.dev/github.com/metronome/metronome-go/internal/shared">shared</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go/internal/shared#ID">ID</a>
 - <a href="https://pkg.go.dev/github.com/metronome/metronome-go/internal/shared">shared</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go/internal/shared#Override">Override</a>
+- <a href="https://pkg.go.dev/github.com/metronome/metronome-go/internal/shared">shared</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go/internal/shared#Rate">Rate</a>
 - <a href="https://pkg.go.dev/github.com/metronome/metronome-go/internal/shared">shared</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go/internal/shared#SchedulePointInTime">SchedulePointInTime</a>
 - <a href="https://pkg.go.dev/github.com/metronome/metronome-go/internal/shared">shared</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go/internal/shared#ScheduledCharge">ScheduledCharge</a>
 
@@ -35,13 +40,8 @@ Methods:
 
 ## RateCards
 
-Params Types:
-
-- <a href="https://pkg.go.dev/github.com/metronome/metronome-go">metronome</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#RateParam">RateParam</a>
-
 Response Types:
 
-- <a href="https://pkg.go.dev/github.com/metronome/metronome-go">metronome</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#Rate">Rate</a>
 - <a href="https://pkg.go.dev/github.com/metronome/metronome-go">metronome</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#RateCard">RateCard</a>
 - <a href="https://pkg.go.dev/github.com/metronome/metronome-go">metronome</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractPricingRateCardNewResponse">ContractPricingRateCardNewResponse</a>
 - <a href="https://pkg.go.dev/github.com/metronome/metronome-go">metronome</a>.<a href="https://pkg.go.dev/github.com/metronome/metronome-go#ContractPricingRateCardGetResponse">ContractPricingRateCardGetResponse</a>

@@ -6,7 +6,7 @@ import (
   "github.com/metronome/metronome-go/internal/apijson"
   "time"
   "github.com/tidwall/gjson"
-  "github.com/metronome/metronome-go"
+  "github.com/metronome/metronome-go/internal/param"
 )
 
 type Commit struct {
@@ -747,7 +747,7 @@ Type OverrideType `json:"type,required"`
 EndingBefore time.Time `json:"ending_before" format:"date-time"`
 Entitled bool `json:"entitled"`
 Multiplier float64 `json:"multiplier"`
-OverwriteRate metronome.Rate `json:"overwrite_rate"`
+OverwriteRate Rate `json:"overwrite_rate"`
 Product OverrideProduct `json:"product"`
 Tags []string `json:"tags"`
 JSON overrideJSON
@@ -795,6 +795,55 @@ ExtraFields map[string]apijson.Field
 
 func (r *OverrideProduct) UnmarshalJSON(data []byte) (err error) {
   return apijson.UnmarshalRoot(data, r)
+}
+
+type Rate struct {
+// Default price. For FLAT rate_type, this must be >=0. For PERCENTAGE rate_type,
+// this is a decimal fraction, e.g. use 0.1 for 10%; this must be >=0 and <=1.
+Price float64 `json:"price,required"`
+RateType RateRateType `json:"rate_type,required"`
+// Only set for PERCENTAGE rate_type. Defaults to false. If true, rate is computed
+// using list prices rather than the standard rates for this product on the
+// contract.
+UseListPrices bool `json:"use_list_prices"`
+JSON rateJSON
+}
+
+// rateJSON contains the JSON metadata for the struct [Rate]
+type rateJSON struct {
+Price apijson.Field
+RateType apijson.Field
+UseListPrices apijson.Field
+raw string
+ExtraFields map[string]apijson.Field
+}
+
+func (r *Rate) UnmarshalJSON(data []byte) (err error) {
+  return apijson.UnmarshalRoot(data, r)
+}
+
+type RateRateType string
+
+const (
+  RateRateTypeFlat RateRateType = "FLAT"
+  RateRateTypeFlat RateRateType = "flat"
+  RateRateTypePercentage RateRateType = "PERCENTAGE"
+  RateRateTypePercentage RateRateType = "percentage"
+)
+
+type RateParam struct {
+// Default price. For FLAT rate_type, this must be >=0. For PERCENTAGE rate_type,
+// this is a decimal fraction, e.g. use 0.1 for 10%; this must be >=0 and <=1.
+Price param.Field[float64] `json:"price,required"`
+RateType param.Field[RateRateType] `json:"rate_type,required"`
+// Only set for PERCENTAGE rate_type. Defaults to false. If true, rate is computed
+// using list prices rather than the standard rates for this product on the
+// contract.
+UseListPrices param.Field[bool] `json:"use_list_prices"`
+}
+
+func (r RateParam) MarshalJSON() (data []byte, err error) {
+  return apijson.MarshalRoot(r)
 }
 
 type SchedulePointInTime struct {

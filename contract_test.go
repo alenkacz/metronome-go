@@ -10,6 +10,7 @@ import (
   "github.com/metronome/metronome-go/option"
   "github.com/metronome/metronome-go/internal/testutil"
   "time"
+  "github.com/metronome/metronome-go/internal/shared"
 )
 
 func TestContractNewWithOptionalParams(t *testing.T) {
@@ -290,8 +291,8 @@ func TestContractNewWithOptionalParams(t *testing.T) {
       Entitled: metronome.F(true),
       Type: metronome.F(metronome.ContractNewParamsOverridesTypeOverwrite),
       Multiplier: metronome.F(0.000000),
-      OverwriteRate: metronome.F(metronome.RateParam{
-        RateType: metronome.F(metronome.RateRateTypeFlat),
+      OverwriteRate: metronome.F(shared.RateParam{
+        RateType: metronome.F(shared.RateRateTypeFlat),
         Price: metronome.F(0.000000),
         UseListPrices: metronome.F(true),
       }),
@@ -303,8 +304,8 @@ func TestContractNewWithOptionalParams(t *testing.T) {
       Entitled: metronome.F(true),
       Type: metronome.F(metronome.ContractNewParamsOverridesTypeOverwrite),
       Multiplier: metronome.F(0.000000),
-      OverwriteRate: metronome.F(metronome.RateParam{
-        RateType: metronome.F(metronome.RateRateTypeFlat),
+      OverwriteRate: metronome.F(shared.RateParam{
+        RateType: metronome.F(shared.RateRateTypeFlat),
         Price: metronome.F(0.000000),
         UseListPrices: metronome.F(true),
       }),
@@ -316,8 +317,8 @@ func TestContractNewWithOptionalParams(t *testing.T) {
       Entitled: metronome.F(true),
       Type: metronome.F(metronome.ContractNewParamsOverridesTypeOverwrite),
       Multiplier: metronome.F(0.000000),
-      OverwriteRate: metronome.F(metronome.RateParam{
-        RateType: metronome.F(metronome.RateRateTypeFlat),
+      OverwriteRate: metronome.F(shared.RateParam{
+        RateType: metronome.F(shared.RateRateTypeFlat),
         Price: metronome.F(0.000000),
         UseListPrices: metronome.F(true),
       }),
@@ -820,8 +821,8 @@ func TestContractAmendWithOptionalParams(t *testing.T) {
       Entitled: metronome.F(true),
       Type: metronome.F(metronome.ContractAmendParamsOverridesTypeOverwrite),
       Multiplier: metronome.F(0.000000),
-      OverwriteRate: metronome.F(metronome.RateParam{
-        RateType: metronome.F(metronome.RateRateTypeFlat),
+      OverwriteRate: metronome.F(shared.RateParam{
+        RateType: metronome.F(shared.RateRateTypeFlat),
         Price: metronome.F(0.000000),
         UseListPrices: metronome.F(true),
       }),
@@ -833,8 +834,8 @@ func TestContractAmendWithOptionalParams(t *testing.T) {
       Entitled: metronome.F(true),
       Type: metronome.F(metronome.ContractAmendParamsOverridesTypeOverwrite),
       Multiplier: metronome.F(0.000000),
-      OverwriteRate: metronome.F(metronome.RateParam{
-        RateType: metronome.F(metronome.RateRateTypeFlat),
+      OverwriteRate: metronome.F(shared.RateParam{
+        RateType: metronome.F(shared.RateRateTypeFlat),
         Price: metronome.F(0.000000),
         UseListPrices: metronome.F(true),
       }),
@@ -846,8 +847,8 @@ func TestContractAmendWithOptionalParams(t *testing.T) {
       Entitled: metronome.F(true),
       Type: metronome.F(metronome.ContractAmendParamsOverridesTypeOverwrite),
       Multiplier: metronome.F(0.000000),
-      OverwriteRate: metronome.F(metronome.RateParam{
-        RateType: metronome.F(metronome.RateRateTypeFlat),
+      OverwriteRate: metronome.F(shared.RateParam{
+        RateType: metronome.F(shared.RateRateTypeFlat),
         Price: metronome.F(0.000000),
         UseListPrices: metronome.F(true),
       }),

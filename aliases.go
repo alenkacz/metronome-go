@@ -134,6 +134,16 @@ const OverrideTypeMultiplier = shared.OverrideTypeMultiplier
 // This is an alias to an internal type.
 type OverrideProduct = shared.OverrideProduct
 // This is an alias to an internal type.
+type Rate = shared.Rate
+// This is an alias to an internal type.
+type RateRateType = shared.RateRateType
+// This is an alias to an internal value.
+const RateRateTypeFlat = shared.RateRateTypeFlat
+// This is an alias to an internal value.
+const RateRateTypePercentage = shared.RateRateTypePercentage
+// This is an alias to an internal type.
+type RateParam = shared.RateParam
+// This is an alias to an internal type.
 type SchedulePointInTime = shared.SchedulePointInTime
 // This is an alias to an internal type.
 type SchedulePointInTimeScheduleItem = shared.SchedulePointInTimeScheduleItem
