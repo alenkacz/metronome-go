@@ -1,10 +1,10 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package example
+package metronome
 
 import (
-  "github.com/example/example-go/internal/apierror"
-  "github.com/example/example-go/internal/shared"
+  "github.com/metronome/metronome-go/internal/apierror"
+  "github.com/metronome/metronome-go/internal/shared"
 )
 
 type Error = apierror.Error

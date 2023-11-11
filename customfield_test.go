@@ -9,10 +9,9 @@ import (
   "github.com/metronome/metronome-go"
   "github.com/metronome/metronome-go/option"
   "github.com/metronome/metronome-go/internal/testutil"
-  "time"
 )
 
-func TestContractPricingProductNewWithOptionalParams(t *testing.T) {
+func TestCustomFieldAddKey(t *testing.T) {
   baseURL := "http://localhost:4010"
   if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
     baseURL = envURL
@@ -24,17 +23,10 @@ func TestContractPricingProductNewWithOptionalParams(t *testing.T) {
     option.WithBaseURL(baseURL),
     option.WithBearerToken("My Bearer Token"),
   )
-  _, err := client.ContractPricing.Products.New(context.TODO(), metronome.ContractPricingProductNewParams{
-    Name: metronome.F("My Product"),
-    Type: metronome.F(metronome.ContractPricingProductNewParamsTypeUsage),
-    BillableMetricID: metronome.F("13117714-3f05-48e5-a6e9-a66093f13b4d"),
-    CompositeProductIDs: metronome.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
-    CompositeTags: metronome.F([]string{"string", "string", "string"}),
-    IsRefundable: metronome.F(true),
-    NetsuiteInternalItemID: metronome.F("12345"),
-    NetsuiteOverageItemID: metronome.F("12346"),
-    StartingAt: metronome.F(time.Now()),
-    Tags: metronome.F([]string{"string", "string", "string"}),
+  err := client.CustomFields.AddKey(context.TODO(), metronome.CustomFieldAddKeyParams{
+    EnforceUniqueness: metronome.F(true),
+    Entity: metronome.F(metronome.CustomFieldAddKeyParamsEntityCustomer),
+    Key: metronome.F("x_account_id"),
   })
   if err != nil {
     var apierr *metronome.Error
@@ -45,7 +37,7 @@ func TestContractPricingProductNewWithOptionalParams(t *testing.T) {
   }
 }
 
-func TestContractPricingProductGet(t *testing.T) {
+func TestCustomFieldDeleteValues(t *testing.T) {
   baseURL := "http://localhost:4010"
   if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
     baseURL = envURL
@@ -57,8 +49,10 @@ func TestContractPricingProductGet(t *testing.T) {
     option.WithBaseURL(baseURL),
     option.WithBearerToken("My Bearer Token"),
   )
-  _, err := client.ContractPricing.Products.Get(context.TODO(), metronome.ContractPricingProductGetParams{
-    ID: metronome.F("d84e7f4e-7a70-4fe4-be02-7a5027beffcc"),
+  err := client.CustomFields.DeleteValues(context.TODO(), metronome.CustomFieldDeleteValuesParams{
+    Entity: metronome.F(metronome.CustomFieldDeleteValuesParamsEntityCustomer),
+    EntityID: metronome.F("99594816-e8a5-4bca-be21-8d1de0f45120"),
+    Keys: metronome.F([]string{"x_account_id"}),
   })
   if err != nil {
     var apierr *metronome.Error
@@ -69,7 +63,7 @@ func TestContractPricingProductGet(t *testing.T) {
   }
 }
 
-func TestContractPricingProductUpdateWithOptionalParams(t *testing.T) {
+func TestCustomFieldListKeysWithOptionalParams(t *testing.T) {
   baseURL := "http://localhost:4010"
   if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
     baseURL = envURL
@@ -81,17 +75,8 @@ func TestContractPricingProductUpdateWithOptionalParams(t *testing.T) {
     option.WithBaseURL(baseURL),
     option.WithBearerToken("My Bearer Token"),
   )
-  _, err := client.ContractPricing.Products.Update(context.TODO(), metronome.ContractPricingProductUpdateParams{
-    ProductID: metronome.F("d7abd0cd-4ae9-4db7-8676-e986a4ebd8dc"),
-    StartingAt: metronome.F(time.Now()),
-    BillableMetricID: metronome.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-    CompositeProductIDs: metronome.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
-    CompositeTags: metronome.F([]string{"string", "string", "string"}),
-    IsRefundable: metronome.F(true),
-    Name: metronome.F("My Updated Product"),
-    NetsuiteInternalItemID: metronome.F("string"),
-    NetsuiteOverageItemID: metronome.F("string"),
-    Tags: metronome.F([]string{"string", "string", "string"}),
+  _, err := client.CustomFields.ListKeys(context.TODO(), metronome.CustomFieldListKeysParams{
+    Entities: metronome.F([]metronome.CustomFieldListKeysParamsEntity{metronome.CustomFieldListKeysParamsEntityCustomer, metronome.CustomFieldListKeysParamsEntityCreditGrant}),
   })
   if err != nil {
     var apierr *metronome.Error
@@ -102,7 +87,7 @@ func TestContractPricingProductUpdateWithOptionalParams(t *testing.T) {
   }
 }
 
-func TestContractPricingProductListWithOptionalParams(t *testing.T) {
+func TestCustomFieldRemoveKey(t *testing.T) {
   baseURL := "http://localhost:4010"
   if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
     baseURL = envURL
@@ -114,10 +99,37 @@ func TestContractPricingProductListWithOptionalParams(t *testing.T) {
     option.WithBaseURL(baseURL),
     option.WithBearerToken("My Bearer Token"),
   )
-  _, err := client.ContractPricing.Products.List(context.TODO(), metronome.ContractPricingProductListParams{
-    Body: metronome.F[any](map[string]interface{}{}),
-    Limit: metronome.F(int64(1)),
-    NextPage: metronome.F("string"),
+  err := client.CustomFields.RemoveKey(context.TODO(), metronome.CustomFieldRemoveKeyParams{
+    Entity: metronome.F(metronome.CustomFieldRemoveKeyParamsEntityCustomer),
+    Key: metronome.F("x_account_id"),
+  })
+  if err != nil {
+    var apierr *metronome.Error
+    if errors.As(err, &apierr) {
+      t.Log(string(apierr.DumpRequest(true)))
+    }
+    t.Fatalf("err should be nil: %s", err.Error())
+  }
+}
+
+func TestCustomFieldSetValues(t *testing.T) {
+  baseURL := "http://localhost:4010"
+  if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
+    baseURL = envURL
+  }
+  if !testutil.CheckTestServer(t, baseURL) {
+    return
+  }
+  client := metronome.NewClient(
+    option.WithBaseURL(baseURL),
+    option.WithBearerToken("My Bearer Token"),
+  )
+  err := client.CustomFields.SetValues(context.TODO(), metronome.CustomFieldSetValuesParams{
+    CustomFields: metronome.F(map[string]string{
+      "x_account_id": "KyVnHhSBWl7eY2bl",
+    }),
+    Entity: metronome.F(metronome.CustomFieldSetValuesParamsEntityCustomer),
+    EntityID: metronome.F("99594816-e8a5-4bca-be21-8d1de0f45120"),
   })
   if err != nil {
     var apierr *metronome.Error

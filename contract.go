@@ -1,21 +1,21 @@
 // File generated from our OpenAPI spec by Stainless.
 
-package example
+package metronome
 
 import (
-  "github.com/example/example-go/internal/shared"
-  "github.com/example/example-go/internal/apijson"
+  "github.com/metronome/metronome-go/internal/shared"
+  "github.com/metronome/metronome-go/internal/apijson"
   "time"
-  "github.com/example/example-go/internal/param"
+  "github.com/metronome/metronome-go/internal/param"
   "context"
-  "github.com/example/example-go/option"
-  "github.com/example/example-go/internal/requestconfig"
+  "github.com/metronome/metronome-go/option"
+  "github.com/metronome/metronome-go/internal/requestconfig"
 )
 
 // ContractService contains methods and other services that help with interacting
-// with the example API. Note, unlike clients, this service does not read variables
-// from the environment automatically. You should not instantiate this service
-// directly, and instead use the [NewContractService] method instead.
+// with the metronome API. Note, unlike clients, this service does not read
+// variables from the environment automatically. You should not instantiate this
+// service directly, and instead use the [NewContractService] method instead.
 type ContractService struct {
 Options []option.RequestOption
 }
@@ -37,6 +37,14 @@ func (r *ContractService) New(ctx context.Context, body ContractNewParams, opts 
   return
 }
 
+// Get a specific contract
+func (r *ContractService) Get(ctx context.Context, body ContractGetParams, opts ...option.RequestOption) (res *ContractGetResponse, err error) {
+  opts = append(r.Options[:], opts...)
+  path := "contracts/get"
+  err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
+  return
+}
+
 // List all contracts for a customer
 func (r *ContractService) List(ctx context.Context, body ContractListParams, opts ...option.RequestOption) (res *ContractListResponse, err error) {
   opts = append(r.Options[:], opts...)
@@ -49,14 +57,6 @@ func (r *ContractService) List(ctx context.Context, body ContractListParams, opt
 func (r *ContractService) Amend(ctx context.Context, body ContractAmendParams, opts ...option.RequestOption) (res *ContractAmendResponse, err error) {
   opts = append(r.Options[:], opts...)
   path := "contracts/amend"
-  err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-  return
-}
-
-// Get a specific contract
-func (r *ContractService) Get(ctx context.Context, body ContractGetParams, opts ...option.RequestOption) (res *ContractGetResponse, err error) {
-  opts = append(r.Options[:], opts...)
-  path := "contracts/get"
   err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
   return
 }
@@ -200,6 +200,23 @@ func (r *ContractNewResponse) UnmarshalJSON(data []byte) (err error) {
   return apijson.UnmarshalRoot(data, r)
 }
 
+type ContractGetResponse struct {
+Data Contract `json:"data,required"`
+JSON contractGetResponseJSON
+}
+
+// contractGetResponseJSON contains the JSON metadata for the struct
+// [ContractGetResponse]
+type contractGetResponseJSON struct {
+Data apijson.Field
+raw string
+ExtraFields map[string]apijson.Field
+}
+
+func (r *ContractGetResponse) UnmarshalJSON(data []byte) (err error) {
+  return apijson.UnmarshalRoot(data, r)
+}
+
 type ContractListResponse struct {
 Data []Contract `json:"data,required"`
 JSON contractListResponseJSON
@@ -231,23 +248,6 @@ ExtraFields map[string]apijson.Field
 }
 
 func (r *ContractAmendResponse) UnmarshalJSON(data []byte) (err error) {
-  return apijson.UnmarshalRoot(data, r)
-}
-
-type ContractGetResponse struct {
-Data Contract `json:"data,required"`
-JSON contractGetResponseJSON
-}
-
-// contractGetResponseJSON contains the JSON metadata for the struct
-// [ContractGetResponse]
-type contractGetResponseJSON struct {
-Data apijson.Field
-raw string
-ExtraFields map[string]apijson.Field
-}
-
-func (r *ContractGetResponse) UnmarshalJSON(data []byte) (err error) {
   return apijson.UnmarshalRoot(data, r)
 }
 
@@ -713,6 +713,18 @@ const (
   ContractNewParamsUsageInvoiceScheduleFrequencyQuarterly ContractNewParamsUsageInvoiceScheduleFrequency = "quarterly"
 )
 
+type ContractGetParams struct {
+ContractID param.Field[string] `json:"contract_id,required" format:"uuid"`
+CustomerID param.Field[string] `json:"customer_id,required" format:"uuid"`
+// Include commit ledgers in the response. Setting this flag may cause the query to
+// be slower.
+IncludeLedgers param.Field[bool] `json:"include_ledgers"`
+}
+
+func (r ContractGetParams) MarshalJSON() (data []byte, err error) {
+  return apijson.MarshalRoot(r)
+}
+
 type ContractListParams struct {
 CustomerID param.Field[string] `json:"customer_id,required" format:"uuid"`
 // Include commit ledgers in the response. Setting this flag may cause the query to
@@ -1117,18 +1129,6 @@ UnitPrice param.Field[float64] `json:"unit_price"`
 }
 
 func (r ContractAmendParamsScheduledChargesScheduleScheduleItem) MarshalJSON() (data []byte, err error) {
-  return apijson.MarshalRoot(r)
-}
-
-type ContractGetParams struct {
-ContractID param.Field[string] `json:"contract_id,required" format:"uuid"`
-CustomerID param.Field[string] `json:"customer_id,required" format:"uuid"`
-// Include commit ledgers in the response. Setting this flag may cause the query to
-// be slower.
-IncludeLedgers param.Field[bool] `json:"include_ledgers"`
-}
-
-func (r ContractGetParams) MarshalJSON() (data []byte, err error) {
   return apijson.MarshalRoot(r)
 }
 

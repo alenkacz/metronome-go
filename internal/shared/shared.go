@@ -3,10 +3,10 @@
 package shared
 
 import (
-  "github.com/example/example-go/internal/apijson"
+  "github.com/metronome/metronome-go/internal/apijson"
   "time"
   "github.com/tidwall/gjson"
-  "github.com/example/example-go"
+  "github.com/metronome/metronome-go"
 )
 
 type Commit struct {
@@ -747,7 +747,7 @@ Type OverrideType `json:"type,required"`
 EndingBefore time.Time `json:"ending_before" format:"date-time"`
 Entitled bool `json:"entitled"`
 Multiplier float64 `json:"multiplier"`
-OverwriteRate example.Rate `json:"overwrite_rate"`
+OverwriteRate metronome.Rate `json:"overwrite_rate"`
 Product OverrideProduct `json:"product"`
 Tags []string `json:"tags"`
 JSON overrideJSON

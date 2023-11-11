@@ -7,10 +7,10 @@ import (
   "net/url"
   "net/http"
   "log"
-  "github.com/example/example-go/internal/requestconfig"
+  "github.com/metronome/metronome-go/internal/requestconfig"
 )
 
-// RequestOption is an option for the requests made by the example API Client
+// RequestOption is an option for the requests made by the metronome API Client
 // which can be supplied to clients, services, and methods. You can read more about this functional
 // options pattern in our [README].
 //

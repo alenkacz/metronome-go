@@ -5,11 +5,11 @@ package requestconfig
 import (
   "runtime"
   "fmt"
-  "github.com/example/example-go/internal"
+  "github.com/metronome/metronome-go/internal"
   "encoding/json"
   "github.com/google/uuid"
-  "github.com/example/example-go/internal/apiquery"
-  "github.com/example/example-go/internal/apiform"
+  "github.com/metronome/metronome-go/internal/apiquery"
+  "github.com/metronome/metronome-go/internal/apiform"
   "net/url"
   "bytes"
   "io"
@@ -19,7 +19,7 @@ import (
   "strconv"
   "strings"
   "time"
-  "github.com/example/example-go/internal/apierror"
+  "github.com/metronome/metronome-go/internal/apierror"
   "context"
 )
 

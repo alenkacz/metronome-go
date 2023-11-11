@@ -1,22 +1,22 @@
-# Example Go API Library
+# Metronome Go API Library
 
-<a href="https://pkg.go.dev/github.com/example/example-go"><img src="https://pkg.go.dev/badge/github.com/example/example-go.svg" alt="Go Reference"></a>
+<a href="https://pkg.go.dev/github.com/metronome/metronome-go"><img src="https://pkg.go.dev/badge/github.com/metronome/metronome-go.svg" alt="Go Reference"></a>
 
-The Example Go library provides convenient access to [the Example REST
-API](https://docs.example.com) from applications written in Go.
+The Metronome Go library provides convenient access to [the Metronome REST
+API](https://docs.metronome.com) from applications written in Go.
 
 ## Installation
 
 ```go
 import (
-	"github.com/example/example-go" // imported as example
+	"github.com/metronome/metronome-go" // imported as metronome
 )
 ```
 
 Or to pin the version:
 
 ```sh
-go get -u 'github.com/example/example-go@v0.0.1'
+go get -u 'github.com/metronome/metronome-go@v0.0.1'
 ```
 
 ## Requirements
@@ -25,31 +25,32 @@ This library requires Go 1.18+.
 
 ## Usage
 
-The full API of this library can be found in [api.md](https://www.github.com/example/example-go/blob/main/api.md).
+The full API of this library can be found in [api.md](https://www.github.com/metronome/metronome-go/blob/main/api.md).
 
 ```go
 package main
 
 import (
 	"context"
-	"fmt"
-	"github.com/example/example-go"
-	"github.com/example/example-go/option"
-	"time"
+	"github.com/metronome/metronome-go"
+	"github.com/metronome/metronome-go/option"
 )
 
 func main() {
-	client := example.NewClient(
-		option.WithBearerToken("My Bearer Token"), // defaults to os.LookupEnv("EXAMPLE_BEARER_TOKEN")
+	client := metronome.NewClient(
+		option.WithBearerToken("My Bearer Token"), // defaults to os.LookupEnv("METRONOME_BEARER_TOKEN")
 	)
-	contractNewResponse, err := client.Contracts.New(context.TODO(), example.ContractNewParams{
-		CustomerID: example.F("13117714-3f05-48e5-a6e9-a66093f13b4d"),
-		StartingAt: example.F(time.Now()),
+	err := client.Ingest(context.TODO(), metronome.IngestParams{
+		Body: metronome.F([]metronome.IngestParamsBody{{
+			TransactionID: metronome.F("2021-01-01T00:00:00+00:00_cluster42"),
+			CustomerID:    metronome.F("team@example.com"),
+			EventType:     metronome.F("heartbeat"),
+			Timestamp:     metronome.F("2021-01-01T00:00:00+00:00"),
+		}}),
 	})
 	if err != nil {
 		panic(err.Error())
 	}
-	fmt.Printf("%+v\n", contractNewResponse.Data)
 }
 
 ```
@@ -68,18 +69,18 @@ To send a null, use `Null[T]()`, and to send a nonconforming value, use `Raw[T](
 
 ```go
 params := FooParams{
-	Name: example.F("hello"),
+	Name: metronome.F("hello"),
 
 	// Explicitly send `"description": null`
-	Description: example.Null[string](),
+	Description: metronome.Null[string](),
 
-	Point: example.F(example.Point{
-		X: example.Int(0),
-		Y: example.Int(1),
+	Point: metronome.F(metronome.Point{
+		X: metronome.Int(0),
+		Y: metronome.Int(1),
 
 		// In cases where the API specifies a given type,
 		// but you want to send something else, use `Raw`:
-		Z: example.Raw[int64](0.01), // sends a float
+		Z: metronome.Raw[int64](0.01), // sends a float
 	}),
 }
 ```
@@ -133,7 +134,7 @@ This library uses the functional options pattern. Functions defined in the
 requests. For example:
 
 ```go
-client := example.NewClient(
+client := metronome.NewClient(
 	// Adds a header to every request made by the client
 	option.WithHeader("X-Some-Header", "custom_header_info"),
 )
@@ -146,7 +147,7 @@ client.Contracts.New(context.TODO(), ...,
 )
 ```
 
-The full list of request options is [here](https://pkg.go.dev/github.com/example/example-go/option).
+The full list of request options is [here](https://pkg.go.dev/github.com/metronome/metronome-go/option).
 
 ### Pagination
 
@@ -168,19 +169,19 @@ with additional helper methods like `.GetNextPage()`, e.g.:
 ### Errors
 
 When the API returns a non-success status code, we return an error with type
-`*example.Error`. This contains the `StatusCode`, `*http.Request`, and
+`*metronome.Error`. This contains the `StatusCode`, `*http.Request`, and
 `*http.Response` values of the request, as well as the JSON of the error body
 (much like other response objects in the SDK).
 
 To handle errors, we recommend that you use the `errors.As` pattern:
 
 ```go
-_, err := client.Contracts.New(context.TODO(), example.ContractNewParams{
-	CustomerID: example.F("13117714-3f05-48e5-a6e9-a66093f13b4d"),
-	StartingAt: example.F(time.Now()),
+_, err := client.Contracts.New(context.TODO(), metronome.ContractNewParams{
+	CustomerID: metronome.F("13117714-3f05-48e5-a6e9-a66093f13b4d"),
+	StartingAt: metronome.F(time.Now()),
 })
 if err != nil {
-	var apierr *example.Error
+	var apierr *metronome.Error
 	if errors.As(err, &apierr) {
 		println(string(apierr.DumpRequest(true)))  // Prints the serialized HTTP request
 		println(string(apierr.DumpResponse(true))) // Prints the serialized HTTP response
@@ -205,9 +206,9 @@ ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 defer cancel()
 client.Contracts.New(
 	ctx,
-	example.ContractNewParams{
-		CustomerID: example.F("13117714-3f05-48e5-a6e9-a66093f13b4d"),
-		StartingAt: example.F(time.Now()),
+	metronome.ContractNewParams{
+		CustomerID: metronome.F("13117714-3f05-48e5-a6e9-a66093f13b4d"),
+		StartingAt: metronome.F(time.Now()),
 	},
 	// This sets the per-retry timeout
 	option.WithRequestTimeout(20*time.Second),
@@ -224,16 +225,16 @@ You can use the `WithMaxRetries` option to configure or disable this:
 
 ```go
 // Configure the default for all requests:
-client := example.NewClient(
+client := metronome.NewClient(
 	option.WithMaxRetries(0), // default is 2
 )
 
 // Override per-request:
 client.Contracts.New(
 	context.TODO(),
-	example.ContractNewParams{
-		CustomerID: example.F("13117714-3f05-48e5-a6e9-a66093f13b4d"),
-		StartingAt: example.F(time.Now()),
+	metronome.ContractNewParams{
+		CustomerID: metronome.F("13117714-3f05-48e5-a6e9-a66093f13b4d"),
+		StartingAt: metronome.F(time.Now()),
 	},
 	option.WithMaxRetries(5),
 )
@@ -260,7 +261,7 @@ func Logger(req *http.Request, next option.MiddlewareNext) (res *http.Response, 
     return res, err
 }
 
-client := example.NewClient(
+client := metronome.NewClient(
 	option.WithMiddleware(Logger),
 )
 ```
@@ -285,4 +286,4 @@ This package generally follows [SemVer](https://semver.org/spec/v2.0.0.html) con
 
 We take backwards-compatibility seriously and work hard to ensure you can rely on a smooth upgrade experience.
 
-We are keen for your feedback; please open an [issue](https://www.github.com/example/example-go/issues) with questions, bugs, or suggestions.
+We are keen for your feedback; please open an [issue](https://www.github.com/metronome/metronome-go/issues) with questions, bugs, or suggestions.
