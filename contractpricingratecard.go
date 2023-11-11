@@ -414,9 +414,7 @@ type ContractPricingRateCardAddRateParamsRateType string
 
 const (
   ContractPricingRateCardAddRateParamsRateTypeFlat ContractPricingRateCardAddRateParamsRateType = "FLAT"
-  ContractPricingRateCardAddRateParamsRateTypeFlat ContractPricingRateCardAddRateParamsRateType = "flat"
   ContractPricingRateCardAddRateParamsRateTypePercentage ContractPricingRateCardAddRateParamsRateType = "PERCENTAGE"
-  ContractPricingRateCardAddRateParamsRateTypePercentage ContractPricingRateCardAddRateParamsRateType = "percentage"
 )
 
 type ContractPricingRateCardMoveRateCardProductsParams struct {
