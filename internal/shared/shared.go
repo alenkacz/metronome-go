@@ -824,9 +824,7 @@ type RateRateType string
 
 const (
   RateRateTypeFlat RateRateType = "FLAT"
-  RateRateTypeFlat RateRateType = "flat"
   RateRateTypePercentage RateRateType = "PERCENTAGE"
-  RateRateTypePercentage RateRateType = "percentage"
 )
 
 type RateParam struct {
