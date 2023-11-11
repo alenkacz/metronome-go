@@ -592,9 +592,7 @@ func (r *ContractWithoutAmendmentsUsageInvoiceSchedule) UnmarshalJSON(data []byt
 type ContractWithoutAmendmentsUsageInvoiceScheduleFrequency string
 
 const (
-  ContractWithoutAmendmentsUsageInvoiceScheduleFrequencyMonthly ContractWithoutAmendmentsUsageInvoiceScheduleFrequency = "MONTHLY"
   ContractWithoutAmendmentsUsageInvoiceScheduleFrequencyMonthly ContractWithoutAmendmentsUsageInvoiceScheduleFrequency = "monthly"
-  ContractWithoutAmendmentsUsageInvoiceScheduleFrequencyQuarterly ContractWithoutAmendmentsUsageInvoiceScheduleFrequency = "QUARTERLY"
   ContractWithoutAmendmentsUsageInvoiceScheduleFrequencyQuarterly ContractWithoutAmendmentsUsageInvoiceScheduleFrequency = "quarterly"
 )
 

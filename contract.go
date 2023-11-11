@@ -707,9 +707,7 @@ func (r ContractNewParamsUsageInvoiceSchedule) MarshalJSON() (data []byte, err e
 type ContractNewParamsUsageInvoiceScheduleFrequency string
 
 const (
-  ContractNewParamsUsageInvoiceScheduleFrequencyMonthly ContractNewParamsUsageInvoiceScheduleFrequency = "MONTHLY"
   ContractNewParamsUsageInvoiceScheduleFrequencyMonthly ContractNewParamsUsageInvoiceScheduleFrequency = "monthly"
-  ContractNewParamsUsageInvoiceScheduleFrequencyQuarterly ContractNewParamsUsageInvoiceScheduleFrequency = "QUARTERLY"
   ContractNewParamsUsageInvoiceScheduleFrequencyQuarterly ContractNewParamsUsageInvoiceScheduleFrequency = "quarterly"
 )
 
