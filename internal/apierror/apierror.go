@@ -8,14 +8,14 @@ import (
 	"net/http"
 	"net/http/httputil"
 
-	"github.com/metronome/metronome-go/internal/apijson"
+	"github.com/Metronome-Industries/metronome-go/internal/apijson"
 )
 
 // Error represents an error that originates from the API, i.e. when a request is
 // made and the API returns a response with a HTTP status code. Other errors are
 // not wrapped by this SDK.
 type Error struct {
-	JSON       errorJSON
+	JSON       errorJSON `json:"-"`
 	StatusCode int
 	Request    *http.Request
 	Response   *http.Response

@@ -8,9 +8,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/metronome/metronome-go"
-	"github.com/metronome/metronome-go/internal/testutil"
-	"github.com/metronome/metronome-go/option"
+	"github.com/Metronome-Industries/metronome-go"
+	"github.com/Metronome-Industries/metronome-go/internal/testutil"
+	"github.com/Metronome-Industries/metronome-go/option"
 )
 
 func TestDashboardGetEmbeddableURLWithOptionalParams(t *testing.T) {
@@ -28,17 +28,17 @@ func TestDashboardGetEmbeddableURLWithOptionalParams(t *testing.T) {
 	_, err := client.Dashboards.GetEmbeddableURL(context.TODO(), metronome.DashboardGetEmbeddableURLParams{
 		CustomerID: metronome.F("4db51251-61de-4bfe-b9ce-495e244f3491"),
 		Dashboard:  metronome.F(metronome.DashboardGetEmbeddableURLParamsDashboardInvoices),
-		ColorOverrides: metronome.F([]metronome.DashboardGetEmbeddableURLParamsColorOverride{metronome.DashboardGetEmbeddableURLParamsColorOverride{
+		ColorOverrides: metronome.F([]metronome.DashboardGetEmbeddableURLParamsColorOverride{{
 			Name:  metronome.F(metronome.DashboardGetEmbeddableURLParamsColorOverridesNameGrayDark),
 			Value: metronome.F("#ff0000"),
 		}}),
-		DashboardOptions: metronome.F([]metronome.DashboardGetEmbeddableURLParamsDashboardOption{metronome.DashboardGetEmbeddableURLParamsDashboardOption{
+		DashboardOptions: metronome.F([]metronome.DashboardGetEmbeddableURLParamsDashboardOption{{
 			Key:   metronome.F("string"),
 			Value: metronome.F("string"),
-		}, metronome.DashboardGetEmbeddableURLParamsDashboardOption{
+		}, {
 			Key:   metronome.F("string"),
 			Value: metronome.F("string"),
-		}, metronome.DashboardGetEmbeddableURLParamsDashboardOption{
+		}, {
 			Key:   metronome.F("string"),
 			Value: metronome.F("string"),
 		}}),

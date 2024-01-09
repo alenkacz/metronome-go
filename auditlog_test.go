@@ -9,12 +9,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/metronome/metronome-go"
-	"github.com/metronome/metronome-go/internal/testutil"
-	"github.com/metronome/metronome-go/option"
+	"github.com/Metronome-Industries/metronome-go"
+	"github.com/Metronome-Industries/metronome-go/internal/testutil"
+	"github.com/Metronome-Industries/metronome-go/option"
 )
 
-func TestAuditLogGetAuditLogsWithOptionalParams(t *testing.T) {
+func TestAuditLogListWithOptionalParams(t *testing.T) {
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
@@ -26,7 +26,7 @@ func TestAuditLogGetAuditLogsWithOptionalParams(t *testing.T) {
 		option.WithBaseURL(baseURL),
 		option.WithBearerToken("My Bearer Token"),
 	)
-	_, err := client.AuditLogs.GetAuditLogs(context.TODO(), metronome.AuditLogGetAuditLogsParams{
+	_, err := client.AuditLogs.List(context.TODO(), metronome.AuditLogListParams{
 		Limit:      metronome.F(int64(1)),
 		NextPage:   metronome.F("string"),
 		StartingOn: metronome.F(time.Now()),

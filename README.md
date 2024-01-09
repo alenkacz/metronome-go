@@ -1,6 +1,6 @@
 # Metronome Go API Library
 
-<a href="https://pkg.go.dev/github.com/metronome/metronome-go"><img src="https://pkg.go.dev/badge/github.com/metronome/metronome-go.svg" alt="Go Reference"></a>
+<a href="https://pkg.go.dev/github.com/Metronome-Industries/metronome-go"><img src="https://pkg.go.dev/badge/github.com/Metronome-Industries/metronome-go.svg" alt="Go Reference"></a>
 
 The Metronome Go library provides convenient access to [the Metronome REST
 API](https://docs.metronome.com) from applications written in Go.
@@ -9,14 +9,14 @@ API](https://docs.metronome.com) from applications written in Go.
 
 ```go
 import (
-	"github.com/metronome/metronome-go" // imported as metronome
+	"github.com/Metronome-Industries/metronome-go" // imported as metronome
 )
 ```
 
 Or to pin the version:
 
 ```sh
-go get -u 'github.com/metronome/metronome-go@v0.0.1'
+go get -u 'github.com/Metronome-Industries/metronome-go@v0.0.1'
 ```
 
 ## Requirements
@@ -25,15 +25,15 @@ This library requires Go 1.18+.
 
 ## Usage
 
-The full API of this library can be found in [api.md](https://www.github.com/metronome/metronome-go/blob/main/api.md).
+The full API of this library can be found in [api.md](https://www.github.com/Metronome-Industries/metronome-go/blob/main/api.md).
 
 ```go
 package main
 
 import (
 	"context"
-	"github.com/metronome/metronome-go"
-	"github.com/metronome/metronome-go/option"
+	"github.com/Metronome-Industries/metronome-go"
+	"github.com/Metronome-Industries/metronome-go/option"
 )
 
 func main() {
@@ -139,7 +139,7 @@ client := metronome.NewClient(
 	option.WithHeader("X-Some-Header", "custom_header_info"),
 )
 
-client.Contracts.New(context.TODO(), ...,
+client.Alerts.New(context.TODO(), ...,
 	// Override the header
 	option.WithHeader("X-Some-Header", "some_other_custom_header_info"),
 	// Add an undocumented field to the request body, using sjson syntax
@@ -147,7 +147,7 @@ client.Contracts.New(context.TODO(), ...,
 )
 ```
 
-The full list of request options is [here](https://pkg.go.dev/github.com/metronome/metronome-go/option).
+The full list of request options is [here](https://pkg.go.dev/github.com/Metronome-Industries/metronome-go/option).
 
 ### Pagination
 
@@ -176,9 +176,10 @@ When the API returns a non-success status code, we return an error with type
 To handle errors, we recommend that you use the `errors.As` pattern:
 
 ```go
-_, err := client.Contracts.New(context.TODO(), metronome.ContractNewParams{
-	CustomerID: metronome.F("13117714-3f05-48e5-a6e9-a66093f13b4d"),
-	StartingAt: metronome.F(time.Now()),
+_, err := client.Alerts.New(context.TODO(), metronome.AlertNewParams{
+	AlertType: metronome.F(metronome.AlertNewParamsAlertTypeLowCreditBalanceReached),
+	Name:      metronome.F("$100 credit balance alert for single customer"),
+	Threshold: metronome.F(10000.000000),
 })
 if err != nil {
 	var apierr *metronome.Error
@@ -186,7 +187,7 @@ if err != nil {
 		println(string(apierr.DumpRequest(true)))  // Prints the serialized HTTP request
 		println(string(apierr.DumpResponse(true))) // Prints the serialized HTTP response
 	}
-	panic(err.Error()) // GET "/contracts/create": 400 Bad Request { ... }
+	panic(err.Error()) // GET "/alerts/create": 400 Bad Request { ... }
 }
 ```
 
@@ -204,11 +205,12 @@ To set a per-retry timeout, use `option.WithRequestTimeout()`.
 // This sets the timeout for the request, including all the retries.
 ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 defer cancel()
-client.Contracts.New(
+client.Alerts.New(
 	ctx,
-	metronome.ContractNewParams{
-		CustomerID: metronome.F("13117714-3f05-48e5-a6e9-a66093f13b4d"),
-		StartingAt: metronome.F(time.Now()),
+	metronome.AlertNewParams{
+		AlertType: metronome.F(metronome.AlertNewParamsAlertTypeLowCreditBalanceReached),
+		Name:      metronome.F("$100 credit balance alert for single customer"),
+		Threshold: metronome.F(10000.000000),
 	},
 	// This sets the per-retry timeout
 	option.WithRequestTimeout(20*time.Second),
@@ -230,11 +232,12 @@ client := metronome.NewClient(
 )
 
 // Override per-request:
-client.Contracts.New(
+client.Alerts.New(
 	context.TODO(),
-	metronome.ContractNewParams{
-		CustomerID: metronome.F("13117714-3f05-48e5-a6e9-a66093f13b4d"),
-		StartingAt: metronome.F(time.Now()),
+	metronome.AlertNewParams{
+		AlertType: metronome.F(metronome.AlertNewParamsAlertTypeLowCreditBalanceReached),
+		Name:      metronome.F("$100 credit balance alert for single customer"),
+		Threshold: metronome.F(10000.000000),
 	},
 	option.WithMaxRetries(5),
 )
@@ -286,4 +289,4 @@ This package generally follows [SemVer](https://semver.org/spec/v2.0.0.html) con
 
 We take backwards-compatibility seriously and work hard to ensure you can rely on a smooth upgrade experience.
 
-We are keen for your feedback; please open an [issue](https://www.github.com/metronome/metronome-go/issues) with questions, bugs, or suggestions.
+We are keen for your feedback; please open an [issue](https://www.github.com/Metronome-Industries/metronome-go/issues) with questions, bugs, or suggestions.

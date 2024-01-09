@@ -3,8 +3,8 @@
 package metronome
 
 import (
-	"github.com/metronome/metronome-go/internal/apijson"
-	"github.com/metronome/metronome-go/internal/param"
+	"github.com/Metronome-Industries/metronome-go/internal/apijson"
+	"github.com/Metronome-Industries/metronome-go/internal/param"
 )
 
 type IngestParams struct {

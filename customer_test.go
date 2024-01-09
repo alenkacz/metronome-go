@@ -9,9 +9,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/metronome/metronome-go"
-	"github.com/metronome/metronome-go/internal/testutil"
-	"github.com/metronome/metronome-go/option"
+	"github.com/Metronome-Industries/metronome-go"
+	"github.com/Metronome-Industries/metronome-go/internal/testutil"
+	"github.com/Metronome-Industries/metronome-go/option"
 )
 
 func TestCustomerNewWithOptionalParams(t *testing.T) {
@@ -35,8 +35,11 @@ func TestCustomerNewWithOptionalParams(t *testing.T) {
 			AwsProductCode:            metronome.F("string"),
 			AwsRegion:                 metronome.F(metronome.CustomerNewParamsBillingConfigAwsRegionAfSouth1),
 		}),
-		ExternalID:    metronome.F("team@example.com"),
-		IngestAliases: metronome.F([]string{"x", "x", "x"}),
+		CustomFields: metronome.F(map[string]string{
+			"foo": "string",
+		}),
+		ExternalID:    metronome.F("x"),
+		IngestAliases: metronome.F([]string{"team@example.com"}),
 	})
 	if err != nil {
 		var apierr *metronome.Error
@@ -122,7 +125,7 @@ func TestCustomerArchive(t *testing.T) {
 	}
 }
 
-func TestCustomerBillableMetricsWithOptionalParams(t *testing.T) {
+func TestCustomerListBillableMetricsWithOptionalParams(t *testing.T) {
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
@@ -134,10 +137,10 @@ func TestCustomerBillableMetricsWithOptionalParams(t *testing.T) {
 		option.WithBaseURL(baseURL),
 		option.WithBearerToken("My Bearer Token"),
 	)
-	_, err := client.Customers.BillableMetrics(
+	_, err := client.Customers.ListBillableMetrics(
 		context.TODO(),
 		"d7abd0cd-4ae9-4db7-8676-e986a4ebd8dc",
-		metronome.CustomerBillableMetricsParams{
+		metronome.CustomerListBillableMetricsParams{
 			Limit:         metronome.F(int64(1)),
 			NextPage:      metronome.F("string"),
 			OnCurrentPlan: metronome.F(true),
@@ -152,7 +155,7 @@ func TestCustomerBillableMetricsWithOptionalParams(t *testing.T) {
 	}
 }
 
-func TestCustomerCostsWithOptionalParams(t *testing.T) {
+func TestCustomerListCostsWithOptionalParams(t *testing.T) {
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
@@ -164,10 +167,10 @@ func TestCustomerCostsWithOptionalParams(t *testing.T) {
 		option.WithBaseURL(baseURL),
 		option.WithBearerToken("My Bearer Token"),
 	)
-	_, err := client.Customers.Costs(
+	_, err := client.Customers.ListCosts(
 		context.TODO(),
 		"d7abd0cd-4ae9-4db7-8676-e986a4ebd8dc",
-		metronome.CustomerCostsParams{
+		metronome.CustomerListCostsParams{
 			EndingBefore: metronome.F(time.Now()),
 			StartingOn:   metronome.F(time.Now()),
 			Limit:        metronome.F(int64(1)),

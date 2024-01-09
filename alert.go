@@ -6,11 +6,11 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/metronome/metronome-go/internal/apijson"
-	"github.com/metronome/metronome-go/internal/param"
-	"github.com/metronome/metronome-go/internal/requestconfig"
-	"github.com/metronome/metronome-go/internal/shared"
-	"github.com/metronome/metronome-go/option"
+	"github.com/Metronome-Industries/metronome-go/internal/apijson"
+	"github.com/Metronome-Industries/metronome-go/internal/param"
+	"github.com/Metronome-Industries/metronome-go/internal/requestconfig"
+	"github.com/Metronome-Industries/metronome-go/internal/shared"
+	"github.com/Metronome-Industries/metronome-go/option"
 )
 
 // AlertService contains methods and other services that help with interacting with
@@ -30,7 +30,7 @@ func NewAlertService(opts ...option.RequestOption) (r *AlertService) {
 	return
 }
 
-// Create an alert
+// Create a new alert
 func (r *AlertService) New(ctx context.Context, body AlertNewParams, opts ...option.RequestOption) (res *AlertNewResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "alerts/create"
@@ -38,7 +38,7 @@ func (r *AlertService) New(ctx context.Context, body AlertNewParams, opts ...opt
 	return
 }
 
-// Archive an alert
+// Archive an existing alert
 func (r *AlertService) Archive(ctx context.Context, body AlertArchiveParams, opts ...option.RequestOption) (res *AlertArchiveResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "alerts/archive"
@@ -47,8 +47,8 @@ func (r *AlertService) Archive(ctx context.Context, body AlertArchiveParams, opt
 }
 
 type AlertNewResponse struct {
-	Data shared.ID `json:"data,required"`
-	JSON alertNewResponseJSON
+	Data shared.ID            `json:"data,required"`
+	JSON alertNewResponseJSON `json:"-"`
 }
 
 // alertNewResponseJSON contains the JSON metadata for the struct
@@ -64,8 +64,8 @@ func (r *AlertNewResponse) UnmarshalJSON(data []byte) (err error) {
 }
 
 type AlertArchiveResponse struct {
-	Data shared.ID `json:"data,required"`
-	JSON alertArchiveResponseJSON
+	Data shared.ID                `json:"data,required"`
+	JSON alertArchiveResponseJSON `json:"-"`
 }
 
 // alertArchiveResponseJSON contains the JSON metadata for the struct

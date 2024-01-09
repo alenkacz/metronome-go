@@ -8,9 +8,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/metronome/metronome-go"
-	"github.com/metronome/metronome-go/internal/testutil"
-	"github.com/metronome/metronome-go/option"
+	"github.com/Metronome-Industries/metronome-go"
+	"github.com/Metronome-Industries/metronome-go/internal/testutil"
+	"github.com/Metronome-Industries/metronome-go/option"
 )
 
 func TestCustomFieldAddKey(t *testing.T) {
@@ -78,6 +78,7 @@ func TestCustomFieldListKeysWithOptionalParams(t *testing.T) {
 		option.WithBearerToken("My Bearer Token"),
 	)
 	_, err := client.CustomFields.ListKeys(context.TODO(), metronome.CustomFieldListKeysParams{
+		NextPage: metronome.F("string"),
 		Entities: metronome.F([]metronome.CustomFieldListKeysParamsEntity{metronome.CustomFieldListKeysParamsEntityCustomer, metronome.CustomFieldListKeysParamsEntityCreditGrant}),
 	})
 	if err != nil {

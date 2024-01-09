@@ -7,9 +7,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/metronome/metronome-go"
-	"github.com/metronome/metronome-go/internal/testutil"
-	"github.com/metronome/metronome-go/option"
+	"github.com/Metronome-Industries/metronome-go"
+	"github.com/Metronome-Industries/metronome-go/internal/testutil"
+	"github.com/Metronome-Industries/metronome-go/option"
 )
 
 func TestUsage(t *testing.T) {
@@ -24,8 +24,8 @@ func TestUsage(t *testing.T) {
 		option.WithBaseURL(baseURL),
 		option.WithBearerToken("My Bearer Token"),
 	)
-	err := client.Ingest(context.TODO(), metronome.IngestParams{
-		Body: metronome.F([]metronome.IngestParamsBody{metronome.IngestParamsBody{
+	_, err := client.Ingest(context.TODO(), metronome.IngestParams{
+		Body: metronome.F([]metronome.IngestParamsBody{{
 			TransactionID: metronome.F("2021-01-01T00:00:00+00:00_cluster42"),
 			CustomerID:    metronome.F("team@example.com"),
 			EventType:     metronome.F("heartbeat"),

@@ -9,11 +9,12 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/metronome/metronome-go/internal/apijson"
-	"github.com/metronome/metronome-go/internal/apiquery"
-	"github.com/metronome/metronome-go/internal/param"
-	"github.com/metronome/metronome-go/internal/requestconfig"
-	"github.com/metronome/metronome-go/option"
+	"github.com/Metronome-Industries/metronome-go/internal/apijson"
+	"github.com/Metronome-Industries/metronome-go/internal/apiquery"
+	"github.com/Metronome-Industries/metronome-go/internal/param"
+	"github.com/Metronome-Industries/metronome-go/internal/requestconfig"
+	"github.com/Metronome-Industries/metronome-go/internal/shared"
+	"github.com/Metronome-Industries/metronome-go/option"
 )
 
 // CustomerInvoiceService contains methods and other services that help with
@@ -44,11 +45,27 @@ func (r *CustomerInvoiceService) Get(ctx context.Context, customerID string, inv
 
 // List all invoices for a given customer, optionally filtered by status, date
 // range, and/or credit type.
-func (r *CustomerInvoiceService) List(ctx context.Context, customerID string, query CustomerInvoiceListParams, opts ...option.RequestOption) (res *CustomerInvoiceListResponse, err error) {
-	opts = append(r.Options[:], opts...)
+func (r *CustomerInvoiceService) List(ctx context.Context, customerID string, query CustomerInvoiceListParams, opts ...option.RequestOption) (res *shared.Page[Invoice], err error) {
+	var raw *http.Response
+	opts = append(r.Options, opts...)
+	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := fmt.Sprintf("customers/%s/invoices", customerID)
-	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, query, &res, opts...)
-	return
+	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
+	if err != nil {
+		return nil, err
+	}
+	err = cfg.Execute()
+	if err != nil {
+		return nil, err
+	}
+	res.SetPageConfig(cfg, raw)
+	return res, nil
+}
+
+// List all invoices for a given customer, optionally filtered by status, date
+// range, and/or credit type.
+func (r *CustomerInvoiceService) ListAutoPaging(ctx context.Context, customerID string, query CustomerInvoiceListParams, opts ...option.RequestOption) *shared.PageAutoPager[Invoice] {
+	return shared.NewPageAutoPager(r.List(ctx, customerID, query, opts...))
 }
 
 type Invoice struct {
@@ -58,27 +75,31 @@ type Invoice struct {
 	LineItems        []InvoiceLineItem       `json:"line_items,required"`
 	Status           string                  `json:"status,required"`
 	Total            float64                 `json:"total,required"`
+	Type             string                  `json:"type,required"`
 	AmendmentID      string                  `json:"amendment_id" format:"uuid"`
 	ContractID       string                  `json:"contract_id" format:"uuid"`
 	CorrectionRecord InvoiceCorrectionRecord `json:"correction_record"`
-	CustomFields     interface{}             `json:"custom_fields"`
+	CustomFields     map[string]interface{}  `json:"custom_fields"`
 	// End of the usage period this invoice covers (UTC)
 	EndTimestamp       time.Time                  `json:"end_timestamp" format:"date-time"`
 	ExternalInvoice    InvoiceExternalInvoice     `json:"external_invoice,nullable"`
 	InvoiceAdjustments []InvoiceInvoiceAdjustment `json:"invoice_adjustments"`
 	// When the invoice was issued (UTC)
-	IssuedAt             time.Time `json:"issued_at" format:"date-time"`
-	NetPaymentTermsDays  float64   `json:"net_payment_terms_days"`
-	NetsuiteSalesOrderID string    `json:"netsuite_sales_order_id"`
-	PlanID               string    `json:"plan_id" format:"uuid"`
-	PlanName             string    `json:"plan_name"`
+	IssuedAt            time.Time `json:"issued_at" format:"date-time"`
+	NetPaymentTermsDays float64   `json:"net_payment_terms_days"`
+	// This field's availability is dependent on your client's configuration.
+	NetsuiteSalesOrderID string            `json:"netsuite_sales_order_id"`
+	PlanCustomFields     map[string]string `json:"plan_custom_fields"`
+	PlanID               string            `json:"plan_id" format:"uuid"`
+	PlanName             string            `json:"plan_name"`
 	// only present for beta contract invoices with reseller royalties
-	ResellerRoyalty         InvoiceResellerRoyalty `json:"reseller_royalty"`
-	SalesforceOpportunityID string                 `json:"salesforce_opportunity_id"`
+	ResellerRoyalty InvoiceResellerRoyalty `json:"reseller_royalty"`
+	// This field's availability is dependent on your client's configuration.
+	SalesforceOpportunityID string `json:"salesforce_opportunity_id"`
 	// Beginning of the usage period this invoice covers (UTC)
-	StartTimestamp time.Time `json:"start_timestamp" format:"date-time"`
-	Subtotal       float64   `json:"subtotal"`
-	JSON           invoiceJSON
+	StartTimestamp time.Time   `json:"start_timestamp" format:"date-time"`
+	Subtotal       float64     `json:"subtotal"`
+	JSON           invoiceJSON `json:"-"`
 }
 
 // invoiceJSON contains the JSON metadata for the struct [Invoice]
@@ -89,6 +110,7 @@ type invoiceJSON struct {
 	LineItems               apijson.Field
 	Status                  apijson.Field
 	Total                   apijson.Field
+	Type                    apijson.Field
 	AmendmentID             apijson.Field
 	ContractID              apijson.Field
 	CorrectionRecord        apijson.Field
@@ -99,6 +121,7 @@ type invoiceJSON struct {
 	IssuedAt                apijson.Field
 	NetPaymentTermsDays     apijson.Field
 	NetsuiteSalesOrderID    apijson.Field
+	PlanCustomFields        apijson.Field
 	PlanID                  apijson.Field
 	PlanName                apijson.Field
 	ResellerRoyalty         apijson.Field
@@ -114,9 +137,9 @@ func (r *Invoice) UnmarshalJSON(data []byte) (err error) {
 }
 
 type InvoiceCreditType struct {
-	ID   string `json:"id,required" format:"uuid"`
-	Name string `json:"name,required"`
-	JSON invoiceCreditTypeJSON
+	ID   string                `json:"id,required" format:"uuid"`
+	Name string                `json:"name,required"`
+	JSON invoiceCreditTypeJSON `json:"-"`
 }
 
 // invoiceCreditTypeJSON contains the JSON metadata for the struct
@@ -146,6 +169,9 @@ type InvoiceLineItem struct {
 	GroupKey     string    `json:"group_key"`
 	GroupValue   string    `json:"group_value"`
 	// only present for beta contract invoices
+	IsProrated bool `json:"is_prorated"`
+	// only present for beta contract invoices. This field's availability is dependent
+	// on your client's configuration.
 	NetsuiteItemID string `json:"netsuite_item_id"`
 	// only present for beta contract invoices
 	PostpaidCommit InvoiceLineItemsPostpaidCommit `json:"postpaid_commit"`
@@ -156,8 +182,8 @@ type InvoiceLineItem struct {
 	StartingAt   time.Time                     `json:"starting_at" format:"date-time"`
 	SubLineItems []InvoiceLineItemsSubLineItem `json:"sub_line_items"`
 	// only present for beta contract invoices
-	UnitPrice float64 `json:"unit_price"`
-	JSON      invoiceLineItemJSON
+	UnitPrice float64             `json:"unit_price"`
+	JSON      invoiceLineItemJSON `json:"-"`
 }
 
 // invoiceLineItemJSON contains the JSON metadata for the struct [InvoiceLineItem]
@@ -171,6 +197,7 @@ type invoiceLineItemJSON struct {
 	EndingBefore    apijson.Field
 	GroupKey        apijson.Field
 	GroupValue      apijson.Field
+	IsProrated      apijson.Field
 	NetsuiteItemID  apijson.Field
 	PostpaidCommit  apijson.Field
 	ProductID       apijson.Field
@@ -188,9 +215,9 @@ func (r *InvoiceLineItem) UnmarshalJSON(data []byte) (err error) {
 }
 
 type InvoiceLineItemsCreditType struct {
-	ID   string `json:"id,required" format:"uuid"`
-	Name string `json:"name,required"`
-	JSON invoiceLineItemsCreditTypeJSON
+	ID   string                         `json:"id,required" format:"uuid"`
+	Name string                         `json:"name,required"`
+	JSON invoiceLineItemsCreditTypeJSON `json:"-"`
 }
 
 // invoiceLineItemsCreditTypeJSON contains the JSON metadata for the struct
@@ -208,8 +235,8 @@ func (r *InvoiceLineItemsCreditType) UnmarshalJSON(data []byte) (err error) {
 
 // only present for beta contract invoices
 type InvoiceLineItemsPostpaidCommit struct {
-	ID   string `json:"id,required" format:"uuid"`
-	JSON invoiceLineItemsPostpaidCommitJSON
+	ID   string                             `json:"id,required" format:"uuid"`
+	JSON invoiceLineItemsPostpaidCommitJSON `json:"-"`
 }
 
 // invoiceLineItemsPostpaidCommitJSON contains the JSON metadata for the struct
@@ -242,7 +269,7 @@ type InvoiceLineItemsSubLineItem struct {
 	// quantity is nonzero
 	Price float64                            `json:"price"`
 	Tiers []InvoiceLineItemsSubLineItemsTier `json:"tiers"`
-	JSON  invoiceLineItemsSubLineItemJSON
+	JSON  invoiceLineItemsSubLineItemJSON    `json:"-"`
 }
 
 // invoiceLineItemsSubLineItemJSON contains the JSON metadata for the struct
@@ -268,9 +295,9 @@ type InvoiceLineItemsSubLineItemsTier struct {
 	Price    float64 `json:"price,required"`
 	Quantity float64 `json:"quantity,required"`
 	// at what metric amount this tier begins
-	StartingAt float64 `json:"starting_at,required"`
-	Subtotal   float64 `json:"subtotal,required"`
-	JSON       invoiceLineItemsSubLineItemsTierJSON
+	StartingAt float64                              `json:"starting_at,required"`
+	Subtotal   float64                              `json:"subtotal,required"`
+	JSON       invoiceLineItemsSubLineItemsTierJSON `json:"-"`
 }
 
 // invoiceLineItemsSubLineItemsTierJSON contains the JSON metadata for the struct
@@ -289,30 +316,84 @@ func (r *InvoiceLineItemsSubLineItemsTier) UnmarshalJSON(data []byte) (err error
 }
 
 type InvoiceCorrectionRecord struct {
-	Memo   string `json:"memo,required"`
-	Reason string `json:"reason,required"`
-	JSON   invoiceCorrectionRecordJSON
+	CorrectedInvoiceID       string                                          `json:"corrected_invoice_id,required" format:"uuid"`
+	Memo                     string                                          `json:"memo,required"`
+	Reason                   string                                          `json:"reason,required"`
+	CorrectedExternalInvoice InvoiceCorrectionRecordCorrectedExternalInvoice `json:"corrected_external_invoice"`
+	JSON                     invoiceCorrectionRecordJSON                     `json:"-"`
 }
 
 // invoiceCorrectionRecordJSON contains the JSON metadata for the struct
 // [InvoiceCorrectionRecord]
 type invoiceCorrectionRecordJSON struct {
-	Memo        apijson.Field
-	Reason      apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
+	CorrectedInvoiceID       apijson.Field
+	Memo                     apijson.Field
+	Reason                   apijson.Field
+	CorrectedExternalInvoice apijson.Field
+	raw                      string
+	ExtraFields              map[string]apijson.Field
 }
 
 func (r *InvoiceCorrectionRecord) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+type InvoiceCorrectionRecordCorrectedExternalInvoice struct {
+	BillingProviderType InvoiceCorrectionRecordCorrectedExternalInvoiceBillingProviderType `json:"billing_provider_type,required"`
+	ExternalStatus      InvoiceCorrectionRecordCorrectedExternalInvoiceExternalStatus      `json:"external_status"`
+	InvoiceID           string                                                             `json:"invoice_id"`
+	IssuedAtTimestamp   time.Time                                                          `json:"issued_at_timestamp" format:"date-time"`
+	JSON                invoiceCorrectionRecordCorrectedExternalInvoiceJSON                `json:"-"`
+}
+
+// invoiceCorrectionRecordCorrectedExternalInvoiceJSON contains the JSON metadata
+// for the struct [InvoiceCorrectionRecordCorrectedExternalInvoice]
+type invoiceCorrectionRecordCorrectedExternalInvoiceJSON struct {
+	BillingProviderType apijson.Field
+	ExternalStatus      apijson.Field
+	InvoiceID           apijson.Field
+	IssuedAtTimestamp   apijson.Field
+	raw                 string
+	ExtraFields         map[string]apijson.Field
+}
+
+func (r *InvoiceCorrectionRecordCorrectedExternalInvoice) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type InvoiceCorrectionRecordCorrectedExternalInvoiceBillingProviderType string
+
+const (
+	InvoiceCorrectionRecordCorrectedExternalInvoiceBillingProviderTypeAwsMarketplace   InvoiceCorrectionRecordCorrectedExternalInvoiceBillingProviderType = "aws_marketplace"
+	InvoiceCorrectionRecordCorrectedExternalInvoiceBillingProviderTypeStripe           InvoiceCorrectionRecordCorrectedExternalInvoiceBillingProviderType = "stripe"
+	InvoiceCorrectionRecordCorrectedExternalInvoiceBillingProviderTypeNetsuite         InvoiceCorrectionRecordCorrectedExternalInvoiceBillingProviderType = "netsuite"
+	InvoiceCorrectionRecordCorrectedExternalInvoiceBillingProviderTypeCustom           InvoiceCorrectionRecordCorrectedExternalInvoiceBillingProviderType = "custom"
+	InvoiceCorrectionRecordCorrectedExternalInvoiceBillingProviderTypeAzureMarketplace InvoiceCorrectionRecordCorrectedExternalInvoiceBillingProviderType = "azure_marketplace"
+	InvoiceCorrectionRecordCorrectedExternalInvoiceBillingProviderTypeQuickbooksOnline InvoiceCorrectionRecordCorrectedExternalInvoiceBillingProviderType = "quickbooks_online"
+)
+
+type InvoiceCorrectionRecordCorrectedExternalInvoiceExternalStatus string
+
+const (
+	InvoiceCorrectionRecordCorrectedExternalInvoiceExternalStatusDraft               InvoiceCorrectionRecordCorrectedExternalInvoiceExternalStatus = "DRAFT"
+	InvoiceCorrectionRecordCorrectedExternalInvoiceExternalStatusFinalized           InvoiceCorrectionRecordCorrectedExternalInvoiceExternalStatus = "FINALIZED"
+	InvoiceCorrectionRecordCorrectedExternalInvoiceExternalStatusPaid                InvoiceCorrectionRecordCorrectedExternalInvoiceExternalStatus = "PAID"
+	InvoiceCorrectionRecordCorrectedExternalInvoiceExternalStatusUncollectible       InvoiceCorrectionRecordCorrectedExternalInvoiceExternalStatus = "UNCOLLECTIBLE"
+	InvoiceCorrectionRecordCorrectedExternalInvoiceExternalStatusVoid                InvoiceCorrectionRecordCorrectedExternalInvoiceExternalStatus = "VOID"
+	InvoiceCorrectionRecordCorrectedExternalInvoiceExternalStatusDeleted             InvoiceCorrectionRecordCorrectedExternalInvoiceExternalStatus = "DELETED"
+	InvoiceCorrectionRecordCorrectedExternalInvoiceExternalStatusPaymentFailed       InvoiceCorrectionRecordCorrectedExternalInvoiceExternalStatus = "PAYMENT_FAILED"
+	InvoiceCorrectionRecordCorrectedExternalInvoiceExternalStatusInvalidRequestError InvoiceCorrectionRecordCorrectedExternalInvoiceExternalStatus = "INVALID_REQUEST_ERROR"
+	InvoiceCorrectionRecordCorrectedExternalInvoiceExternalStatusSkipped             InvoiceCorrectionRecordCorrectedExternalInvoiceExternalStatus = "SKIPPED"
+	InvoiceCorrectionRecordCorrectedExternalInvoiceExternalStatusSent                InvoiceCorrectionRecordCorrectedExternalInvoiceExternalStatus = "SENT"
+	InvoiceCorrectionRecordCorrectedExternalInvoiceExternalStatusQueued              InvoiceCorrectionRecordCorrectedExternalInvoiceExternalStatus = "QUEUED"
+)
+
 type InvoiceExternalInvoice struct {
 	BillingProviderType InvoiceExternalInvoiceBillingProviderType `json:"billing_provider_type,required"`
 	ExternalStatus      InvoiceExternalInvoiceExternalStatus      `json:"external_status"`
 	InvoiceID           string                                    `json:"invoice_id"`
 	IssuedAtTimestamp   time.Time                                 `json:"issued_at_timestamp" format:"date-time"`
-	JSON                invoiceExternalInvoiceJSON
+	JSON                invoiceExternalInvoiceJSON                `json:"-"`
 }
 
 // invoiceExternalInvoiceJSON contains the JSON metadata for the struct
@@ -361,7 +442,7 @@ type InvoiceInvoiceAdjustment struct {
 	CreditType InvoiceInvoiceAdjustmentsCreditType `json:"credit_type,required"`
 	Name       string                              `json:"name,required"`
 	Total      float64                             `json:"total,required"`
-	JSON       invoiceInvoiceAdjustmentJSON
+	JSON       invoiceInvoiceAdjustmentJSON        `json:"-"`
 }
 
 // invoiceInvoiceAdjustmentJSON contains the JSON metadata for the struct
@@ -379,9 +460,9 @@ func (r *InvoiceInvoiceAdjustment) UnmarshalJSON(data []byte) (err error) {
 }
 
 type InvoiceInvoiceAdjustmentsCreditType struct {
-	ID   string `json:"id,required" format:"uuid"`
-	Name string `json:"name,required"`
-	JSON invoiceInvoiceAdjustmentsCreditTypeJSON
+	ID   string                                  `json:"id,required" format:"uuid"`
+	Name string                                  `json:"name,required"`
+	JSON invoiceInvoiceAdjustmentsCreditTypeJSON `json:"-"`
 }
 
 // invoiceInvoiceAdjustmentsCreditTypeJSON contains the JSON metadata for the
@@ -404,7 +485,7 @@ type InvoiceResellerRoyalty struct {
 	ResellerType       InvoiceResellerRoyaltyResellerType `json:"reseller_type,required"`
 	AwsOptions         InvoiceResellerRoyaltyAwsOptions   `json:"aws_options"`
 	GcpOptions         InvoiceResellerRoyaltyGcpOptions   `json:"gcp_options"`
-	JSON               invoiceResellerRoyaltyJSON
+	JSON               invoiceResellerRoyaltyJSON         `json:"-"`
 }
 
 // invoiceResellerRoyaltyJSON contains the JSON metadata for the struct
@@ -431,10 +512,10 @@ const (
 )
 
 type InvoiceResellerRoyaltyAwsOptions struct {
-	AwsAccountNumber    string `json:"aws_account_number"`
-	AwsOfferID          string `json:"aws_offer_id"`
-	AwsPayerReferenceID string `json:"aws_payer_reference_id"`
-	JSON                invoiceResellerRoyaltyAwsOptionsJSON
+	AwsAccountNumber    string                               `json:"aws_account_number"`
+	AwsOfferID          string                               `json:"aws_offer_id"`
+	AwsPayerReferenceID string                               `json:"aws_payer_reference_id"`
+	JSON                invoiceResellerRoyaltyAwsOptionsJSON `json:"-"`
 }
 
 // invoiceResellerRoyaltyAwsOptionsJSON contains the JSON metadata for the struct
@@ -452,9 +533,9 @@ func (r *InvoiceResellerRoyaltyAwsOptions) UnmarshalJSON(data []byte) (err error
 }
 
 type InvoiceResellerRoyaltyGcpOptions struct {
-	GcpAccountID string `json:"gcp_account_id"`
-	GcpOfferID   string `json:"gcp_offer_id"`
-	JSON         invoiceResellerRoyaltyGcpOptionsJSON
+	GcpAccountID string                               `json:"gcp_account_id"`
+	GcpOfferID   string                               `json:"gcp_offer_id"`
+	JSON         invoiceResellerRoyaltyGcpOptionsJSON `json:"-"`
 }
 
 // invoiceResellerRoyaltyGcpOptionsJSON contains the JSON metadata for the struct
@@ -471,8 +552,8 @@ func (r *InvoiceResellerRoyaltyGcpOptions) UnmarshalJSON(data []byte) (err error
 }
 
 type CustomerInvoiceGetResponse struct {
-	Data Invoice `json:"data,required"`
-	JSON customerInvoiceGetResponseJSON
+	Data Invoice                        `json:"data,required"`
+	JSON customerInvoiceGetResponseJSON `json:"-"`
 }
 
 // customerInvoiceGetResponseJSON contains the JSON metadata for the struct
@@ -484,25 +565,6 @@ type customerInvoiceGetResponseJSON struct {
 }
 
 func (r *CustomerInvoiceGetResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-type CustomerInvoiceListResponse struct {
-	Data     []Invoice `json:"data,required"`
-	NextPage string    `json:"next_page,required,nullable"`
-	JSON     customerInvoiceListResponseJSON
-}
-
-// customerInvoiceListResponseJSON contains the JSON metadata for the struct
-// [CustomerInvoiceListResponse]
-type customerInvoiceListResponseJSON struct {
-	Data        apijson.Field
-	NextPage    apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *CustomerInvoiceListResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 

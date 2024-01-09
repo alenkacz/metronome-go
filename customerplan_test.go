@@ -9,9 +9,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/metronome/metronome-go"
-	"github.com/metronome/metronome-go/internal/testutil"
-	"github.com/metronome/metronome-go/option"
+	"github.com/Metronome-Industries/metronome-go"
+	"github.com/Metronome-Industries/metronome-go/internal/testutil"
+	"github.com/Metronome-Industries/metronome-go/option"
 )
 
 func TestCustomerPlanListWithOptionalParams(t *testing.T) {
@@ -63,21 +63,21 @@ func TestCustomerPlanAddWithOptionalParams(t *testing.T) {
 			StartingOn:          metronome.F(time.Now()),
 			EndingBefore:        metronome.F(time.Now()),
 			NetPaymentTermsDays: metronome.F(0.000000),
-			PriceAdjustments: metronome.F([]metronome.CustomerPlanAddParamsPriceAdjustment{metronome.CustomerPlanAddParamsPriceAdjustment{
+			PriceAdjustments: metronome.F([]metronome.CustomerPlanAddParamsPriceAdjustment{{
 				ChargeID:       metronome.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 				AdjustmentType: metronome.F(metronome.CustomerPlanAddParamsPriceAdjustmentsAdjustmentTypePercentage),
 				Value:          metronome.F(0.000000),
 				Quantity:       metronome.F(0.000000),
 				Tier:           metronome.F(0.000000),
 				StartPeriod:    metronome.F(0.000000),
-			}, metronome.CustomerPlanAddParamsPriceAdjustment{
+			}, {
 				ChargeID:       metronome.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 				AdjustmentType: metronome.F(metronome.CustomerPlanAddParamsPriceAdjustmentsAdjustmentTypePercentage),
 				Value:          metronome.F(0.000000),
 				Quantity:       metronome.F(0.000000),
 				Tier:           metronome.F(0.000000),
 				StartPeriod:    metronome.F(0.000000),
-			}, metronome.CustomerPlanAddParamsPriceAdjustment{
+			}, {
 				ChargeID:       metronome.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 				AdjustmentType: metronome.F(metronome.CustomerPlanAddParamsPriceAdjustmentsAdjustmentTypePercentage),
 				Value:          metronome.F(0.000000),
@@ -127,7 +127,7 @@ func TestCustomerPlanEndWithOptionalParams(t *testing.T) {
 	}
 }
 
-func TestCustomerPlanGetPriceAdjustmentsWithOptionalParams(t *testing.T) {
+func TestCustomerPlanListPriceAdjustmentsWithOptionalParams(t *testing.T) {
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
@@ -139,11 +139,11 @@ func TestCustomerPlanGetPriceAdjustmentsWithOptionalParams(t *testing.T) {
 		option.WithBaseURL(baseURL),
 		option.WithBearerToken("My Bearer Token"),
 	)
-	_, err := client.Customers.Plans.GetPriceAdjustments(
+	_, err := client.Customers.Plans.ListPriceAdjustments(
 		context.TODO(),
 		"d7abd0cd-4ae9-4db7-8676-e986a4ebd8dc",
 		"7aa11640-0703-4600-8eb9-293f535a6b74",
-		metronome.CustomerPlanGetPriceAdjustmentsParams{
+		metronome.CustomerPlanListPriceAdjustmentsParams{
 			Limit:    metronome.F(int64(1)),
 			NextPage: metronome.F("string"),
 		},

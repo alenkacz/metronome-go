@@ -7,27 +7,25 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/metronome/metronome-go/internal/requestconfig"
-	"github.com/metronome/metronome-go/option"
+	"github.com/Metronome-Industries/metronome-go/internal/requestconfig"
+	"github.com/Metronome-Industries/metronome-go/option"
 )
 
 // Client creates a struct with services and top level methods that help with
 // interacting with the metronome API. You should not instantiate this client
 // directly, and instead use the [NewClient] method instead.
 type Client struct {
-	Options         []option.RequestOption
-	ContractPricing *ContractPricingService
-	Contracts       *ContractService
-	Alerts          *AlertService
-	CustomerAlerts  *CustomerAlertService
-	Plans           *PlanService
-	Credits         *CreditService
-	CreditTypes     *CreditTypeService
-	Customers       *CustomerService
-	Dashboards      *DashboardService
-	Usage           *UsageService
-	AuditLogs       *AuditLogService
-	CustomFields    *CustomFieldService
+	Options        []option.RequestOption
+	Alerts         *AlertService
+	CustomerAlerts *CustomerAlertService
+	Plans          *PlanService
+	Credits        *CreditService
+	CreditTypes    *CreditTypeService
+	Customers      *CustomerService
+	Dashboards     *DashboardService
+	Usage          *UsageService
+	AuditLogs      *AuditLogService
+	CustomFields   *CustomFieldService
 }
 
 // NewClient generates a new client with the default option read from the
@@ -43,8 +41,6 @@ func NewClient(opts ...option.RequestOption) (r *Client) {
 
 	r = &Client{Options: opts}
 
-	r.ContractPricing = NewContractPricingService(opts...)
-	r.Contracts = NewContractService(opts...)
 	r.Alerts = NewAlertService(opts...)
 	r.CustomerAlerts = NewCustomerAlertService(opts...)
 	r.Plans = NewPlanService(opts...)

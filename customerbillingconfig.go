@@ -8,10 +8,10 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/metronome/metronome-go/internal/apijson"
-	"github.com/metronome/metronome-go/internal/param"
-	"github.com/metronome/metronome-go/internal/requestconfig"
-	"github.com/metronome/metronome-go/option"
+	"github.com/Metronome-Industries/metronome-go/internal/apijson"
+	"github.com/Metronome-Industries/metronome-go/internal/param"
+	"github.com/Metronome-Industries/metronome-go/internal/requestconfig"
+	"github.com/Metronome-Industries/metronome-go/option"
 )
 
 // CustomerBillingConfigService contains methods and other services that help with
@@ -61,7 +61,7 @@ func (r *CustomerBillingConfigService) Delete(ctx context.Context, customerID st
 
 type CustomerBillingConfigGetResponse struct {
 	Data CustomerBillingConfigGetResponseData `json:"data,required"`
-	JSON customerBillingConfigGetResponseJSON
+	JSON customerBillingConfigGetResponseJSON `json:"-"`
 }
 
 // customerBillingConfigGetResponseJSON contains the JSON metadata for the struct
@@ -95,7 +95,7 @@ type CustomerBillingConfigGetResponseData struct {
 	AzureSubscriptionStatus   CustomerBillingConfigGetResponseDataAzureSubscriptionStatus `json:"azure_subscription_status"`
 	BillingProviderCustomerID string                                                      `json:"billing_provider_customer_id"`
 	StripeCollectionMethod    CustomerBillingConfigGetResponseDataStripeCollectionMethod  `json:"stripe_collection_method"`
-	JSON                      customerBillingConfigGetResponseDataJSON
+	JSON                      customerBillingConfigGetResponseDataJSON                    `json:"-"`
 }
 
 // customerBillingConfigGetResponseDataJSON contains the JSON metadata for the

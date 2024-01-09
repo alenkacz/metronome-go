@@ -9,11 +9,12 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/metronome/metronome-go/internal/apijson"
-	"github.com/metronome/metronome-go/internal/apiquery"
-	"github.com/metronome/metronome-go/internal/param"
-	"github.com/metronome/metronome-go/internal/requestconfig"
-	"github.com/metronome/metronome-go/option"
+	"github.com/Metronome-Industries/metronome-go/internal/apijson"
+	"github.com/Metronome-Industries/metronome-go/internal/apiquery"
+	"github.com/Metronome-Industries/metronome-go/internal/param"
+	"github.com/Metronome-Industries/metronome-go/internal/requestconfig"
+	"github.com/Metronome-Industries/metronome-go/internal/shared"
+	"github.com/Metronome-Industries/metronome-go/option"
 )
 
 // PlanService contains methods and other services that help with interacting with
@@ -34,11 +35,26 @@ func NewPlanService(opts ...option.RequestOption) (r *PlanService) {
 }
 
 // List all available plans.
-func (r *PlanService) List(ctx context.Context, query PlanListParams, opts ...option.RequestOption) (res *PlanListResponse, err error) {
-	opts = append(r.Options[:], opts...)
+func (r *PlanService) List(ctx context.Context, query PlanListParams, opts ...option.RequestOption) (res *shared.Page[PlanListResponse], err error) {
+	var raw *http.Response
+	opts = append(r.Options, opts...)
+	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "plans"
-	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, query, &res, opts...)
-	return
+	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
+	if err != nil {
+		return nil, err
+	}
+	err = cfg.Execute()
+	if err != nil {
+		return nil, err
+	}
+	res.SetPageConfig(cfg, raw)
+	return res, nil
+}
+
+// List all available plans.
+func (r *PlanService) ListAutoPaging(ctx context.Context, query PlanListParams, opts ...option.RequestOption) *shared.PageAutoPager[PlanListResponse] {
+	return shared.NewPageAutoPager(r.List(ctx, query, opts...))
 }
 
 // Fetch high level details of a specific plan.
@@ -50,20 +66,51 @@ func (r *PlanService) GetDetails(ctx context.Context, planID string, opts ...opt
 }
 
 // Fetches a list of charges of a specific plan.
-func (r *PlanService) ListCharges(ctx context.Context, planID string, query PlanListChargesParams, opts ...option.RequestOption) (res *PlanListChargesResponse, err error) {
-	opts = append(r.Options[:], opts...)
+func (r *PlanService) ListCharges(ctx context.Context, planID string, query PlanListChargesParams, opts ...option.RequestOption) (res *shared.Page[PlanListChargesResponse], err error) {
+	var raw *http.Response
+	opts = append(r.Options, opts...)
+	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := fmt.Sprintf("planDetails/%s/charges", planID)
-	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, query, &res, opts...)
-	return
+	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
+	if err != nil {
+		return nil, err
+	}
+	err = cfg.Execute()
+	if err != nil {
+		return nil, err
+	}
+	res.SetPageConfig(cfg, raw)
+	return res, nil
 }
 
-// Fetches a list of customers on a specific plan (only currently active plans are
-// included)
-func (r *PlanService) ListCustomers(ctx context.Context, planID string, query PlanListCustomersParams, opts ...option.RequestOption) (res *PlanListCustomersResponse, err error) {
-	opts = append(r.Options[:], opts...)
+// Fetches a list of charges of a specific plan.
+func (r *PlanService) ListChargesAutoPaging(ctx context.Context, planID string, query PlanListChargesParams, opts ...option.RequestOption) *shared.PageAutoPager[PlanListChargesResponse] {
+	return shared.NewPageAutoPager(r.ListCharges(ctx, planID, query, opts...))
+}
+
+// Fetches a list of customers on a specific plan (by default, only currently
+// active plans are included)
+func (r *PlanService) ListCustomers(ctx context.Context, planID string, query PlanListCustomersParams, opts ...option.RequestOption) (res *shared.Page[PlanListCustomersResponse], err error) {
+	var raw *http.Response
+	opts = append(r.Options, opts...)
+	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := fmt.Sprintf("planDetails/%s/customers", planID)
-	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, query, &res, opts...)
-	return
+	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
+	if err != nil {
+		return nil, err
+	}
+	err = cfg.Execute()
+	if err != nil {
+		return nil, err
+	}
+	res.SetPageConfig(cfg, raw)
+	return res, nil
+}
+
+// Fetches a list of customers on a specific plan (by default, only currently
+// active plans are included)
+func (r *PlanService) ListCustomersAutoPaging(ctx context.Context, planID string, query PlanListCustomersParams, opts ...option.RequestOption) *shared.PageAutoPager[PlanListCustomersResponse] {
+	return shared.NewPageAutoPager(r.ListCustomers(ctx, planID, query, opts...))
 }
 
 type PlanDetail struct {
@@ -73,7 +120,8 @@ type PlanDetail struct {
 	CreditGrants []PlanDetailCreditGrant `json:"credit_grants"`
 	Description  string                  `json:"description"`
 	Minimums     []PlanDetailMinimum     `json:"minimums"`
-	JSON         planDetailJSON
+	OverageRates []PlanDetailOverageRate `json:"overage_rates"`
+	JSON         planDetailJSON          `json:"-"`
 }
 
 // planDetailJSON contains the JSON metadata for the struct [PlanDetail]
@@ -84,6 +132,7 @@ type planDetailJSON struct {
 	CreditGrants apijson.Field
 	Description  apijson.Field
 	Minimums     apijson.Field
+	OverageRates apijson.Field
 	raw          string
 	ExtraFields  map[string]apijson.Field
 }
@@ -104,7 +153,7 @@ type PlanDetailCreditGrant struct {
 	Reason                  string                                        `json:"reason"`
 	RecurrenceDuration      float64                                       `json:"recurrence_duration"`
 	RecurrenceInterval      float64                                       `json:"recurrence_interval"`
-	JSON                    planDetailCreditGrantJSON
+	JSON                    planDetailCreditGrantJSON                     `json:"-"`
 }
 
 // planDetailCreditGrantJSON contains the JSON metadata for the struct
@@ -130,9 +179,9 @@ func (r *PlanDetailCreditGrant) UnmarshalJSON(data []byte) (err error) {
 }
 
 type PlanDetailCreditGrantsAmountGrantedCreditType struct {
-	ID   string `json:"id,required" format:"uuid"`
-	Name string `json:"name,required"`
-	JSON planDetailCreditGrantsAmountGrantedCreditTypeJSON
+	ID   string                                            `json:"id,required" format:"uuid"`
+	Name string                                            `json:"name,required"`
+	JSON planDetailCreditGrantsAmountGrantedCreditTypeJSON `json:"-"`
 }
 
 // planDetailCreditGrantsAmountGrantedCreditTypeJSON contains the JSON metadata for
@@ -149,9 +198,9 @@ func (r *PlanDetailCreditGrantsAmountGrantedCreditType) UnmarshalJSON(data []byt
 }
 
 type PlanDetailCreditGrantsAmountPaidCreditType struct {
-	ID   string `json:"id,required" format:"uuid"`
-	Name string `json:"name,required"`
-	JSON planDetailCreditGrantsAmountPaidCreditTypeJSON
+	ID   string                                         `json:"id,required" format:"uuid"`
+	Name string                                         `json:"name,required"`
+	JSON planDetailCreditGrantsAmountPaidCreditTypeJSON `json:"-"`
 }
 
 // planDetailCreditGrantsAmountPaidCreditTypeJSON contains the JSON metadata for
@@ -172,9 +221,9 @@ type PlanDetailMinimum struct {
 	Name       string                       `json:"name,required"`
 	// Used in price ramps. Indicates how many billing periods pass before the charge
 	// applies.
-	StartPeriod float64 `json:"start_period,required"`
-	Value       float64 `json:"value,required"`
-	JSON        planDetailMinimumJSON
+	StartPeriod float64               `json:"start_period,required"`
+	Value       float64               `json:"value,required"`
+	JSON        planDetailMinimumJSON `json:"-"`
 }
 
 // planDetailMinimumJSON contains the JSON metadata for the struct
@@ -193,9 +242,9 @@ func (r *PlanDetailMinimum) UnmarshalJSON(data []byte) (err error) {
 }
 
 type PlanDetailMinimumsCreditType struct {
-	ID   string `json:"id,required" format:"uuid"`
-	Name string `json:"name,required"`
-	JSON planDetailMinimumsCreditTypeJSON
+	ID   string                           `json:"id,required" format:"uuid"`
+	Name string                           `json:"name,required"`
+	JSON planDetailMinimumsCreditTypeJSON `json:"-"`
 }
 
 // planDetailMinimumsCreditTypeJSON contains the JSON metadata for the struct
@@ -211,17 +260,82 @@ func (r *PlanDetailMinimumsCreditType) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+type PlanDetailOverageRate struct {
+	CreditType     PlanDetailOverageRatesCreditType     `json:"credit_type,required"`
+	FiatCreditType PlanDetailOverageRatesFiatCreditType `json:"fiat_credit_type,required"`
+	// Used in price ramps. Indicates how many billing periods pass before the charge
+	// applies.
+	StartPeriod            float64                   `json:"start_period,required"`
+	ToFiatConversionFactor float64                   `json:"to_fiat_conversion_factor,required"`
+	JSON                   planDetailOverageRateJSON `json:"-"`
+}
+
+// planDetailOverageRateJSON contains the JSON metadata for the struct
+// [PlanDetailOverageRate]
+type planDetailOverageRateJSON struct {
+	CreditType             apijson.Field
+	FiatCreditType         apijson.Field
+	StartPeriod            apijson.Field
+	ToFiatConversionFactor apijson.Field
+	raw                    string
+	ExtraFields            map[string]apijson.Field
+}
+
+func (r *PlanDetailOverageRate) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type PlanDetailOverageRatesCreditType struct {
+	ID   string                               `json:"id,required" format:"uuid"`
+	Name string                               `json:"name,required"`
+	JSON planDetailOverageRatesCreditTypeJSON `json:"-"`
+}
+
+// planDetailOverageRatesCreditTypeJSON contains the JSON metadata for the struct
+// [PlanDetailOverageRatesCreditType]
+type planDetailOverageRatesCreditTypeJSON struct {
+	ID          apijson.Field
+	Name        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *PlanDetailOverageRatesCreditType) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type PlanDetailOverageRatesFiatCreditType struct {
+	ID   string                                   `json:"id,required" format:"uuid"`
+	Name string                                   `json:"name,required"`
+	JSON planDetailOverageRatesFiatCreditTypeJSON `json:"-"`
+}
+
+// planDetailOverageRatesFiatCreditTypeJSON contains the JSON metadata for the
+// struct [PlanDetailOverageRatesFiatCreditType]
+type planDetailOverageRatesFiatCreditTypeJSON struct {
+	ID          apijson.Field
+	Name        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *PlanDetailOverageRatesFiatCreditType) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
 type PlanListResponse struct {
-	Data     []PlanListResponseData `json:"data,required"`
-	NextPage string                 `json:"next_page,required,nullable"`
-	JSON     planListResponseJSON
+	ID          string               `json:"id,required" format:"uuid"`
+	Description string               `json:"description,required"`
+	Name        string               `json:"name,required"`
+	JSON        planListResponseJSON `json:"-"`
 }
 
 // planListResponseJSON contains the JSON metadata for the struct
 // [PlanListResponse]
 type planListResponseJSON struct {
-	Data        apijson.Field
-	NextPage    apijson.Field
+	ID          apijson.Field
+	Description apijson.Field
+	Name        apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
@@ -230,30 +344,9 @@ func (r *PlanListResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type PlanListResponseData struct {
-	ID          string `json:"id,required" format:"uuid"`
-	Description string `json:"description,required"`
-	Name        string `json:"name,required"`
-	JSON        planListResponseDataJSON
-}
-
-// planListResponseDataJSON contains the JSON metadata for the struct
-// [PlanListResponseData]
-type planListResponseDataJSON struct {
-	ID          apijson.Field
-	Description apijson.Field
-	Name        apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *PlanListResponseData) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
 type PlanGetDetailsResponse struct {
-	Data PlanDetail `json:"data,required"`
-	JSON planGetDetailsResponseJSON
+	Data PlanDetail                 `json:"data,required"`
+	JSON planGetDetailsResponseJSON `json:"-"`
 }
 
 // planGetDetailsResponseJSON contains the JSON metadata for the struct
@@ -269,44 +362,25 @@ func (r *PlanGetDetailsResponse) UnmarshalJSON(data []byte) (err error) {
 }
 
 type PlanListChargesResponse struct {
-	Data     []PlanListChargesResponseData `json:"data,required"`
-	NextPage string                        `json:"next_page,required,nullable"`
-	JSON     planListChargesResponseJSON
+	ID           string                            `json:"id,required" format:"uuid"`
+	ChargeType   PlanListChargesResponseChargeType `json:"charge_type,required"`
+	CreditType   PlanListChargesResponseCreditType `json:"credit_type,required"`
+	CustomFields map[string]string                 `json:"custom_fields,required"`
+	Name         string                            `json:"name,required"`
+	Prices       []PlanListChargesResponsePrice    `json:"prices,required"`
+	ProductName  string                            `json:"product_name,required"`
+	Quantity     float64                           `json:"quantity"`
+	// Used in price ramps. Indicates how many billing periods pass before the charge
+	// applies.
+	StartPeriod float64 `json:"start_period"`
+	// Specifies how quantities for usage based charges will be converted.
+	UnitConversion PlanListChargesResponseUnitConversion `json:"unit_conversion"`
+	JSON           planListChargesResponseJSON           `json:"-"`
 }
 
 // planListChargesResponseJSON contains the JSON metadata for the struct
 // [PlanListChargesResponse]
 type planListChargesResponseJSON struct {
-	Data        apijson.Field
-	NextPage    apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *PlanListChargesResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-type PlanListChargesResponseData struct {
-	ID           string                                `json:"id,required" format:"uuid"`
-	ChargeType   PlanListChargesResponseDataChargeType `json:"charge_type,required"`
-	CreditType   PlanListChargesResponseDataCreditType `json:"credit_type,required"`
-	CustomFields map[string]string                     `json:"custom_fields,required"`
-	Name         string                                `json:"name,required"`
-	Prices       []PlanListChargesResponseDataPrice    `json:"prices,required"`
-	ProductName  string                                `json:"product_name,required"`
-	Quantity     float64                               `json:"quantity"`
-	// Used in price ramps. Indicates how many billing periods pass before the charge
-	// applies.
-	StartPeriod float64 `json:"start_period"`
-	// Specifies how quantities for usage based charges will be converted.
-	UnitConversion PlanListChargesResponseDataUnitConversion `json:"unit_conversion"`
-	JSON           planListChargesResponseDataJSON
-}
-
-// planListChargesResponseDataJSON contains the JSON metadata for the struct
-// [PlanListChargesResponseData]
-type planListChargesResponseDataJSON struct {
 	ID             apijson.Field
 	ChargeType     apijson.Field
 	CreditType     apijson.Field
@@ -321,52 +395,52 @@ type planListChargesResponseDataJSON struct {
 	ExtraFields    map[string]apijson.Field
 }
 
-func (r *PlanListChargesResponseData) UnmarshalJSON(data []byte) (err error) {
+func (r *PlanListChargesResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type PlanListChargesResponseDataChargeType string
+type PlanListChargesResponseChargeType string
 
 const (
-	PlanListChargesResponseDataChargeTypeUsage     PlanListChargesResponseDataChargeType = "usage"
-	PlanListChargesResponseDataChargeTypeFixed     PlanListChargesResponseDataChargeType = "fixed"
-	PlanListChargesResponseDataChargeTypeComposite PlanListChargesResponseDataChargeType = "composite"
-	PlanListChargesResponseDataChargeTypeMinimum   PlanListChargesResponseDataChargeType = "minimum"
-	PlanListChargesResponseDataChargeTypeSeat      PlanListChargesResponseDataChargeType = "seat"
+	PlanListChargesResponseChargeTypeUsage     PlanListChargesResponseChargeType = "usage"
+	PlanListChargesResponseChargeTypeFixed     PlanListChargesResponseChargeType = "fixed"
+	PlanListChargesResponseChargeTypeComposite PlanListChargesResponseChargeType = "composite"
+	PlanListChargesResponseChargeTypeMinimum   PlanListChargesResponseChargeType = "minimum"
+	PlanListChargesResponseChargeTypeSeat      PlanListChargesResponseChargeType = "seat"
 )
 
-type PlanListChargesResponseDataCreditType struct {
-	ID   string `json:"id,required" format:"uuid"`
-	Name string `json:"name,required"`
-	JSON planListChargesResponseDataCreditTypeJSON
+type PlanListChargesResponseCreditType struct {
+	ID   string                                `json:"id,required" format:"uuid"`
+	Name string                                `json:"name,required"`
+	JSON planListChargesResponseCreditTypeJSON `json:"-"`
 }
 
-// planListChargesResponseDataCreditTypeJSON contains the JSON metadata for the
-// struct [PlanListChargesResponseDataCreditType]
-type planListChargesResponseDataCreditTypeJSON struct {
+// planListChargesResponseCreditTypeJSON contains the JSON metadata for the struct
+// [PlanListChargesResponseCreditType]
+type planListChargesResponseCreditTypeJSON struct {
 	ID          apijson.Field
 	Name        apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *PlanListChargesResponseDataCreditType) UnmarshalJSON(data []byte) (err error) {
+func (r *PlanListChargesResponseCreditType) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type PlanListChargesResponseDataPrice struct {
+type PlanListChargesResponsePrice struct {
 	// Used in pricing tiers. Indicates at what metric value the price applies.
-	Tier               float64 `json:"tier,required"`
-	Value              float64 `json:"value,required"`
-	CollectionInterval float64 `json:"collection_interval"`
-	CollectionSchedule string  `json:"collection_schedule"`
-	Quantity           float64 `json:"quantity"`
-	JSON               planListChargesResponseDataPriceJSON
+	Tier               float64                          `json:"tier,required"`
+	Value              float64                          `json:"value,required"`
+	CollectionInterval float64                          `json:"collection_interval"`
+	CollectionSchedule string                           `json:"collection_schedule"`
+	Quantity           float64                          `json:"quantity"`
+	JSON               planListChargesResponsePriceJSON `json:"-"`
 }
 
-// planListChargesResponseDataPriceJSON contains the JSON metadata for the struct
-// [PlanListChargesResponseDataPrice]
-type planListChargesResponseDataPriceJSON struct {
+// planListChargesResponsePriceJSON contains the JSON metadata for the struct
+// [PlanListChargesResponsePrice]
+type planListChargesResponsePriceJSON struct {
 	Tier               apijson.Field
 	Value              apijson.Field
 	CollectionInterval apijson.Field
@@ -376,104 +450,87 @@ type planListChargesResponseDataPriceJSON struct {
 	ExtraFields        map[string]apijson.Field
 }
 
-func (r *PlanListChargesResponseDataPrice) UnmarshalJSON(data []byte) (err error) {
+func (r *PlanListChargesResponsePrice) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
 // Specifies how quantities for usage based charges will be converted.
-type PlanListChargesResponseDataUnitConversion struct {
+type PlanListChargesResponseUnitConversion struct {
 	// The conversion factor
 	DivisionFactor float64 `json:"division_factor,required"`
 	// Whether usage should be rounded down or up to the nearest whole number. If null,
 	// quantity will be rounded to 20 decimal places.
-	RoundingBehavior PlanListChargesResponseDataUnitConversionRoundingBehavior `json:"rounding_behavior"`
-	JSON             planListChargesResponseDataUnitConversionJSON
+	RoundingBehavior PlanListChargesResponseUnitConversionRoundingBehavior `json:"rounding_behavior"`
+	JSON             planListChargesResponseUnitConversionJSON             `json:"-"`
 }
 
-// planListChargesResponseDataUnitConversionJSON contains the JSON metadata for the
-// struct [PlanListChargesResponseDataUnitConversion]
-type planListChargesResponseDataUnitConversionJSON struct {
+// planListChargesResponseUnitConversionJSON contains the JSON metadata for the
+// struct [PlanListChargesResponseUnitConversion]
+type planListChargesResponseUnitConversionJSON struct {
 	DivisionFactor   apijson.Field
 	RoundingBehavior apijson.Field
 	raw              string
 	ExtraFields      map[string]apijson.Field
 }
 
-func (r *PlanListChargesResponseDataUnitConversion) UnmarshalJSON(data []byte) (err error) {
+func (r *PlanListChargesResponseUnitConversion) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
 // Whether usage should be rounded down or up to the nearest whole number. If null,
 // quantity will be rounded to 20 decimal places.
-type PlanListChargesResponseDataUnitConversionRoundingBehavior string
+type PlanListChargesResponseUnitConversionRoundingBehavior string
 
 const (
-	PlanListChargesResponseDataUnitConversionRoundingBehaviorFloor   PlanListChargesResponseDataUnitConversionRoundingBehavior = "floor"
-	PlanListChargesResponseDataUnitConversionRoundingBehaviorCeiling PlanListChargesResponseDataUnitConversionRoundingBehavior = "ceiling"
+	PlanListChargesResponseUnitConversionRoundingBehaviorFloor   PlanListChargesResponseUnitConversionRoundingBehavior = "floor"
+	PlanListChargesResponseUnitConversionRoundingBehaviorCeiling PlanListChargesResponseUnitConversionRoundingBehavior = "ceiling"
 )
 
 type PlanListCustomersResponse struct {
-	Data     []PlanListCustomersResponseData `json:"data,required"`
-	NextPage string                          `json:"next_page,required,nullable"`
-	JSON     planListCustomersResponseJSON
+	CustomerDetails CustomerDetail                       `json:"customer_details,required"`
+	PlanDetails     PlanListCustomersResponsePlanDetails `json:"plan_details,required"`
+	JSON            planListCustomersResponseJSON        `json:"-"`
 }
 
 // planListCustomersResponseJSON contains the JSON metadata for the struct
 // [PlanListCustomersResponse]
 type planListCustomersResponseJSON struct {
-	Data        apijson.Field
-	NextPage    apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *PlanListCustomersResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-type PlanListCustomersResponseData struct {
-	CustomerDetails CustomerDetail                           `json:"customer_details,required"`
-	PlanDetails     PlanListCustomersResponseDataPlanDetails `json:"plan_details,required"`
-	JSON            planListCustomersResponseDataJSON
-}
-
-// planListCustomersResponseDataJSON contains the JSON metadata for the struct
-// [PlanListCustomersResponseData]
-type planListCustomersResponseDataJSON struct {
 	CustomerDetails apijson.Field
 	PlanDetails     apijson.Field
 	raw             string
 	ExtraFields     map[string]apijson.Field
 }
 
-func (r *PlanListCustomersResponseData) UnmarshalJSON(data []byte) (err error) {
+func (r *PlanListCustomersResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type PlanListCustomersResponseDataPlanDetails struct {
-	ID           string            `json:"id,required" format:"uuid"`
-	CustomFields map[string]string `json:"custom_fields,required"`
-	Name         string            `json:"name,required"`
+type PlanListCustomersResponsePlanDetails struct {
+	ID             string            `json:"id,required" format:"uuid"`
+	CustomFields   map[string]string `json:"custom_fields,required"`
+	CustomerPlanID string            `json:"customer_plan_id,required" format:"uuid"`
+	Name           string            `json:"name,required"`
 	// The start date of the plan
 	StartingOn time.Time `json:"starting_on,required" format:"date-time"`
 	// The end date of the plan
-	EndingBefore time.Time `json:"ending_before,nullable" format:"date-time"`
-	JSON         planListCustomersResponseDataPlanDetailsJSON
+	EndingBefore time.Time                                `json:"ending_before,nullable" format:"date-time"`
+	JSON         planListCustomersResponsePlanDetailsJSON `json:"-"`
 }
 
-// planListCustomersResponseDataPlanDetailsJSON contains the JSON metadata for the
-// struct [PlanListCustomersResponseDataPlanDetails]
-type planListCustomersResponseDataPlanDetailsJSON struct {
-	ID           apijson.Field
-	CustomFields apijson.Field
-	Name         apijson.Field
-	StartingOn   apijson.Field
-	EndingBefore apijson.Field
-	raw          string
-	ExtraFields  map[string]apijson.Field
+// planListCustomersResponsePlanDetailsJSON contains the JSON metadata for the
+// struct [PlanListCustomersResponsePlanDetails]
+type planListCustomersResponsePlanDetailsJSON struct {
+	ID             apijson.Field
+	CustomFields   apijson.Field
+	CustomerPlanID apijson.Field
+	Name           apijson.Field
+	StartingOn     apijson.Field
+	EndingBefore   apijson.Field
+	raw            string
+	ExtraFields    map[string]apijson.Field
 }
 
-func (r *PlanListCustomersResponseDataPlanDetails) UnmarshalJSON(data []byte) (err error) {
+func (r *PlanListCustomersResponsePlanDetails) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
@@ -512,6 +569,16 @@ type PlanListCustomersParams struct {
 	Limit param.Field[int64] `query:"limit"`
 	// Cursor that indicates where the next page of results should start.
 	NextPage param.Field[string] `query:"next_page"`
+	// Status of customers on a given plan. Defaults to `active`.
+	//
+	// - `all` - Return current, past, and upcoming customers of the plan.
+	// - `active` - Return current customers of the plan.
+	// - `ended` - Return past customers of the plan.
+	// - `upcoming` - Return upcoming customers of the plan.
+	//
+	// Multiple statuses can be OR'd together using commas, e.g. `active,ended`.
+	// **Note:** `ended,upcoming` combination is not yet supported.
+	Status param.Field[PlanListCustomersParamsStatus] `query:"status"`
 }
 
 // URLQuery serializes [PlanListCustomersParams]'s query parameters as
@@ -522,3 +589,21 @@ func (r PlanListCustomersParams) URLQuery() (v url.Values) {
 		NestedFormat: apiquery.NestedQueryFormatBrackets,
 	})
 }
+
+// Status of customers on a given plan. Defaults to `active`.
+//
+// - `all` - Return current, past, and upcoming customers of the plan.
+// - `active` - Return current customers of the plan.
+// - `ended` - Return past customers of the plan.
+// - `upcoming` - Return upcoming customers of the plan.
+//
+// Multiple statuses can be OR'd together using commas, e.g. `active,ended`.
+// **Note:** `ended,upcoming` combination is not yet supported.
+type PlanListCustomersParamsStatus string
+
+const (
+	PlanListCustomersParamsStatusAll      PlanListCustomersParamsStatus = "all"
+	PlanListCustomersParamsStatusActive   PlanListCustomersParamsStatus = "active"
+	PlanListCustomersParamsStatusEnded    PlanListCustomersParamsStatus = "ended"
+	PlanListCustomersParamsStatusUpcoming PlanListCustomersParamsStatus = "upcoming"
+)

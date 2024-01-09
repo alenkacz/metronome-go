@@ -9,12 +9,12 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/metronome/metronome-go/internal/apijson"
-	"github.com/metronome/metronome-go/internal/apiquery"
-	"github.com/metronome/metronome-go/internal/param"
-	"github.com/metronome/metronome-go/internal/requestconfig"
-	"github.com/metronome/metronome-go/internal/shared"
-	"github.com/metronome/metronome-go/option"
+	"github.com/Metronome-Industries/metronome-go/internal/apijson"
+	"github.com/Metronome-Industries/metronome-go/internal/apiquery"
+	"github.com/Metronome-Industries/metronome-go/internal/param"
+	"github.com/Metronome-Industries/metronome-go/internal/requestconfig"
+	"github.com/Metronome-Industries/metronome-go/internal/shared"
+	"github.com/Metronome-Industries/metronome-go/option"
 )
 
 // CustomerPlanService contains methods and other services that help with
@@ -36,11 +36,26 @@ func NewCustomerPlanService(opts ...option.RequestOption) (r *CustomerPlanServic
 }
 
 // List the given customer's plans in reverse-chronological order.
-func (r *CustomerPlanService) List(ctx context.Context, customerID string, query CustomerPlanListParams, opts ...option.RequestOption) (res *CustomerPlanListResponse, err error) {
-	opts = append(r.Options[:], opts...)
+func (r *CustomerPlanService) List(ctx context.Context, customerID string, query CustomerPlanListParams, opts ...option.RequestOption) (res *shared.Page[CustomerPlanListResponse], err error) {
+	var raw *http.Response
+	opts = append(r.Options, opts...)
+	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := fmt.Sprintf("customers/%s/plans", customerID)
-	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, query, &res, opts...)
-	return
+	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
+	if err != nil {
+		return nil, err
+	}
+	err = cfg.Execute()
+	if err != nil {
+		return nil, err
+	}
+	res.SetPageConfig(cfg, raw)
+	return res, nil
+}
+
+// List the given customer's plans in reverse-chronological order.
+func (r *CustomerPlanService) ListAutoPaging(ctx context.Context, customerID string, query CustomerPlanListParams, opts ...option.RequestOption) *shared.PageAutoPager[CustomerPlanListResponse] {
+	return shared.NewPageAutoPager(r.List(ctx, customerID, query, opts...))
 }
 
 // Associate an existing customer with a plan for a specified date range. See the
@@ -64,50 +79,48 @@ func (r *CustomerPlanService) End(ctx context.Context, customerID string, custom
 // Lists a customer plans adjustments. See the
 // [price adjustments documentation](https://docs.metronome.com/pricing/managing-plans/#price-adjustments)
 // for details.
-func (r *CustomerPlanService) GetPriceAdjustments(ctx context.Context, customerID string, customerPlanID string, query CustomerPlanGetPriceAdjustmentsParams, opts ...option.RequestOption) (res *CustomerPlanGetPriceAdjustmentsResponse, err error) {
-	opts = append(r.Options[:], opts...)
+func (r *CustomerPlanService) ListPriceAdjustments(ctx context.Context, customerID string, customerPlanID string, query CustomerPlanListPriceAdjustmentsParams, opts ...option.RequestOption) (res *shared.Page[CustomerPlanListPriceAdjustmentsResponse], err error) {
+	var raw *http.Response
+	opts = append(r.Options, opts...)
+	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := fmt.Sprintf("customers/%s/plans/%s/priceAdjustments", customerID, customerPlanID)
-	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, query, &res, opts...)
-	return
+	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
+	if err != nil {
+		return nil, err
+	}
+	err = cfg.Execute()
+	if err != nil {
+		return nil, err
+	}
+	res.SetPageConfig(cfg, raw)
+	return res, nil
+}
+
+// Lists a customer plans adjustments. See the
+// [price adjustments documentation](https://docs.metronome.com/pricing/managing-plans/#price-adjustments)
+// for details.
+func (r *CustomerPlanService) ListPriceAdjustmentsAutoPaging(ctx context.Context, customerID string, customerPlanID string, query CustomerPlanListPriceAdjustmentsParams, opts ...option.RequestOption) *shared.PageAutoPager[CustomerPlanListPriceAdjustmentsResponse] {
+	return shared.NewPageAutoPager(r.ListPriceAdjustments(ctx, customerID, customerPlanID, query, opts...))
 }
 
 type CustomerPlanListResponse struct {
-	Data     []CustomerPlanListResponseData `json:"data,required"`
-	NextPage string                         `json:"next_page,required,nullable"`
-	JSON     customerPlanListResponseJSON
-}
-
-// customerPlanListResponseJSON contains the JSON metadata for the struct
-// [CustomerPlanListResponse]
-type customerPlanListResponseJSON struct {
-	Data        apijson.Field
-	NextPage    apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *CustomerPlanListResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-type CustomerPlanListResponseData struct {
 	// the ID of the customer plan
 	ID              string            `json:"id,required" format:"uuid"`
 	CustomFields    map[string]string `json:"custom_fields,required"`
 	PlanDescription string            `json:"plan_description,required"`
 	// the ID of the plan
-	PlanID              string                                `json:"plan_id,required" format:"uuid"`
-	PlanName            string                                `json:"plan_name,required"`
-	StartingOn          time.Time                             `json:"starting_on,required" format:"date-time"`
-	EndingBefore        time.Time                             `json:"ending_before" format:"date-time"`
-	NetPaymentTermsDays float64                               `json:"net_payment_terms_days"`
-	TrialInfo           CustomerPlanListResponseDataTrialInfo `json:"trial_info"`
-	JSON                customerPlanListResponseDataJSON
+	PlanID              string                            `json:"plan_id,required" format:"uuid"`
+	PlanName            string                            `json:"plan_name,required"`
+	StartingOn          time.Time                         `json:"starting_on,required" format:"date-time"`
+	EndingBefore        time.Time                         `json:"ending_before" format:"date-time"`
+	NetPaymentTermsDays float64                           `json:"net_payment_terms_days"`
+	TrialInfo           CustomerPlanListResponseTrialInfo `json:"trial_info"`
+	JSON                customerPlanListResponseJSON      `json:"-"`
 }
 
-// customerPlanListResponseDataJSON contains the JSON metadata for the struct
-// [CustomerPlanListResponseData]
-type customerPlanListResponseDataJSON struct {
+// customerPlanListResponseJSON contains the JSON metadata for the struct
+// [CustomerPlanListResponse]
+type customerPlanListResponseJSON struct {
 	ID                  apijson.Field
 	CustomFields        apijson.Field
 	PlanDescription     apijson.Field
@@ -121,39 +134,39 @@ type customerPlanListResponseDataJSON struct {
 	ExtraFields         map[string]apijson.Field
 }
 
-func (r *CustomerPlanListResponseData) UnmarshalJSON(data []byte) (err error) {
+func (r *CustomerPlanListResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type CustomerPlanListResponseDataTrialInfo struct {
-	EndingBefore string                                             `json:"ending_before,required"`
-	SpendingCaps []CustomerPlanListResponseDataTrialInfoSpendingCap `json:"spending_caps,required"`
-	JSON         customerPlanListResponseDataTrialInfoJSON
+type CustomerPlanListResponseTrialInfo struct {
+	EndingBefore string                                         `json:"ending_before,required"`
+	SpendingCaps []CustomerPlanListResponseTrialInfoSpendingCap `json:"spending_caps,required"`
+	JSON         customerPlanListResponseTrialInfoJSON          `json:"-"`
 }
 
-// customerPlanListResponseDataTrialInfoJSON contains the JSON metadata for the
-// struct [CustomerPlanListResponseDataTrialInfo]
-type customerPlanListResponseDataTrialInfoJSON struct {
+// customerPlanListResponseTrialInfoJSON contains the JSON metadata for the struct
+// [CustomerPlanListResponseTrialInfo]
+type customerPlanListResponseTrialInfoJSON struct {
 	EndingBefore apijson.Field
 	SpendingCaps apijson.Field
 	raw          string
 	ExtraFields  map[string]apijson.Field
 }
 
-func (r *CustomerPlanListResponseDataTrialInfo) UnmarshalJSON(data []byte) (err error) {
+func (r *CustomerPlanListResponseTrialInfo) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type CustomerPlanListResponseDataTrialInfoSpendingCap struct {
-	Amount          float64                                                     `json:"amount,required"`
-	AmountRemaining float64                                                     `json:"amount_remaining,required"`
-	CreditType      CustomerPlanListResponseDataTrialInfoSpendingCapsCreditType `json:"credit_type,required"`
-	JSON            customerPlanListResponseDataTrialInfoSpendingCapJSON
+type CustomerPlanListResponseTrialInfoSpendingCap struct {
+	Amount          float64                                                 `json:"amount,required"`
+	AmountRemaining float64                                                 `json:"amount_remaining,required"`
+	CreditType      CustomerPlanListResponseTrialInfoSpendingCapsCreditType `json:"credit_type,required"`
+	JSON            customerPlanListResponseTrialInfoSpendingCapJSON        `json:"-"`
 }
 
-// customerPlanListResponseDataTrialInfoSpendingCapJSON contains the JSON metadata
-// for the struct [CustomerPlanListResponseDataTrialInfoSpendingCap]
-type customerPlanListResponseDataTrialInfoSpendingCapJSON struct {
+// customerPlanListResponseTrialInfoSpendingCapJSON contains the JSON metadata for
+// the struct [CustomerPlanListResponseTrialInfoSpendingCap]
+type customerPlanListResponseTrialInfoSpendingCapJSON struct {
 	Amount          apijson.Field
 	AmountRemaining apijson.Field
 	CreditType      apijson.Field
@@ -161,33 +174,33 @@ type customerPlanListResponseDataTrialInfoSpendingCapJSON struct {
 	ExtraFields     map[string]apijson.Field
 }
 
-func (r *CustomerPlanListResponseDataTrialInfoSpendingCap) UnmarshalJSON(data []byte) (err error) {
+func (r *CustomerPlanListResponseTrialInfoSpendingCap) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type CustomerPlanListResponseDataTrialInfoSpendingCapsCreditType struct {
-	ID   string `json:"id,required" format:"uuid"`
-	Name string `json:"name,required"`
-	JSON customerPlanListResponseDataTrialInfoSpendingCapsCreditTypeJSON
+type CustomerPlanListResponseTrialInfoSpendingCapsCreditType struct {
+	ID   string                                                      `json:"id,required" format:"uuid"`
+	Name string                                                      `json:"name,required"`
+	JSON customerPlanListResponseTrialInfoSpendingCapsCreditTypeJSON `json:"-"`
 }
 
-// customerPlanListResponseDataTrialInfoSpendingCapsCreditTypeJSON contains the
-// JSON metadata for the struct
-// [CustomerPlanListResponseDataTrialInfoSpendingCapsCreditType]
-type customerPlanListResponseDataTrialInfoSpendingCapsCreditTypeJSON struct {
+// customerPlanListResponseTrialInfoSpendingCapsCreditTypeJSON contains the JSON
+// metadata for the struct
+// [CustomerPlanListResponseTrialInfoSpendingCapsCreditType]
+type customerPlanListResponseTrialInfoSpendingCapsCreditTypeJSON struct {
 	ID          apijson.Field
 	Name        apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *CustomerPlanListResponseDataTrialInfoSpendingCapsCreditType) UnmarshalJSON(data []byte) (err error) {
+func (r *CustomerPlanListResponseTrialInfoSpendingCapsCreditType) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
 type CustomerPlanAddResponse struct {
-	Data shared.ID `json:"data,required"`
-	JSON customerPlanAddResponseJSON
+	Data shared.ID                   `json:"data,required"`
+	JSON customerPlanAddResponseJSON `json:"-"`
 }
 
 // customerPlanAddResponseJSON contains the JSON metadata for the struct
@@ -202,39 +215,33 @@ func (r *CustomerPlanAddResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type CustomerPlanEndResponse interface{}
-
-type CustomerPlanGetPriceAdjustmentsResponse struct {
-	Data     []CustomerPlanGetPriceAdjustmentsResponseData `json:"data,required"`
-	NextPage string                                        `json:"next_page,required,nullable"`
-	JSON     customerPlanGetPriceAdjustmentsResponseJSON
+type CustomerPlanEndResponse struct {
+	JSON customerPlanEndResponseJSON `json:"-"`
 }
 
-// customerPlanGetPriceAdjustmentsResponseJSON contains the JSON metadata for the
-// struct [CustomerPlanGetPriceAdjustmentsResponse]
-type customerPlanGetPriceAdjustmentsResponseJSON struct {
-	Data        apijson.Field
-	NextPage    apijson.Field
+// customerPlanEndResponseJSON contains the JSON metadata for the struct
+// [CustomerPlanEndResponse]
+type customerPlanEndResponseJSON struct {
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *CustomerPlanGetPriceAdjustmentsResponse) UnmarshalJSON(data []byte) (err error) {
+func (r *CustomerPlanEndResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type CustomerPlanGetPriceAdjustmentsResponseData struct {
-	ChargeID    string                                                `json:"charge_id,required" format:"uuid"`
-	ChargeType  CustomerPlanGetPriceAdjustmentsResponseDataChargeType `json:"charge_type,required"`
-	Prices      []CustomerPlanGetPriceAdjustmentsResponseDataPrice    `json:"prices,required"`
-	StartPeriod float64                                               `json:"start_period,required"`
-	Quantity    float64                                               `json:"quantity"`
-	JSON        customerPlanGetPriceAdjustmentsResponseDataJSON
+type CustomerPlanListPriceAdjustmentsResponse struct {
+	ChargeID    string                                             `json:"charge_id,required" format:"uuid"`
+	ChargeType  CustomerPlanListPriceAdjustmentsResponseChargeType `json:"charge_type,required"`
+	Prices      []CustomerPlanListPriceAdjustmentsResponsePrice    `json:"prices,required"`
+	StartPeriod float64                                            `json:"start_period,required"`
+	Quantity    float64                                            `json:"quantity"`
+	JSON        customerPlanListPriceAdjustmentsResponseJSON       `json:"-"`
 }
 
-// customerPlanGetPriceAdjustmentsResponseDataJSON contains the JSON metadata for
-// the struct [CustomerPlanGetPriceAdjustmentsResponseData]
-type customerPlanGetPriceAdjustmentsResponseDataJSON struct {
+// customerPlanListPriceAdjustmentsResponseJSON contains the JSON metadata for the
+// struct [CustomerPlanListPriceAdjustmentsResponse]
+type customerPlanListPriceAdjustmentsResponseJSON struct {
 	ChargeID    apijson.Field
 	ChargeType  apijson.Field
 	Prices      apijson.Field
@@ -244,32 +251,32 @@ type customerPlanGetPriceAdjustmentsResponseDataJSON struct {
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *CustomerPlanGetPriceAdjustmentsResponseData) UnmarshalJSON(data []byte) (err error) {
+func (r *CustomerPlanListPriceAdjustmentsResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type CustomerPlanGetPriceAdjustmentsResponseDataChargeType string
+type CustomerPlanListPriceAdjustmentsResponseChargeType string
 
 const (
-	CustomerPlanGetPriceAdjustmentsResponseDataChargeTypeUsage     CustomerPlanGetPriceAdjustmentsResponseDataChargeType = "usage"
-	CustomerPlanGetPriceAdjustmentsResponseDataChargeTypeFixed     CustomerPlanGetPriceAdjustmentsResponseDataChargeType = "fixed"
-	CustomerPlanGetPriceAdjustmentsResponseDataChargeTypeComposite CustomerPlanGetPriceAdjustmentsResponseDataChargeType = "composite"
-	CustomerPlanGetPriceAdjustmentsResponseDataChargeTypeMinimum   CustomerPlanGetPriceAdjustmentsResponseDataChargeType = "minimum"
-	CustomerPlanGetPriceAdjustmentsResponseDataChargeTypeSeat      CustomerPlanGetPriceAdjustmentsResponseDataChargeType = "seat"
+	CustomerPlanListPriceAdjustmentsResponseChargeTypeUsage     CustomerPlanListPriceAdjustmentsResponseChargeType = "usage"
+	CustomerPlanListPriceAdjustmentsResponseChargeTypeFixed     CustomerPlanListPriceAdjustmentsResponseChargeType = "fixed"
+	CustomerPlanListPriceAdjustmentsResponseChargeTypeComposite CustomerPlanListPriceAdjustmentsResponseChargeType = "composite"
+	CustomerPlanListPriceAdjustmentsResponseChargeTypeMinimum   CustomerPlanListPriceAdjustmentsResponseChargeType = "minimum"
+	CustomerPlanListPriceAdjustmentsResponseChargeTypeSeat      CustomerPlanListPriceAdjustmentsResponseChargeType = "seat"
 )
 
-type CustomerPlanGetPriceAdjustmentsResponseDataPrice struct {
+type CustomerPlanListPriceAdjustmentsResponsePrice struct {
 	// Determines how the value will be applied.
-	AdjustmentType CustomerPlanGetPriceAdjustmentsResponseDataPricesAdjustmentType `json:"adjustment_type,required"`
+	AdjustmentType CustomerPlanListPriceAdjustmentsResponsePricesAdjustmentType `json:"adjustment_type,required"`
 	// Used in pricing tiers. Indicates at what metric value the price applies.
-	Tier  float64 `json:"tier"`
-	Value float64 `json:"value"`
-	JSON  customerPlanGetPriceAdjustmentsResponseDataPriceJSON
+	Tier  float64                                           `json:"tier"`
+	Value float64                                           `json:"value"`
+	JSON  customerPlanListPriceAdjustmentsResponsePriceJSON `json:"-"`
 }
 
-// customerPlanGetPriceAdjustmentsResponseDataPriceJSON contains the JSON metadata
-// for the struct [CustomerPlanGetPriceAdjustmentsResponseDataPrice]
-type customerPlanGetPriceAdjustmentsResponseDataPriceJSON struct {
+// customerPlanListPriceAdjustmentsResponsePriceJSON contains the JSON metadata for
+// the struct [CustomerPlanListPriceAdjustmentsResponsePrice]
+type customerPlanListPriceAdjustmentsResponsePriceJSON struct {
 	AdjustmentType apijson.Field
 	Tier           apijson.Field
 	Value          apijson.Field
@@ -277,18 +284,18 @@ type customerPlanGetPriceAdjustmentsResponseDataPriceJSON struct {
 	ExtraFields    map[string]apijson.Field
 }
 
-func (r *CustomerPlanGetPriceAdjustmentsResponseDataPrice) UnmarshalJSON(data []byte) (err error) {
+func (r *CustomerPlanListPriceAdjustmentsResponsePrice) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
 // Determines how the value will be applied.
-type CustomerPlanGetPriceAdjustmentsResponseDataPricesAdjustmentType string
+type CustomerPlanListPriceAdjustmentsResponsePricesAdjustmentType string
 
 const (
-	CustomerPlanGetPriceAdjustmentsResponseDataPricesAdjustmentTypeFixed      CustomerPlanGetPriceAdjustmentsResponseDataPricesAdjustmentType = "fixed"
-	CustomerPlanGetPriceAdjustmentsResponseDataPricesAdjustmentTypeQuantity   CustomerPlanGetPriceAdjustmentsResponseDataPricesAdjustmentType = "quantity"
-	CustomerPlanGetPriceAdjustmentsResponseDataPricesAdjustmentTypePercentage CustomerPlanGetPriceAdjustmentsResponseDataPricesAdjustmentType = "percentage"
-	CustomerPlanGetPriceAdjustmentsResponseDataPricesAdjustmentTypeOverride   CustomerPlanGetPriceAdjustmentsResponseDataPricesAdjustmentType = "override"
+	CustomerPlanListPriceAdjustmentsResponsePricesAdjustmentTypeFixed      CustomerPlanListPriceAdjustmentsResponsePricesAdjustmentType = "fixed"
+	CustomerPlanListPriceAdjustmentsResponsePricesAdjustmentTypeQuantity   CustomerPlanListPriceAdjustmentsResponsePricesAdjustmentType = "quantity"
+	CustomerPlanListPriceAdjustmentsResponsePricesAdjustmentTypePercentage CustomerPlanListPriceAdjustmentsResponsePricesAdjustmentType = "percentage"
+	CustomerPlanListPriceAdjustmentsResponsePricesAdjustmentTypeOverride   CustomerPlanListPriceAdjustmentsResponsePricesAdjustmentType = "override"
 )
 
 type CustomerPlanListParams struct {
@@ -374,16 +381,16 @@ func (r CustomerPlanEndParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
-type CustomerPlanGetPriceAdjustmentsParams struct {
+type CustomerPlanListPriceAdjustmentsParams struct {
 	// Max number of results that should be returned
 	Limit param.Field[int64] `query:"limit"`
 	// Cursor that indicates where the next page of results should start.
 	NextPage param.Field[string] `query:"next_page"`
 }
 
-// URLQuery serializes [CustomerPlanGetPriceAdjustmentsParams]'s query parameters
+// URLQuery serializes [CustomerPlanListPriceAdjustmentsParams]'s query parameters
 // as `url.Values`.
-func (r CustomerPlanGetPriceAdjustmentsParams) URLQuery() (v url.Values) {
+func (r CustomerPlanListPriceAdjustmentsParams) URLQuery() (v url.Values) {
 	return apiquery.MarshalWithSettings(r, apiquery.QuerySettings{
 		ArrayFormat:  apiquery.ArrayQueryFormatComma,
 		NestedFormat: apiquery.NestedQueryFormatBrackets,

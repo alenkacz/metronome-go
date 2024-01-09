@@ -9,9 +9,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/metronome/metronome-go"
-	"github.com/metronome/metronome-go/internal/testutil"
-	"github.com/metronome/metronome-go/option"
+	"github.com/Metronome-Industries/metronome-go"
+	"github.com/Metronome-Industries/metronome-go/internal/testutil"
+	"github.com/Metronome-Industries/metronome-go/option"
 )
 
 func TestCreditNewGrantWithOptionalParams(t *testing.T) {
@@ -38,11 +38,12 @@ func TestCreditNewGrantWithOptionalParams(t *testing.T) {
 			Amount:       metronome.F(5000.000000),
 			CreditTypeID: metronome.F("2714e483-4ff1-48e4-9e25-ac732e8f24f2"),
 		}),
-		Priority:    metronome.F(0.500000),
-		EffectiveAt: metronome.F(time.Now()),
-		InvoiceDate: metronome.F(time.Now()),
-		ProductIDs:  metronome.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
-		Reason:      metronome.F("Incentivize new customer"),
+		Priority:        metronome.F(0.500000),
+		CreditGrantType: metronome.F("trial"),
+		EffectiveAt:     metronome.F(time.Now()),
+		InvoiceDate:     metronome.F(time.Now()),
+		ProductIDs:      metronome.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
+		Reason:          metronome.F("Incentivize new customer"),
 	})
 	if err != nil {
 		var apierr *metronome.Error

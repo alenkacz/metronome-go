@@ -6,10 +6,10 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/metronome/metronome-go/internal/apijson"
-	"github.com/metronome/metronome-go/internal/param"
-	"github.com/metronome/metronome-go/internal/requestconfig"
-	"github.com/metronome/metronome-go/option"
+	"github.com/Metronome-Industries/metronome-go/internal/apijson"
+	"github.com/Metronome-Industries/metronome-go/internal/param"
+	"github.com/Metronome-Industries/metronome-go/internal/requestconfig"
+	"github.com/Metronome-Industries/metronome-go/option"
 )
 
 // DashboardService contains methods and other services that help with interacting
@@ -41,7 +41,7 @@ func (r *DashboardService) GetEmbeddableURL(ctx context.Context, body DashboardG
 
 type DashboardGetEmbeddableURLResponse struct {
 	Data DashboardGetEmbeddableURLResponseData `json:"data,required"`
-	JSON dashboardGetEmbeddableURLResponseJSON
+	JSON dashboardGetEmbeddableURLResponseJSON `json:"-"`
 }
 
 // dashboardGetEmbeddableURLResponseJSON contains the JSON metadata for the struct
@@ -57,8 +57,8 @@ func (r *DashboardGetEmbeddableURLResponse) UnmarshalJSON(data []byte) (err erro
 }
 
 type DashboardGetEmbeddableURLResponseData struct {
-	URL  string `json:"url"`
-	JSON dashboardGetEmbeddableURLResponseDataJSON
+	URL  string                                    `json:"url"`
+	JSON dashboardGetEmbeddableURLResponseDataJSON `json:"-"`
 }
 
 // dashboardGetEmbeddableURLResponseDataJSON contains the JSON metadata for the

@@ -10,9 +10,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/metronome/metronome-go"
-	"github.com/metronome/metronome-go/internal/testutil"
-	"github.com/metronome/metronome-go/option"
+	"github.com/Metronome-Industries/metronome-go"
+	"github.com/Metronome-Industries/metronome-go/internal/testutil"
+	"github.com/Metronome-Industries/metronome-go/option"
 )
 
 func TestContextCancel(t *testing.T) {
@@ -29,9 +29,10 @@ func TestContextCancel(t *testing.T) {
 	)
 	cancelCtx, cancel := context.WithCancel(context.Background())
 	cancel()
-	res, err := client.Contracts.New(cancelCtx, metronome.ContractNewParams{
-		CustomerID: metronome.F("13117714-3f05-48e5-a6e9-a66093f13b4d"),
-		StartingAt: metronome.F(time.Now()),
+	res, err := client.Alerts.New(cancelCtx, metronome.AlertNewParams{
+		AlertType: metronome.F(metronome.AlertNewParamsAlertTypeLowCreditBalanceReached),
+		Name:      metronome.F("$100 credit balance alert for single customer"),
+		Threshold: metronome.F(10000.000000),
 	})
 	if err == nil || res != nil {
 		t.Error("Expected there to be a cancel error and for the response to be nil")
@@ -64,9 +65,10 @@ func TestContextCancelDelay(t *testing.T) {
 		time.Sleep(time.Millisecond * time.Duration(2))
 		cancel()
 	}()
-	res, err := client.Contracts.New(cancelCtx, metronome.ContractNewParams{
-		CustomerID: metronome.F("13117714-3f05-48e5-a6e9-a66093f13b4d"),
-		StartingAt: metronome.F(time.Now()),
+	res, err := client.Alerts.New(cancelCtx, metronome.AlertNewParams{
+		AlertType: metronome.F(metronome.AlertNewParamsAlertTypeLowCreditBalanceReached),
+		Name:      metronome.F("$100 credit balance alert for single customer"),
+		Threshold: metronome.F(10000.000000),
 	})
 	if err == nil || res != nil {
 		t.Error("expected there to be a cancel error and for the response to be nil")
@@ -95,9 +97,10 @@ func TestContextDeadline(t *testing.T) {
 			option.WithBearerToken("My Bearer Token"),
 			option.WithHTTPClient(&http.Client{Transport: &neverTransport{}}),
 		)
-		res, err := client.Contracts.New(deadlineCtx, metronome.ContractNewParams{
-			CustomerID: metronome.F("13117714-3f05-48e5-a6e9-a66093f13b4d"),
-			StartingAt: metronome.F(time.Now()),
+		res, err := client.Alerts.New(deadlineCtx, metronome.AlertNewParams{
+			AlertType: metronome.F(metronome.AlertNewParamsAlertTypeLowCreditBalanceReached),
+			Name:      metronome.F("$100 credit balance alert for single customer"),
+			Threshold: metronome.F(10000.000000),
 		})
 		if err == nil || res != nil {
 			t.Error("expected there to be a deadline error and for the response to be nil")

@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/metronome/metronome-go/internal/param"
+	"github.com/Metronome-Industries/metronome-go/internal/param"
 )
 
 var encoders sync.Map // map[reflect.Type]encoderFunc

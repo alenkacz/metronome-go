@@ -8,11 +8,12 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/metronome/metronome-go/internal/apijson"
-	"github.com/metronome/metronome-go/internal/apiquery"
-	"github.com/metronome/metronome-go/internal/param"
-	"github.com/metronome/metronome-go/internal/requestconfig"
-	"github.com/metronome/metronome-go/option"
+	"github.com/Metronome-Industries/metronome-go/internal/apijson"
+	"github.com/Metronome-Industries/metronome-go/internal/apiquery"
+	"github.com/Metronome-Industries/metronome-go/internal/param"
+	"github.com/Metronome-Industries/metronome-go/internal/requestconfig"
+	"github.com/Metronome-Industries/metronome-go/internal/shared"
+	"github.com/Metronome-Industries/metronome-go/option"
 )
 
 // UsageService contains methods and other services that help with interacting with
@@ -34,42 +35,55 @@ func NewUsageService(opts ...option.RequestOption) (r *UsageService) {
 
 // Fetch aggregated usage data for multiple customers and billable-metrics, broken
 // into intervals of the specified length.
-func (r *UsageService) GetUsage(ctx context.Context, params UsageGetUsageParams, opts ...option.RequestOption) (res *UsageGetUsageResponse, err error) {
-	opts = append(r.Options[:], opts...)
+func (r *UsageService) List(ctx context.Context, params UsageListParams, opts ...option.RequestOption) (res *shared.Page[UsageListResponse], err error) {
+	var raw *http.Response
+	opts = append(r.Options, opts...)
+	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "usage"
-	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, params, &res, opts...)
-	return
+	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodPost, path, params, &res, opts...)
+	if err != nil {
+		return nil, err
+	}
+	err = cfg.Execute()
+	if err != nil {
+		return nil, err
+	}
+	res.SetPageConfig(cfg, raw)
+	return res, nil
+}
+
+// Fetch aggregated usage data for multiple customers and billable-metrics, broken
+// into intervals of the specified length.
+func (r *UsageService) ListAutoPaging(ctx context.Context, params UsageListParams, opts ...option.RequestOption) *shared.PageAutoPager[UsageListResponse] {
+	return shared.NewPageAutoPager(r.List(ctx, params, opts...))
 }
 
 // Fetch aggregated usage data for the specified customer, billable-metric, and
 // optional group, broken into intervals of the specified length.
-func (r *UsageService) GetUsageGroups(ctx context.Context, params UsageGetUsageGroupsParams, opts ...option.RequestOption) (res *UsageGetUsageGroupsResponse, err error) {
-	opts = append(r.Options[:], opts...)
+func (r *UsageService) ListWithGroups(ctx context.Context, params UsageListWithGroupsParams, opts ...option.RequestOption) (res *shared.Page[UsageListWithGroupsResponse], err error) {
+	var raw *http.Response
+	opts = append(r.Options, opts...)
+	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "usage/groups"
-	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, params, &res, opts...)
-	return
+	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodPost, path, params, &res, opts...)
+	if err != nil {
+		return nil, err
+	}
+	err = cfg.Execute()
+	if err != nil {
+		return nil, err
+	}
+	res.SetPageConfig(cfg, raw)
+	return res, nil
 }
 
-type UsageGetUsageResponse struct {
-	Data     []UsageGetUsageResponseData `json:"data,required"`
-	NextPage string                      `json:"next_page,required,nullable"`
-	JSON     usageGetUsageResponseJSON
+// Fetch aggregated usage data for the specified customer, billable-metric, and
+// optional group, broken into intervals of the specified length.
+func (r *UsageService) ListWithGroupsAutoPaging(ctx context.Context, params UsageListWithGroupsParams, opts ...option.RequestOption) *shared.PageAutoPager[UsageListWithGroupsResponse] {
+	return shared.NewPageAutoPager(r.ListWithGroups(ctx, params, opts...))
 }
 
-// usageGetUsageResponseJSON contains the JSON metadata for the struct
-// [UsageGetUsageResponse]
-type usageGetUsageResponseJSON struct {
-	Data        apijson.Field
-	NextPage    apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *UsageGetUsageResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-type UsageGetUsageResponseData struct {
+type UsageListResponse struct {
 	BillableMetricID   string    `json:"billable_metric_id,required" format:"uuid"`
 	BillableMetricName string    `json:"billable_metric_name,required"`
 	CustomerID         string    `json:"customer_id,required" format:"uuid"`
@@ -78,13 +92,13 @@ type UsageGetUsageResponseData struct {
 	Value              float64   `json:"value,required,nullable"`
 	// Values will be either a number or null. Null indicates that there were no
 	// matches for the group_by value.
-	Groups map[string]float64 `json:"groups"`
-	JSON   usageGetUsageResponseDataJSON
+	Groups map[string]float64    `json:"groups"`
+	JSON   usageListResponseJSON `json:"-"`
 }
 
-// usageGetUsageResponseDataJSON contains the JSON metadata for the struct
-// [UsageGetUsageResponseData]
-type usageGetUsageResponseDataJSON struct {
+// usageListResponseJSON contains the JSON metadata for the struct
+// [UsageListResponse]
+type usageListResponseJSON struct {
 	BillableMetricID   apijson.Field
 	BillableMetricName apijson.Field
 	CustomerID         apijson.Field
@@ -96,41 +110,22 @@ type usageGetUsageResponseDataJSON struct {
 	ExtraFields        map[string]apijson.Field
 }
 
-func (r *UsageGetUsageResponseData) UnmarshalJSON(data []byte) (err error) {
+func (r *UsageListResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type UsageGetUsageGroupsResponse struct {
-	Data     []UsageGetUsageGroupsResponseData `json:"data,required"`
-	NextPage string                            `json:"next_page,required,nullable"`
-	JSON     usageGetUsageGroupsResponseJSON
+type UsageListWithGroupsResponse struct {
+	EndingBefore time.Time                       `json:"ending_before,required" format:"date-time"`
+	GroupKey     string                          `json:"group_key,required,nullable"`
+	GroupValue   string                          `json:"group_value,required,nullable"`
+	StartingOn   time.Time                       `json:"starting_on,required" format:"date-time"`
+	Value        float64                         `json:"value,required,nullable"`
+	JSON         usageListWithGroupsResponseJSON `json:"-"`
 }
 
-// usageGetUsageGroupsResponseJSON contains the JSON metadata for the struct
-// [UsageGetUsageGroupsResponse]
-type usageGetUsageGroupsResponseJSON struct {
-	Data        apijson.Field
-	NextPage    apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *UsageGetUsageGroupsResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-type UsageGetUsageGroupsResponseData struct {
-	EndingBefore time.Time `json:"ending_before,required" format:"date-time"`
-	GroupKey     string    `json:"group_key,required,nullable"`
-	GroupValue   string    `json:"group_value,required,nullable"`
-	StartingOn   time.Time `json:"starting_on,required" format:"date-time"`
-	Value        float64   `json:"value,required,nullable"`
-	JSON         usageGetUsageGroupsResponseDataJSON
-}
-
-// usageGetUsageGroupsResponseDataJSON contains the JSON metadata for the struct
-// [UsageGetUsageGroupsResponseData]
-type usageGetUsageGroupsResponseDataJSON struct {
+// usageListWithGroupsResponseJSON contains the JSON metadata for the struct
+// [UsageListWithGroupsResponse]
+type usageListWithGroupsResponseJSON struct {
 	EndingBefore apijson.Field
 	GroupKey     apijson.Field
 	GroupValue   apijson.Field
@@ -140,33 +135,33 @@ type usageGetUsageGroupsResponseDataJSON struct {
 	ExtraFields  map[string]apijson.Field
 }
 
-func (r *UsageGetUsageGroupsResponseData) UnmarshalJSON(data []byte) (err error) {
+func (r *UsageListWithGroupsResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type UsageGetUsageParams struct {
+type UsageListParams struct {
 	EndingBefore param.Field[time.Time] `json:"ending_before,required" format:"date-time"`
 	StartingOn   param.Field[time.Time] `json:"starting_on,required" format:"date-time"`
 	// A window_size of "day" or "hour" will return the usage for the specified period
 	// segmented into daily or hourly aggregates. A window_size of "none" will return a
 	// single usage aggregate for the entirety of the specified period.
-	WindowSize param.Field[UsageGetUsageParamsWindowSize] `json:"window_size,required"`
+	WindowSize param.Field[UsageListParamsWindowSize] `json:"window_size,required"`
 	// Cursor that indicates where the next page of results should start.
 	NextPage param.Field[string] `query:"next_page"`
 	// A list of billable metrics to fetch usage for. If absent, all billable metrics
 	// will be returned.
-	BillableMetrics param.Field[[]UsageGetUsageParamsBillableMetric] `json:"billable_metrics"`
+	BillableMetrics param.Field[[]UsageListParamsBillableMetric] `json:"billable_metrics"`
 	// A list of Metronome customer IDs to fetch usage for. If absent, usage for all
 	// customers will be returned.
 	CustomerIDs param.Field[[]string] `json:"customer_ids" format:"uuid"`
 }
 
-func (r UsageGetUsageParams) MarshalJSON() (data []byte, err error) {
+func (r UsageListParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
-// URLQuery serializes [UsageGetUsageParams]'s query parameters as `url.Values`.
-func (r UsageGetUsageParams) URLQuery() (v url.Values) {
+// URLQuery serializes [UsageListParams]'s query parameters as `url.Values`.
+func (r UsageListParams) URLQuery() (v url.Values) {
 	return apiquery.MarshalWithSettings(r, apiquery.QuerySettings{
 		ArrayFormat:  apiquery.ArrayQueryFormatComma,
 		NestedFormat: apiquery.NestedQueryFormatBrackets,
@@ -176,30 +171,30 @@ func (r UsageGetUsageParams) URLQuery() (v url.Values) {
 // A window_size of "day" or "hour" will return the usage for the specified period
 // segmented into daily or hourly aggregates. A window_size of "none" will return a
 // single usage aggregate for the entirety of the specified period.
-type UsageGetUsageParamsWindowSize string
+type UsageListParamsWindowSize string
 
 const (
-	UsageGetUsageParamsWindowSizeHour UsageGetUsageParamsWindowSize = "hour"
-	UsageGetUsageParamsWindowSizeDay  UsageGetUsageParamsWindowSize = "day"
-	UsageGetUsageParamsWindowSizeNone UsageGetUsageParamsWindowSize = "none"
-	UsageGetUsageParamsWindowSizeHour UsageGetUsageParamsWindowSize = "HOUR"
-	UsageGetUsageParamsWindowSizeDay  UsageGetUsageParamsWindowSize = "DAY"
-	UsageGetUsageParamsWindowSizeNone UsageGetUsageParamsWindowSize = "NONE"
-	UsageGetUsageParamsWindowSizeHour UsageGetUsageParamsWindowSize = "Hour"
-	UsageGetUsageParamsWindowSizeDay  UsageGetUsageParamsWindowSize = "Day"
-	UsageGetUsageParamsWindowSizeNone UsageGetUsageParamsWindowSize = "None"
+	UsageListParamsWindowSizeHour UsageListParamsWindowSize = "hour"
+	UsageListParamsWindowSizeDay  UsageListParamsWindowSize = "day"
+	UsageListParamsWindowSizeNone UsageListParamsWindowSize = "none"
+	UsageListParamsWindowSizeHour UsageListParamsWindowSize = "HOUR"
+	UsageListParamsWindowSizeDay  UsageListParamsWindowSize = "DAY"
+	UsageListParamsWindowSizeNone UsageListParamsWindowSize = "NONE"
+	UsageListParamsWindowSizeHour UsageListParamsWindowSize = "Hour"
+	UsageListParamsWindowSizeDay  UsageListParamsWindowSize = "Day"
+	UsageListParamsWindowSizeNone UsageListParamsWindowSize = "None"
 )
 
-type UsageGetUsageParamsBillableMetric struct {
-	ID      param.Field[string]                                    `json:"id,required" format:"uuid"`
-	GroupBy param.Field[UsageGetUsageParamsBillableMetricsGroupBy] `json:"group_by"`
+type UsageListParamsBillableMetric struct {
+	ID      param.Field[string]                                `json:"id,required" format:"uuid"`
+	GroupBy param.Field[UsageListParamsBillableMetricsGroupBy] `json:"group_by"`
 }
 
-func (r UsageGetUsageParamsBillableMetric) MarshalJSON() (data []byte, err error) {
+func (r UsageListParamsBillableMetric) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
-type UsageGetUsageParamsBillableMetricsGroupBy struct {
+type UsageListParamsBillableMetricsGroupBy struct {
 	// The name of the group_by key to use
 	Key param.Field[string] `json:"key,required"`
 	// Values of the group_by key to return in the query. If this field is omitted, all
@@ -207,17 +202,17 @@ type UsageGetUsageParamsBillableMetricsGroupBy struct {
 	Values param.Field[[]string] `json:"values"`
 }
 
-func (r UsageGetUsageParamsBillableMetricsGroupBy) MarshalJSON() (data []byte, err error) {
+func (r UsageListParamsBillableMetricsGroupBy) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
-type UsageGetUsageGroupsParams struct {
+type UsageListWithGroupsParams struct {
 	BillableMetricID param.Field[string] `json:"billable_metric_id,required" format:"uuid"`
 	CustomerID       param.Field[string] `json:"customer_id,required" format:"uuid"`
 	// A window_size of "day" or "hour" will return the usage for the specified period
 	// segmented into daily or hourly aggregates. A window_size of "none" will return a
 	// single usage aggregate for the entirety of the specified period.
-	WindowSize param.Field[UsageGetUsageGroupsParamsWindowSize] `json:"window_size,required"`
+	WindowSize param.Field[UsageListWithGroupsParamsWindowSize] `json:"window_size,required"`
 	// Max number of results that should be returned
 	Limit param.Field[int64] `query:"limit"`
 	// Cursor that indicates where the next page of results should start.
@@ -227,17 +222,17 @@ type UsageGetUsageGroupsParams struct {
 	// are specified when this is true.
 	CurrentPeriod param.Field[bool]                             `json:"current_period"`
 	EndingBefore  param.Field[time.Time]                        `json:"ending_before" format:"date-time"`
-	GroupBy       param.Field[UsageGetUsageGroupsParamsGroupBy] `json:"group_by"`
+	GroupBy       param.Field[UsageListWithGroupsParamsGroupBy] `json:"group_by"`
 	StartingOn    param.Field[time.Time]                        `json:"starting_on" format:"date-time"`
 }
 
-func (r UsageGetUsageGroupsParams) MarshalJSON() (data []byte, err error) {
+func (r UsageListWithGroupsParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
-// URLQuery serializes [UsageGetUsageGroupsParams]'s query parameters as
+// URLQuery serializes [UsageListWithGroupsParams]'s query parameters as
 // `url.Values`.
-func (r UsageGetUsageGroupsParams) URLQuery() (v url.Values) {
+func (r UsageListWithGroupsParams) URLQuery() (v url.Values) {
 	return apiquery.MarshalWithSettings(r, apiquery.QuerySettings{
 		ArrayFormat:  apiquery.ArrayQueryFormatComma,
 		NestedFormat: apiquery.NestedQueryFormatBrackets,
@@ -247,21 +242,21 @@ func (r UsageGetUsageGroupsParams) URLQuery() (v url.Values) {
 // A window_size of "day" or "hour" will return the usage for the specified period
 // segmented into daily or hourly aggregates. A window_size of "none" will return a
 // single usage aggregate for the entirety of the specified period.
-type UsageGetUsageGroupsParamsWindowSize string
+type UsageListWithGroupsParamsWindowSize string
 
 const (
-	UsageGetUsageGroupsParamsWindowSizeHour UsageGetUsageGroupsParamsWindowSize = "hour"
-	UsageGetUsageGroupsParamsWindowSizeDay  UsageGetUsageGroupsParamsWindowSize = "day"
-	UsageGetUsageGroupsParamsWindowSizeNone UsageGetUsageGroupsParamsWindowSize = "none"
-	UsageGetUsageGroupsParamsWindowSizeHour UsageGetUsageGroupsParamsWindowSize = "HOUR"
-	UsageGetUsageGroupsParamsWindowSizeDay  UsageGetUsageGroupsParamsWindowSize = "DAY"
-	UsageGetUsageGroupsParamsWindowSizeNone UsageGetUsageGroupsParamsWindowSize = "NONE"
-	UsageGetUsageGroupsParamsWindowSizeHour UsageGetUsageGroupsParamsWindowSize = "Hour"
-	UsageGetUsageGroupsParamsWindowSizeDay  UsageGetUsageGroupsParamsWindowSize = "Day"
-	UsageGetUsageGroupsParamsWindowSizeNone UsageGetUsageGroupsParamsWindowSize = "None"
+	UsageListWithGroupsParamsWindowSizeHour UsageListWithGroupsParamsWindowSize = "hour"
+	UsageListWithGroupsParamsWindowSizeDay  UsageListWithGroupsParamsWindowSize = "day"
+	UsageListWithGroupsParamsWindowSizeNone UsageListWithGroupsParamsWindowSize = "none"
+	UsageListWithGroupsParamsWindowSizeHour UsageListWithGroupsParamsWindowSize = "HOUR"
+	UsageListWithGroupsParamsWindowSizeDay  UsageListWithGroupsParamsWindowSize = "DAY"
+	UsageListWithGroupsParamsWindowSizeNone UsageListWithGroupsParamsWindowSize = "NONE"
+	UsageListWithGroupsParamsWindowSizeHour UsageListWithGroupsParamsWindowSize = "Hour"
+	UsageListWithGroupsParamsWindowSizeDay  UsageListWithGroupsParamsWindowSize = "Day"
+	UsageListWithGroupsParamsWindowSizeNone UsageListWithGroupsParamsWindowSize = "None"
 )
 
-type UsageGetUsageGroupsParamsGroupBy struct {
+type UsageListWithGroupsParamsGroupBy struct {
 	// The name of the group_by key to use
 	Key param.Field[string] `json:"key,required"`
 	// Values of the group_by key to return in the query. Omit this if you'd like all
@@ -269,6 +264,6 @@ type UsageGetUsageGroupsParamsGroupBy struct {
 	Values param.Field[[]string] `json:"values"`
 }
 
-func (r UsageGetUsageGroupsParamsGroupBy) MarshalJSON() (data []byte, err error) {
+func (r UsageListWithGroupsParamsGroupBy) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
