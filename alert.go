@@ -9,7 +9,6 @@ import (
 	"github.com/Metronome-Industries/metronome-go/internal/apijson"
 	"github.com/Metronome-Industries/metronome-go/internal/param"
 	"github.com/Metronome-Industries/metronome-go/internal/requestconfig"
-	"github.com/Metronome-Industries/metronome-go/internal/shared"
 	"github.com/Metronome-Industries/metronome-go/option"
 )
 
@@ -47,7 +46,7 @@ func (r *AlertService) Archive(ctx context.Context, body AlertArchiveParams, opt
 }
 
 type AlertNewResponse struct {
-	Data shared.ID            `json:"data,required"`
+	Data AlertNewResponseData `json:"data,required"`
 	JSON alertNewResponseJSON `json:"-"`
 }
 
@@ -63,8 +62,25 @@ func (r *AlertNewResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+type AlertNewResponseData struct {
+	ID   string                   `json:"id,required" format:"uuid"`
+	JSON alertNewResponseDataJSON `json:"-"`
+}
+
+// alertNewResponseDataJSON contains the JSON metadata for the struct
+// [AlertNewResponseData]
+type alertNewResponseDataJSON struct {
+	ID          apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AlertNewResponseData) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
 type AlertArchiveResponse struct {
-	Data shared.ID                `json:"data,required"`
+	Data AlertArchiveResponseData `json:"data,required"`
 	JSON alertArchiveResponseJSON `json:"-"`
 }
 
@@ -77,6 +93,23 @@ type alertArchiveResponseJSON struct {
 }
 
 func (r *AlertArchiveResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type AlertArchiveResponseData struct {
+	ID   string                       `json:"id,required" format:"uuid"`
+	JSON alertArchiveResponseDataJSON `json:"-"`
+}
+
+// alertArchiveResponseDataJSON contains the JSON metadata for the struct
+// [AlertArchiveResponseData]
+type alertArchiveResponseDataJSON struct {
+	ID          apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AlertArchiveResponseData) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 

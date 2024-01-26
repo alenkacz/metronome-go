@@ -258,7 +258,8 @@ func TestCustomerUpdateConfigWithOptionalParams(t *testing.T) {
 		context.TODO(),
 		"d7abd0cd-4ae9-4db7-8676-e986a4ebd8dc",
 		metronome.CustomerUpdateConfigParams{
-			SalesforceAccountID: metronome.F("0015500001WO1ZiABL"),
+			LeaveStripeInvoicesInDraft: metronome.F(true),
+			SalesforceAccountID:        metronome.F("0015500001WO1ZiABL"),
 		},
 	)
 	if err != nil {

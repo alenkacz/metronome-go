@@ -4,28 +4,92 @@ package metronome_test
 
 import (
 	"context"
-	"fmt"
 	"net/http"
-	"os"
 	"testing"
 	"time"
 
 	"github.com/Metronome-Industries/metronome-go"
-	"github.com/Metronome-Industries/metronome-go/internal/testutil"
 	"github.com/Metronome-Industries/metronome-go/option"
 )
 
-func TestContextCancel(t *testing.T) {
-	baseURL := "http://localhost:4010"
-	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
-		baseURL = envURL
-	}
-	if !testutil.CheckTestServer(t, baseURL) {
-		return
-	}
+type closureTransport struct {
+	fn func(req *http.Request) (*http.Response, error)
+}
+
+func (t *closureTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	return t.fn(req)
+}
+
+func TestRetryAfter(t *testing.T) {
+	attempts := 0
 	client := metronome.NewClient(
-		option.WithBaseURL(baseURL),
-		option.WithBearerToken("My Bearer Token"),
+		option.WithHTTPClient(&http.Client{
+			Transport: &closureTransport{
+				fn: func(req *http.Request) (*http.Response, error) {
+					attempts++
+					return &http.Response{
+						StatusCode: http.StatusTooManyRequests,
+						Header: http.Header{
+							http.CanonicalHeaderKey("Retry-After"): []string{"0.1"},
+						},
+					}, nil
+				},
+			},
+		}),
+	)
+	res, err := client.Alerts.New(context.Background(), metronome.AlertNewParams{
+		AlertType: metronome.F(metronome.AlertNewParamsAlertTypeLowCreditBalanceReached),
+		Name:      metronome.F("$100 credit balance alert for single customer"),
+		Threshold: metronome.F(10000.000000),
+	})
+	if err == nil || res != nil {
+		t.Error("Expected there to be a cancel error and for the response to be nil")
+	}
+	if want := 3; attempts != want {
+		t.Errorf("Expected %d attempts, got %d", want, attempts)
+	}
+}
+
+func TestRetryAfterMs(t *testing.T) {
+	attempts := 0
+	client := metronome.NewClient(
+		option.WithHTTPClient(&http.Client{
+			Transport: &closureTransport{
+				fn: func(req *http.Request) (*http.Response, error) {
+					attempts++
+					return &http.Response{
+						StatusCode: http.StatusTooManyRequests,
+						Header: http.Header{
+							http.CanonicalHeaderKey("Retry-After-Ms"): []string{"100"},
+						},
+					}, nil
+				},
+			},
+		}),
+	)
+	res, err := client.Alerts.New(context.Background(), metronome.AlertNewParams{
+		AlertType: metronome.F(metronome.AlertNewParamsAlertTypeLowCreditBalanceReached),
+		Name:      metronome.F("$100 credit balance alert for single customer"),
+		Threshold: metronome.F(10000.000000),
+	})
+	if err == nil || res != nil {
+		t.Error("Expected there to be a cancel error and for the response to be nil")
+	}
+	if want := 3; attempts != want {
+		t.Errorf("Expected %d attempts, got %d", want, attempts)
+	}
+}
+
+func TestContextCancel(t *testing.T) {
+	client := metronome.NewClient(
+		option.WithHTTPClient(&http.Client{
+			Transport: &closureTransport{
+				fn: func(req *http.Request) (*http.Response, error) {
+					<-req.Context().Done()
+					return nil, req.Context().Err()
+				},
+			},
+		}),
 	)
 	cancelCtx, cancel := context.WithCancel(context.Background())
 	cancel()
@@ -39,32 +103,19 @@ func TestContextCancel(t *testing.T) {
 	}
 }
 
-// neverTransport never completes a request and waits for the Context to be done.
-type neverTransport struct{}
-
-func (t *neverTransport) RoundTrip(req *http.Request) (*http.Response, error) {
-	<-req.Context().Done()
-	return nil, fmt.Errorf("cancelled")
-}
-
 func TestContextCancelDelay(t *testing.T) {
-	baseURL := "http://localhost:4010"
-	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
-		baseURL = envURL
-	}
-	if !testutil.CheckTestServer(t, baseURL) {
-		return
-	}
 	client := metronome.NewClient(
-		option.WithBaseURL(baseURL),
-		option.WithBearerToken("My Bearer Token"),
-		option.WithHTTPClient(&http.Client{Transport: &neverTransport{}}),
+		option.WithHTTPClient(&http.Client{
+			Transport: &closureTransport{
+				fn: func(req *http.Request) (*http.Response, error) {
+					<-req.Context().Done()
+					return nil, req.Context().Err()
+				},
+			},
+		}),
 	)
-	cancelCtx, cancel := context.WithCancel(context.Background())
-	go func() {
-		time.Sleep(time.Millisecond * time.Duration(2))
-		cancel()
-	}()
+	cancelCtx, cancel := context.WithTimeout(context.Background(), 2*time.Millisecond)
+	defer cancel()
 	res, err := client.Alerts.New(cancelCtx, metronome.AlertNewParams{
 		AlertType: metronome.F(metronome.AlertNewParamsAlertTypeLowCreditBalanceReached),
 		Name:      metronome.F("$100 credit balance alert for single customer"),
@@ -76,16 +127,8 @@ func TestContextCancelDelay(t *testing.T) {
 }
 
 func TestContextDeadline(t *testing.T) {
-	baseURL := "http://localhost:4010"
-	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
-		baseURL = envURL
-	}
-	if !testutil.CheckTestServer(t, baseURL) {
-		return
-	}
-
 	testTimeout := time.After(3 * time.Second)
-	testDone := make(chan bool)
+	testDone := make(chan struct{})
 
 	deadline := time.Now().Add(100 * time.Millisecond)
 	deadlineCtx, cancel := context.WithDeadline(context.Background(), deadline)
@@ -93,9 +136,14 @@ func TestContextDeadline(t *testing.T) {
 
 	go func() {
 		client := metronome.NewClient(
-			option.WithBaseURL(baseURL),
-			option.WithBearerToken("My Bearer Token"),
-			option.WithHTTPClient(&http.Client{Transport: &neverTransport{}}),
+			option.WithHTTPClient(&http.Client{
+				Transport: &closureTransport{
+					fn: func(req *http.Request) (*http.Response, error) {
+						<-req.Context().Done()
+						return nil, req.Context().Err()
+					},
+				},
+			}),
 		)
 		res, err := client.Alerts.New(deadlineCtx, metronome.AlertNewParams{
 			AlertType: metronome.F(metronome.AlertNewParamsAlertTypeLowCreditBalanceReached),
@@ -105,17 +153,15 @@ func TestContextDeadline(t *testing.T) {
 		if err == nil || res != nil {
 			t.Error("expected there to be a deadline error and for the response to be nil")
 		}
-		testDone <- true
+		close(testDone)
 	}()
 
 	select {
 	case <-testTimeout:
 		t.Fatal("client didn't finish in time")
 	case <-testDone:
-		diff := time.Now().Sub(deadline)
-		if diff < -20*time.Millisecond || 20*time.Millisecond < diff {
-			t.Logf("error difference: %v", diff)
-			t.Fatal("client did not return within 20ms of context deadline")
+		if diff := time.Since(deadline); diff < -20*time.Millisecond || 20*time.Millisecond < diff {
+			t.Fatalf("client did not return within 20ms of context deadline, got %s", diff)
 		}
 	}
 }

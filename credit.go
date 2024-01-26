@@ -108,7 +108,7 @@ func (r *CreditService) VoidGrant(ctx context.Context, body CreditVoidGrantParam
 }
 
 type CreditNewGrantResponse struct {
-	Data shared.ID                  `json:"data,required"`
+	Data CreditNewGrantResponseData `json:"data,required"`
 	JSON creditNewGrantResponseJSON `json:"-"`
 }
 
@@ -124,8 +124,25 @@ func (r *CreditNewGrantResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+type CreditNewGrantResponseData struct {
+	ID   string                         `json:"id,required" format:"uuid"`
+	JSON creditNewGrantResponseDataJSON `json:"-"`
+}
+
+// creditNewGrantResponseDataJSON contains the JSON metadata for the struct
+// [CreditNewGrantResponseData]
+type creditNewGrantResponseDataJSON struct {
+	ID          apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CreditNewGrantResponseData) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
 type CreditEditGrantResponse struct {
-	Data shared.ID                   `json:"data,required"`
+	Data CreditEditGrantResponseData `json:"data,required"`
 	JSON creditEditGrantResponseJSON `json:"-"`
 }
 
@@ -138,6 +155,23 @@ type creditEditGrantResponseJSON struct {
 }
 
 func (r *CreditEditGrantResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type CreditEditGrantResponseData struct {
+	ID   string                          `json:"id,required" format:"uuid"`
+	JSON creditEditGrantResponseDataJSON `json:"-"`
+}
+
+// creditEditGrantResponseDataJSON contains the JSON metadata for the struct
+// [CreditEditGrantResponseData]
+type creditEditGrantResponseDataJSON struct {
+	ID          apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CreditEditGrantResponseData) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
@@ -595,7 +629,7 @@ func (r *CreditListGrantsResponseProduct) UnmarshalJSON(data []byte) (err error)
 }
 
 type CreditVoidGrantResponse struct {
-	Data shared.ID                   `json:"data,required"`
+	Data CreditVoidGrantResponseData `json:"data,required"`
 	JSON creditVoidGrantResponseJSON `json:"-"`
 }
 
@@ -608,6 +642,23 @@ type creditVoidGrantResponseJSON struct {
 }
 
 func (r *CreditVoidGrantResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type CreditVoidGrantResponseData struct {
+	ID   string                          `json:"id,required" format:"uuid"`
+	JSON creditVoidGrantResponseDataJSON `json:"-"`
+}
+
+// creditVoidGrantResponseDataJSON contains the JSON metadata for the struct
+// [CreditVoidGrantResponseData]
+type creditVoidGrantResponseDataJSON struct {
+	ID          apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CreditVoidGrantResponseData) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 

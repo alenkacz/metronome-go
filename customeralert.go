@@ -44,7 +44,7 @@ func (r *CustomerAlertService) Get(ctx context.Context, body CustomerAlertGetPar
 }
 
 // Fetch all customer alert statuses and alert information for a customer
-func (r *CustomerAlertService) List(ctx context.Context, params CustomerAlertListParams, opts ...option.RequestOption) (res *shared.Page[CustomerAlert], err error) {
+func (r *CustomerAlertService) List(ctx context.Context, params CustomerAlertListParams, opts ...option.RequestOption) (res *shared.Page[CustomerAlertListResponse], err error) {
 	var raw *http.Response
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -62,117 +62,12 @@ func (r *CustomerAlertService) List(ctx context.Context, params CustomerAlertLis
 }
 
 // Fetch all customer alert statuses and alert information for a customer
-func (r *CustomerAlertService) ListAutoPaging(ctx context.Context, params CustomerAlertListParams, opts ...option.RequestOption) *shared.PageAutoPager[CustomerAlert] {
+func (r *CustomerAlertService) ListAutoPaging(ctx context.Context, params CustomerAlertListParams, opts ...option.RequestOption) *shared.PageAutoPager[CustomerAlertListResponse] {
 	return shared.NewPageAutoPager(r.List(ctx, params, opts...))
 }
 
-type CustomerAlert struct {
-	Alert CustomerAlertAlert `json:"alert,required"`
-	// The status of the customer alert. If the alert is archived, null will be
-	// returned.
-	CustomerStatus CustomerAlertCustomerStatus `json:"customer_status,required,nullable"`
-	JSON           customerAlertJSON           `json:"-"`
-}
-
-// customerAlertJSON contains the JSON metadata for the struct [CustomerAlert]
-type customerAlertJSON struct {
-	Alert          apijson.Field
-	CustomerStatus apijson.Field
-	raw            string
-	ExtraFields    map[string]apijson.Field
-}
-
-func (r *CustomerAlert) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-type CustomerAlertAlert struct {
-	// the Metronome ID of the alert
-	ID         string                       `json:"id,required"`
-	CreditType CustomerAlertAlertCreditType `json:"credit_type,required,nullable"`
-	// Name of the alert
-	Name string `json:"name,required"`
-	// Status of the alert
-	Status CustomerAlertAlertStatus `json:"status,required"`
-	// Threshold value of the alert policy
-	Threshold float64 `json:"threshold,required"`
-	// Type of the alert
-	Type CustomerAlertAlertType `json:"type,required"`
-	// Timestamp for when the alert was last updated
-	UpdatedAt time.Time              `json:"updated_at,required" format:"date-time"`
-	JSON      customerAlertAlertJSON `json:"-"`
-}
-
-// customerAlertAlertJSON contains the JSON metadata for the struct
-// [CustomerAlertAlert]
-type customerAlertAlertJSON struct {
-	ID          apijson.Field
-	CreditType  apijson.Field
-	Name        apijson.Field
-	Status      apijson.Field
-	Threshold   apijson.Field
-	Type        apijson.Field
-	UpdatedAt   apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *CustomerAlertAlert) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-type CustomerAlertAlertCreditType struct {
-	ID   string                           `json:"id,required" format:"uuid"`
-	Name string                           `json:"name,required"`
-	JSON customerAlertAlertCreditTypeJSON `json:"-"`
-}
-
-// customerAlertAlertCreditTypeJSON contains the JSON metadata for the struct
-// [CustomerAlertAlertCreditType]
-type customerAlertAlertCreditTypeJSON struct {
-	ID          apijson.Field
-	Name        apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *CustomerAlertAlertCreditType) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-// Status of the alert
-type CustomerAlertAlertStatus string
-
-const (
-	CustomerAlertAlertStatusEnabled  CustomerAlertAlertStatus = "enabled"
-	CustomerAlertAlertStatusArchived CustomerAlertAlertStatus = "archived"
-	CustomerAlertAlertStatusDisabled CustomerAlertAlertStatus = "disabled"
-)
-
-// Type of the alert
-type CustomerAlertAlertType string
-
-const (
-	CustomerAlertAlertTypeLowCreditBalanceReached                  CustomerAlertAlertType = "low_credit_balance_reached"
-	CustomerAlertAlertTypeSpendThresholdReached                    CustomerAlertAlertType = "spend_threshold_reached"
-	CustomerAlertAlertTypeMonthlyInvoiceTotalSpendThresholdReached CustomerAlertAlertType = "monthly_invoice_total_spend_threshold_reached"
-	CustomerAlertAlertTypeLowRemainingDaysInPlanReached            CustomerAlertAlertType = "low_remaining_days_in_plan_reached"
-	CustomerAlertAlertTypeLowRemainingCreditPercentageReached      CustomerAlertAlertType = "low_remaining_credit_percentage_reached"
-	CustomerAlertAlertTypeUsageThresholdReached                    CustomerAlertAlertType = "usage_threshold_reached"
-)
-
-// The status of the customer alert. If the alert is archived, null will be
-// returned.
-type CustomerAlertCustomerStatus string
-
-const (
-	CustomerAlertCustomerStatusOk         CustomerAlertCustomerStatus = "ok"
-	CustomerAlertCustomerStatusInAlarm    CustomerAlertCustomerStatus = "in_alarm"
-	CustomerAlertCustomerStatusEvaluating CustomerAlertCustomerStatus = "evaluating"
-)
-
 type CustomerAlertGetResponse struct {
-	Data CustomerAlert                `json:"data,required"`
+	Data CustomerAlertGetResponseData `json:"data,required"`
 	JSON customerAlertGetResponseJSON `json:"-"`
 }
 
@@ -187,6 +82,218 @@ type customerAlertGetResponseJSON struct {
 func (r *CustomerAlertGetResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
+
+type CustomerAlertGetResponseData struct {
+	Alert CustomerAlertGetResponseDataAlert `json:"alert,required"`
+	// The status of the customer alert. If the alert is archived, null will be
+	// returned.
+	CustomerStatus CustomerAlertGetResponseDataCustomerStatus `json:"customer_status,required,nullable"`
+	JSON           customerAlertGetResponseDataJSON           `json:"-"`
+}
+
+// customerAlertGetResponseDataJSON contains the JSON metadata for the struct
+// [CustomerAlertGetResponseData]
+type customerAlertGetResponseDataJSON struct {
+	Alert          apijson.Field
+	CustomerStatus apijson.Field
+	raw            string
+	ExtraFields    map[string]apijson.Field
+}
+
+func (r *CustomerAlertGetResponseData) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type CustomerAlertGetResponseDataAlert struct {
+	// the Metronome ID of the alert
+	ID         string                                      `json:"id,required"`
+	CreditType CustomerAlertGetResponseDataAlertCreditType `json:"credit_type,required,nullable"`
+	// Name of the alert
+	Name string `json:"name,required"`
+	// Status of the alert
+	Status CustomerAlertGetResponseDataAlertStatus `json:"status,required"`
+	// Threshold value of the alert policy
+	Threshold float64 `json:"threshold,required"`
+	// Type of the alert
+	Type CustomerAlertGetResponseDataAlertType `json:"type,required"`
+	// Timestamp for when the alert was last updated
+	UpdatedAt time.Time                             `json:"updated_at,required" format:"date-time"`
+	JSON      customerAlertGetResponseDataAlertJSON `json:"-"`
+}
+
+// customerAlertGetResponseDataAlertJSON contains the JSON metadata for the struct
+// [CustomerAlertGetResponseDataAlert]
+type customerAlertGetResponseDataAlertJSON struct {
+	ID          apijson.Field
+	CreditType  apijson.Field
+	Name        apijson.Field
+	Status      apijson.Field
+	Threshold   apijson.Field
+	Type        apijson.Field
+	UpdatedAt   apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CustomerAlertGetResponseDataAlert) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type CustomerAlertGetResponseDataAlertCreditType struct {
+	ID   string                                          `json:"id,required" format:"uuid"`
+	Name string                                          `json:"name,required"`
+	JSON customerAlertGetResponseDataAlertCreditTypeJSON `json:"-"`
+}
+
+// customerAlertGetResponseDataAlertCreditTypeJSON contains the JSON metadata for
+// the struct [CustomerAlertGetResponseDataAlertCreditType]
+type customerAlertGetResponseDataAlertCreditTypeJSON struct {
+	ID          apijson.Field
+	Name        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CustomerAlertGetResponseDataAlertCreditType) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+// Status of the alert
+type CustomerAlertGetResponseDataAlertStatus string
+
+const (
+	CustomerAlertGetResponseDataAlertStatusEnabled  CustomerAlertGetResponseDataAlertStatus = "enabled"
+	CustomerAlertGetResponseDataAlertStatusArchived CustomerAlertGetResponseDataAlertStatus = "archived"
+	CustomerAlertGetResponseDataAlertStatusDisabled CustomerAlertGetResponseDataAlertStatus = "disabled"
+)
+
+// Type of the alert
+type CustomerAlertGetResponseDataAlertType string
+
+const (
+	CustomerAlertGetResponseDataAlertTypeLowCreditBalanceReached                  CustomerAlertGetResponseDataAlertType = "low_credit_balance_reached"
+	CustomerAlertGetResponseDataAlertTypeSpendThresholdReached                    CustomerAlertGetResponseDataAlertType = "spend_threshold_reached"
+	CustomerAlertGetResponseDataAlertTypeMonthlyInvoiceTotalSpendThresholdReached CustomerAlertGetResponseDataAlertType = "monthly_invoice_total_spend_threshold_reached"
+	CustomerAlertGetResponseDataAlertTypeLowRemainingDaysInPlanReached            CustomerAlertGetResponseDataAlertType = "low_remaining_days_in_plan_reached"
+	CustomerAlertGetResponseDataAlertTypeLowRemainingCreditPercentageReached      CustomerAlertGetResponseDataAlertType = "low_remaining_credit_percentage_reached"
+	CustomerAlertGetResponseDataAlertTypeUsageThresholdReached                    CustomerAlertGetResponseDataAlertType = "usage_threshold_reached"
+)
+
+// The status of the customer alert. If the alert is archived, null will be
+// returned.
+type CustomerAlertGetResponseDataCustomerStatus string
+
+const (
+	CustomerAlertGetResponseDataCustomerStatusOk         CustomerAlertGetResponseDataCustomerStatus = "ok"
+	CustomerAlertGetResponseDataCustomerStatusInAlarm    CustomerAlertGetResponseDataCustomerStatus = "in_alarm"
+	CustomerAlertGetResponseDataCustomerStatusEvaluating CustomerAlertGetResponseDataCustomerStatus = "evaluating"
+)
+
+type CustomerAlertListResponse struct {
+	Alert CustomerAlertListResponseAlert `json:"alert,required"`
+	// The status of the customer alert. If the alert is archived, null will be
+	// returned.
+	CustomerStatus CustomerAlertListResponseCustomerStatus `json:"customer_status,required,nullable"`
+	JSON           customerAlertListResponseJSON           `json:"-"`
+}
+
+// customerAlertListResponseJSON contains the JSON metadata for the struct
+// [CustomerAlertListResponse]
+type customerAlertListResponseJSON struct {
+	Alert          apijson.Field
+	CustomerStatus apijson.Field
+	raw            string
+	ExtraFields    map[string]apijson.Field
+}
+
+func (r *CustomerAlertListResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type CustomerAlertListResponseAlert struct {
+	// the Metronome ID of the alert
+	ID         string                                   `json:"id,required"`
+	CreditType CustomerAlertListResponseAlertCreditType `json:"credit_type,required,nullable"`
+	// Name of the alert
+	Name string `json:"name,required"`
+	// Status of the alert
+	Status CustomerAlertListResponseAlertStatus `json:"status,required"`
+	// Threshold value of the alert policy
+	Threshold float64 `json:"threshold,required"`
+	// Type of the alert
+	Type CustomerAlertListResponseAlertType `json:"type,required"`
+	// Timestamp for when the alert was last updated
+	UpdatedAt time.Time                          `json:"updated_at,required" format:"date-time"`
+	JSON      customerAlertListResponseAlertJSON `json:"-"`
+}
+
+// customerAlertListResponseAlertJSON contains the JSON metadata for the struct
+// [CustomerAlertListResponseAlert]
+type customerAlertListResponseAlertJSON struct {
+	ID          apijson.Field
+	CreditType  apijson.Field
+	Name        apijson.Field
+	Status      apijson.Field
+	Threshold   apijson.Field
+	Type        apijson.Field
+	UpdatedAt   apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CustomerAlertListResponseAlert) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type CustomerAlertListResponseAlertCreditType struct {
+	ID   string                                       `json:"id,required" format:"uuid"`
+	Name string                                       `json:"name,required"`
+	JSON customerAlertListResponseAlertCreditTypeJSON `json:"-"`
+}
+
+// customerAlertListResponseAlertCreditTypeJSON contains the JSON metadata for the
+// struct [CustomerAlertListResponseAlertCreditType]
+type customerAlertListResponseAlertCreditTypeJSON struct {
+	ID          apijson.Field
+	Name        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CustomerAlertListResponseAlertCreditType) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+// Status of the alert
+type CustomerAlertListResponseAlertStatus string
+
+const (
+	CustomerAlertListResponseAlertStatusEnabled  CustomerAlertListResponseAlertStatus = "enabled"
+	CustomerAlertListResponseAlertStatusArchived CustomerAlertListResponseAlertStatus = "archived"
+	CustomerAlertListResponseAlertStatusDisabled CustomerAlertListResponseAlertStatus = "disabled"
+)
+
+// Type of the alert
+type CustomerAlertListResponseAlertType string
+
+const (
+	CustomerAlertListResponseAlertTypeLowCreditBalanceReached                  CustomerAlertListResponseAlertType = "low_credit_balance_reached"
+	CustomerAlertListResponseAlertTypeSpendThresholdReached                    CustomerAlertListResponseAlertType = "spend_threshold_reached"
+	CustomerAlertListResponseAlertTypeMonthlyInvoiceTotalSpendThresholdReached CustomerAlertListResponseAlertType = "monthly_invoice_total_spend_threshold_reached"
+	CustomerAlertListResponseAlertTypeLowRemainingDaysInPlanReached            CustomerAlertListResponseAlertType = "low_remaining_days_in_plan_reached"
+	CustomerAlertListResponseAlertTypeLowRemainingCreditPercentageReached      CustomerAlertListResponseAlertType = "low_remaining_credit_percentage_reached"
+	CustomerAlertListResponseAlertTypeUsageThresholdReached                    CustomerAlertListResponseAlertType = "usage_threshold_reached"
+)
+
+// The status of the customer alert. If the alert is archived, null will be
+// returned.
+type CustomerAlertListResponseCustomerStatus string
+
+const (
+	CustomerAlertListResponseCustomerStatusOk         CustomerAlertListResponseCustomerStatus = "ok"
+	CustomerAlertListResponseCustomerStatusInAlarm    CustomerAlertListResponseCustomerStatus = "in_alarm"
+	CustomerAlertListResponseCustomerStatusEvaluating CustomerAlertListResponseCustomerStatus = "evaluating"
+)
 
 type CustomerAlertGetParams struct {
 	// The Metronome ID of the alert

@@ -29,13 +29,16 @@ type Client struct {
 }
 
 // NewClient generates a new client with the default option read from the
-// environment (METRONOME_BEARER_TOKEN). The option passed in as arguments are
-// applied after these default arguments, and all option will be passed down to the
-// services and requests that this client makes.
+// environment (METRONOME_BEARER_TOKEN, METRONOME_WEBHOOK_SECRET). The option
+// passed in as arguments are applied after these default arguments, and all option
+// will be passed down to the services and requests that this client makes.
 func NewClient(opts ...option.RequestOption) (r *Client) {
 	defaults := []option.RequestOption{option.WithEnvironmentProduction()}
 	if o, ok := os.LookupEnv("METRONOME_BEARER_TOKEN"); ok {
 		defaults = append(defaults, option.WithBearerToken(o))
+	}
+	if o, ok := os.LookupEnv("METRONOME_WEBHOOK_SECRET"); ok {
+		defaults = append(defaults, option.WithWebhookSecret(o))
 	}
 	opts = append(defaults, opts...)
 

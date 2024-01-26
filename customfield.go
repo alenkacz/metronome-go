@@ -33,7 +33,8 @@ func NewCustomFieldService(opts ...option.RequestOption) (r *CustomFieldService)
 	return
 }
 
-// Add a key to the allow list for a given entity.
+// Add a key to the allow list for a given entity. There is a 100 character limit
+// on custom field keys.
 func (r *CustomFieldService) AddKey(ctx context.Context, body CustomFieldAddKeyParams, opts ...option.RequestOption) (err error) {
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
@@ -88,7 +89,8 @@ func (r *CustomFieldService) RemoveKey(ctx context.Context, body CustomFieldRemo
 // value will be overwritten. Any key/value pairs that exist on the entity that do
 // not match those passed in this request will remain untouched. This endpoint is
 // transactional and will update all key/value pairs or no key/value pairs. Partial
-// updates are not supported.
+// updates are not supported. There is a 200 character limit on custom field
+// values.
 func (r *CustomFieldService) SetValues(ctx context.Context, body CustomFieldSetValuesParams, opts ...option.RequestOption) (err error) {
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
@@ -128,6 +130,7 @@ const (
 	CustomFieldListKeysResponseEntityPlan           CustomFieldListKeysResponseEntity = "plan"
 	CustomFieldListKeysResponseEntityProduct        CustomFieldListKeysResponseEntity = "product"
 	CustomFieldListKeysResponseEntityBillableMetric CustomFieldListKeysResponseEntity = "billable_metric"
+	CustomFieldListKeysResponseEntityCommit         CustomFieldListKeysResponseEntity = "commit"
 )
 
 type CustomFieldAddKeyParams struct {
@@ -150,6 +153,7 @@ const (
 	CustomFieldAddKeyParamsEntityPlan           CustomFieldAddKeyParamsEntity = "plan"
 	CustomFieldAddKeyParamsEntityProduct        CustomFieldAddKeyParamsEntity = "product"
 	CustomFieldAddKeyParamsEntityBillableMetric CustomFieldAddKeyParamsEntity = "billable_metric"
+	CustomFieldAddKeyParamsEntityCommit         CustomFieldAddKeyParamsEntity = "commit"
 )
 
 type CustomFieldDeleteValuesParams struct {
@@ -172,6 +176,7 @@ const (
 	CustomFieldDeleteValuesParamsEntityPlan           CustomFieldDeleteValuesParamsEntity = "plan"
 	CustomFieldDeleteValuesParamsEntityProduct        CustomFieldDeleteValuesParamsEntity = "product"
 	CustomFieldDeleteValuesParamsEntityBillableMetric CustomFieldDeleteValuesParamsEntity = "billable_metric"
+	CustomFieldDeleteValuesParamsEntityCommit         CustomFieldDeleteValuesParamsEntity = "commit"
 )
 
 type CustomFieldListKeysParams struct {
@@ -204,6 +209,7 @@ const (
 	CustomFieldListKeysParamsEntityPlan           CustomFieldListKeysParamsEntity = "plan"
 	CustomFieldListKeysParamsEntityProduct        CustomFieldListKeysParamsEntity = "product"
 	CustomFieldListKeysParamsEntityBillableMetric CustomFieldListKeysParamsEntity = "billable_metric"
+	CustomFieldListKeysParamsEntityCommit         CustomFieldListKeysParamsEntity = "commit"
 )
 
 type CustomFieldRemoveKeyParams struct {
@@ -225,6 +231,7 @@ const (
 	CustomFieldRemoveKeyParamsEntityPlan           CustomFieldRemoveKeyParamsEntity = "plan"
 	CustomFieldRemoveKeyParamsEntityProduct        CustomFieldRemoveKeyParamsEntity = "product"
 	CustomFieldRemoveKeyParamsEntityBillableMetric CustomFieldRemoveKeyParamsEntity = "billable_metric"
+	CustomFieldRemoveKeyParamsEntityCommit         CustomFieldRemoveKeyParamsEntity = "commit"
 )
 
 type CustomFieldSetValuesParams struct {
@@ -247,4 +254,5 @@ const (
 	CustomFieldSetValuesParamsEntityPlan           CustomFieldSetValuesParamsEntity = "plan"
 	CustomFieldSetValuesParamsEntityProduct        CustomFieldSetValuesParamsEntity = "product"
 	CustomFieldSetValuesParamsEntityBillableMetric CustomFieldSetValuesParamsEntity = "billable_metric"
+	CustomFieldSetValuesParamsEntityCommit         CustomFieldSetValuesParamsEntity = "commit"
 )

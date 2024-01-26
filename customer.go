@@ -57,7 +57,7 @@ func (r *CustomerService) Get(ctx context.Context, customerID string, opts ...op
 }
 
 // List all customers.
-func (r *CustomerService) List(ctx context.Context, query CustomerListParams, opts ...option.RequestOption) (res *shared.Page[CustomerDetail], err error) {
+func (r *CustomerService) List(ctx context.Context, query CustomerListParams, opts ...option.RequestOption) (res *shared.Page[CustomerListResponse], err error) {
 	var raw *http.Response
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -75,7 +75,7 @@ func (r *CustomerService) List(ctx context.Context, query CustomerListParams, op
 }
 
 // List all customers.
-func (r *CustomerService) ListAutoPaging(ctx context.Context, query CustomerListParams, opts ...option.RequestOption) *shared.PageAutoPager[CustomerDetail] {
+func (r *CustomerService) ListAutoPaging(ctx context.Context, query CustomerListParams, opts ...option.RequestOption) *shared.PageAutoPager[CustomerListResponse] {
 	return shared.NewPageAutoPager(r.List(ctx, query, opts...))
 }
 
@@ -165,86 +165,8 @@ func (r *CustomerService) UpdateConfig(ctx context.Context, customerID string, b
 	return
 }
 
-type Customer struct {
-	// the Metronome ID of the customer
-	ID string `json:"id,required" format:"uuid"`
-	// (deprecated, use ingest_aliases instead) the first ID (Metronome or ingest
-	// alias) that can be used in usage events
-	ExternalID string `json:"external_id,required"`
-	// aliases for this customer that can be used instead of the Metronome customer ID
-	// in usage events
-	IngestAliases []string          `json:"ingest_aliases,required"`
-	Name          string            `json:"name,required"`
-	CustomFields  map[string]string `json:"custom_fields"`
-	JSON          customerJSON      `json:"-"`
-}
-
-// customerJSON contains the JSON metadata for the struct [Customer]
-type customerJSON struct {
-	ID            apijson.Field
-	ExternalID    apijson.Field
-	IngestAliases apijson.Field
-	Name          apijson.Field
-	CustomFields  apijson.Field
-	raw           string
-	ExtraFields   map[string]apijson.Field
-}
-
-func (r *Customer) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-type CustomerDetail struct {
-	// the Metronome ID of the customer
-	ID             string                       `json:"id,required" format:"uuid"`
-	CustomFields   map[string]string            `json:"custom_fields,required"`
-	CustomerConfig CustomerDetailCustomerConfig `json:"customer_config,required"`
-	// (deprecated, use ingest_aliases instead) the first ID (Metronome or ingest
-	// alias) that can be used in usage events
-	ExternalID string `json:"external_id,required"`
-	// aliases for this customer that can be used instead of the Metronome customer ID
-	// in usage events
-	IngestAliases []string           `json:"ingest_aliases,required"`
-	Name          string             `json:"name,required"`
-	JSON          customerDetailJSON `json:"-"`
-}
-
-// customerDetailJSON contains the JSON metadata for the struct [CustomerDetail]
-type customerDetailJSON struct {
-	ID             apijson.Field
-	CustomFields   apijson.Field
-	CustomerConfig apijson.Field
-	ExternalID     apijson.Field
-	IngestAliases  apijson.Field
-	Name           apijson.Field
-	raw            string
-	ExtraFields    map[string]apijson.Field
-}
-
-func (r *CustomerDetail) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-type CustomerDetailCustomerConfig struct {
-	// The Salesforce account ID for the customer
-	SalesforceAccountID string                           `json:"salesforce_account_id,required,nullable"`
-	JSON                customerDetailCustomerConfigJSON `json:"-"`
-}
-
-// customerDetailCustomerConfigJSON contains the JSON metadata for the struct
-// [CustomerDetailCustomerConfig]
-type customerDetailCustomerConfigJSON struct {
-	SalesforceAccountID apijson.Field
-	raw                 string
-	ExtraFields         map[string]apijson.Field
-}
-
-func (r *CustomerDetailCustomerConfig) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
 type CustomerNewResponse struct {
-	Data Customer                `json:"data,required"`
+	Data CustomerNewResponseData `json:"data,required"`
 	JSON customerNewResponseJSON `json:"-"`
 }
 
@@ -260,8 +182,38 @@ func (r *CustomerNewResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+type CustomerNewResponseData struct {
+	// the Metronome ID of the customer
+	ID string `json:"id,required" format:"uuid"`
+	// (deprecated, use ingest_aliases instead) the first ID (Metronome or ingest
+	// alias) that can be used in usage events
+	ExternalID string `json:"external_id,required"`
+	// aliases for this customer that can be used instead of the Metronome customer ID
+	// in usage events
+	IngestAliases []string                    `json:"ingest_aliases,required"`
+	Name          string                      `json:"name,required"`
+	CustomFields  map[string]string           `json:"custom_fields"`
+	JSON          customerNewResponseDataJSON `json:"-"`
+}
+
+// customerNewResponseDataJSON contains the JSON metadata for the struct
+// [CustomerNewResponseData]
+type customerNewResponseDataJSON struct {
+	ID            apijson.Field
+	ExternalID    apijson.Field
+	IngestAliases apijson.Field
+	Name          apijson.Field
+	CustomFields  apijson.Field
+	raw           string
+	ExtraFields   map[string]apijson.Field
+}
+
+func (r *CustomerNewResponseData) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
 type CustomerGetResponse struct {
-	Data CustomerDetail          `json:"data,required"`
+	Data CustomerGetResponseData `json:"data,required"`
 	JSON customerGetResponseJSON `json:"-"`
 }
 
@@ -277,8 +229,164 @@ func (r *CustomerGetResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+type CustomerGetResponseData struct {
+	// the Metronome ID of the customer
+	ID                    string                                       `json:"id,required" format:"uuid"`
+	CurrentBillableStatus CustomerGetResponseDataCurrentBillableStatus `json:"current_billable_status,required"`
+	CustomFields          map[string]string                            `json:"custom_fields,required"`
+	CustomerConfig        CustomerGetResponseDataCustomerConfig        `json:"customer_config,required"`
+	// (deprecated, use ingest_aliases instead) the first ID (Metronome or ingest
+	// alias) that can be used in usage events
+	ExternalID string `json:"external_id,required"`
+	// aliases for this customer that can be used instead of the Metronome customer ID
+	// in usage events
+	IngestAliases []string                    `json:"ingest_aliases,required"`
+	Name          string                      `json:"name,required"`
+	JSON          customerGetResponseDataJSON `json:"-"`
+}
+
+// customerGetResponseDataJSON contains the JSON metadata for the struct
+// [CustomerGetResponseData]
+type customerGetResponseDataJSON struct {
+	ID                    apijson.Field
+	CurrentBillableStatus apijson.Field
+	CustomFields          apijson.Field
+	CustomerConfig        apijson.Field
+	ExternalID            apijson.Field
+	IngestAliases         apijson.Field
+	Name                  apijson.Field
+	raw                   string
+	ExtraFields           map[string]apijson.Field
+}
+
+func (r *CustomerGetResponseData) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type CustomerGetResponseDataCurrentBillableStatus struct {
+	Value       CustomerGetResponseDataCurrentBillableStatusValue `json:"value,required"`
+	EffectiveAt time.Time                                         `json:"effective_at,nullable" format:"date-time"`
+	JSON        customerGetResponseDataCurrentBillableStatusJSON  `json:"-"`
+}
+
+// customerGetResponseDataCurrentBillableStatusJSON contains the JSON metadata for
+// the struct [CustomerGetResponseDataCurrentBillableStatus]
+type customerGetResponseDataCurrentBillableStatusJSON struct {
+	Value       apijson.Field
+	EffectiveAt apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CustomerGetResponseDataCurrentBillableStatus) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type CustomerGetResponseDataCurrentBillableStatusValue string
+
+const (
+	CustomerGetResponseDataCurrentBillableStatusValueBillable   CustomerGetResponseDataCurrentBillableStatusValue = "billable"
+	CustomerGetResponseDataCurrentBillableStatusValueUnbillable CustomerGetResponseDataCurrentBillableStatusValue = "unbillable"
+)
+
+type CustomerGetResponseDataCustomerConfig struct {
+	// The Salesforce account ID for the customer
+	SalesforceAccountID string                                    `json:"salesforce_account_id,required,nullable"`
+	JSON                customerGetResponseDataCustomerConfigJSON `json:"-"`
+}
+
+// customerGetResponseDataCustomerConfigJSON contains the JSON metadata for the
+// struct [CustomerGetResponseDataCustomerConfig]
+type customerGetResponseDataCustomerConfigJSON struct {
+	SalesforceAccountID apijson.Field
+	raw                 string
+	ExtraFields         map[string]apijson.Field
+}
+
+func (r *CustomerGetResponseDataCustomerConfig) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type CustomerListResponse struct {
+	// the Metronome ID of the customer
+	ID                    string                                    `json:"id,required" format:"uuid"`
+	CurrentBillableStatus CustomerListResponseCurrentBillableStatus `json:"current_billable_status,required"`
+	CustomFields          map[string]string                         `json:"custom_fields,required"`
+	CustomerConfig        CustomerListResponseCustomerConfig        `json:"customer_config,required"`
+	// (deprecated, use ingest_aliases instead) the first ID (Metronome or ingest
+	// alias) that can be used in usage events
+	ExternalID string `json:"external_id,required"`
+	// aliases for this customer that can be used instead of the Metronome customer ID
+	// in usage events
+	IngestAliases []string                 `json:"ingest_aliases,required"`
+	Name          string                   `json:"name,required"`
+	JSON          customerListResponseJSON `json:"-"`
+}
+
+// customerListResponseJSON contains the JSON metadata for the struct
+// [CustomerListResponse]
+type customerListResponseJSON struct {
+	ID                    apijson.Field
+	CurrentBillableStatus apijson.Field
+	CustomFields          apijson.Field
+	CustomerConfig        apijson.Field
+	ExternalID            apijson.Field
+	IngestAliases         apijson.Field
+	Name                  apijson.Field
+	raw                   string
+	ExtraFields           map[string]apijson.Field
+}
+
+func (r *CustomerListResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type CustomerListResponseCurrentBillableStatus struct {
+	Value       CustomerListResponseCurrentBillableStatusValue `json:"value,required"`
+	EffectiveAt time.Time                                      `json:"effective_at,nullable" format:"date-time"`
+	JSON        customerListResponseCurrentBillableStatusJSON  `json:"-"`
+}
+
+// customerListResponseCurrentBillableStatusJSON contains the JSON metadata for the
+// struct [CustomerListResponseCurrentBillableStatus]
+type customerListResponseCurrentBillableStatusJSON struct {
+	Value       apijson.Field
+	EffectiveAt apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CustomerListResponseCurrentBillableStatus) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type CustomerListResponseCurrentBillableStatusValue string
+
+const (
+	CustomerListResponseCurrentBillableStatusValueBillable   CustomerListResponseCurrentBillableStatusValue = "billable"
+	CustomerListResponseCurrentBillableStatusValueUnbillable CustomerListResponseCurrentBillableStatusValue = "unbillable"
+)
+
+type CustomerListResponseCustomerConfig struct {
+	// The Salesforce account ID for the customer
+	SalesforceAccountID string                                 `json:"salesforce_account_id,required,nullable"`
+	JSON                customerListResponseCustomerConfigJSON `json:"-"`
+}
+
+// customerListResponseCustomerConfigJSON contains the JSON metadata for the struct
+// [CustomerListResponseCustomerConfig]
+type customerListResponseCustomerConfigJSON struct {
+	SalesforceAccountID apijson.Field
+	raw                 string
+	ExtraFields         map[string]apijson.Field
+}
+
+func (r *CustomerListResponseCustomerConfig) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
 type CustomerArchiveResponse struct {
-	Data shared.ID                   `json:"data,required"`
+	Data CustomerArchiveResponseData `json:"data,required"`
 	JSON customerArchiveResponseJSON `json:"-"`
 }
 
@@ -291,6 +399,23 @@ type customerArchiveResponseJSON struct {
 }
 
 func (r *CustomerArchiveResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type CustomerArchiveResponseData struct {
+	ID   string                          `json:"id,required" format:"uuid"`
+	JSON customerArchiveResponseDataJSON `json:"-"`
+}
+
+// customerArchiveResponseDataJSON contains the JSON metadata for the struct
+// [CustomerArchiveResponseData]
+type customerArchiveResponseDataJSON struct {
+	ID          apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CustomerArchiveResponseData) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
@@ -381,7 +506,7 @@ func (r *CustomerListCostsResponseCreditTypesLineItemBreakdown) UnmarshalJSON(da
 }
 
 type CustomerSetNameResponse struct {
-	Data Customer                    `json:"data,required"`
+	Data CustomerSetNameResponseData `json:"data,required"`
 	JSON customerSetNameResponseJSON `json:"-"`
 }
 
@@ -394,6 +519,36 @@ type customerSetNameResponseJSON struct {
 }
 
 func (r *CustomerSetNameResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type CustomerSetNameResponseData struct {
+	// the Metronome ID of the customer
+	ID string `json:"id,required" format:"uuid"`
+	// (deprecated, use ingest_aliases instead) the first ID (Metronome or ingest
+	// alias) that can be used in usage events
+	ExternalID string `json:"external_id,required"`
+	// aliases for this customer that can be used instead of the Metronome customer ID
+	// in usage events
+	IngestAliases []string                        `json:"ingest_aliases,required"`
+	Name          string                          `json:"name,required"`
+	CustomFields  map[string]string               `json:"custom_fields"`
+	JSON          customerSetNameResponseDataJSON `json:"-"`
+}
+
+// customerSetNameResponseDataJSON contains the JSON metadata for the struct
+// [CustomerSetNameResponseData]
+type customerSetNameResponseDataJSON struct {
+	ID            apijson.Field
+	ExternalID    apijson.Field
+	IngestAliases apijson.Field
+	Name          apijson.Field
+	CustomFields  apijson.Field
+	raw           string
+	ExtraFields   map[string]apijson.Field
+}
+
+func (r *CustomerSetNameResponseData) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
@@ -561,6 +716,9 @@ func (r CustomerSetNameParams) MarshalJSON() (data []byte, err error) {
 }
 
 type CustomerUpdateConfigParams struct {
+	// Leave in draft or set to auto-advance on invoices sent to Stripe. Falls back to
+	// the client-level config if unset, which defaults to true if unset.
+	LeaveStripeInvoicesInDraft param.Field[bool] `json:"leave_stripe_invoices_in_draft"`
 	// The Salesforce account ID for the customer
 	SalesforceAccountID param.Field[string] `json:"salesforce_account_id"`
 }

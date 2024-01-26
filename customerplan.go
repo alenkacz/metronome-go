@@ -139,7 +139,7 @@ func (r *CustomerPlanListResponse) UnmarshalJSON(data []byte) (err error) {
 }
 
 type CustomerPlanListResponseTrialInfo struct {
-	EndingBefore string                                         `json:"ending_before,required"`
+	EndingBefore time.Time                                      `json:"ending_before,required" format:"date-time"`
 	SpendingCaps []CustomerPlanListResponseTrialInfoSpendingCap `json:"spending_caps,required"`
 	JSON         customerPlanListResponseTrialInfoJSON          `json:"-"`
 }
@@ -199,7 +199,7 @@ func (r *CustomerPlanListResponseTrialInfoSpendingCapsCreditType) UnmarshalJSON(
 }
 
 type CustomerPlanAddResponse struct {
-	Data shared.ID                   `json:"data,required"`
+	Data CustomerPlanAddResponseData `json:"data,required"`
 	JSON customerPlanAddResponseJSON `json:"-"`
 }
 
@@ -212,6 +212,23 @@ type customerPlanAddResponseJSON struct {
 }
 
 func (r *CustomerPlanAddResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type CustomerPlanAddResponseData struct {
+	ID   string                          `json:"id,required" format:"uuid"`
+	JSON customerPlanAddResponseDataJSON `json:"-"`
+}
+
+// customerPlanAddResponseDataJSON contains the JSON metadata for the struct
+// [CustomerPlanAddResponseData]
+type customerPlanAddResponseDataJSON struct {
+	ID          apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CustomerPlanAddResponseData) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
