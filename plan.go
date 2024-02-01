@@ -371,6 +371,7 @@ type PlanListChargesResponse struct {
 	CustomFields map[string]string                 `json:"custom_fields,required"`
 	Name         string                            `json:"name,required"`
 	Prices       []PlanListChargesResponsePrice    `json:"prices,required"`
+	ProductID    string                            `json:"product_id,required"`
 	ProductName  string                            `json:"product_name,required"`
 	Quantity     float64                           `json:"quantity"`
 	// Used in price ramps. Indicates how many billing periods pass before the charge
@@ -390,6 +391,7 @@ type planListChargesResponseJSON struct {
 	CustomFields   apijson.Field
 	Name           apijson.Field
 	Prices         apijson.Field
+	ProductID      apijson.Field
 	ProductName    apijson.Field
 	Quantity       apijson.Field
 	StartPeriod    apijson.Field
