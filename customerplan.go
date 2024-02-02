@@ -53,6 +53,11 @@ func (r *CustomerPlanService) List(ctx context.Context, customerID string, query
 	return res, nil
 }
 
+// List the given customer's plans in reverse-chronological order.
+func (r *CustomerPlanService) ListAutoPaging(ctx context.Context, customerID string, query CustomerPlanListParams, opts ...option.RequestOption) *shared.PageAutoPager[CustomerPlanListResponse] {
+	return shared.NewPageAutoPager(r.List(ctx, customerID, query, opts...))
+}
+
 // Associate an existing customer with a plan for a specified date range. See the
 // [price adjustments documentation](https://docs.metronome.com/pricing/managing-plans/#price-adjustments)
 // for details on the price adjustments.
@@ -89,6 +94,13 @@ func (r *CustomerPlanService) ListPriceAdjustments(ctx context.Context, customer
 	}
 	res.SetPageConfig(cfg, raw)
 	return res, nil
+}
+
+// Lists a customer plans adjustments. See the
+// [price adjustments documentation](https://docs.metronome.com/pricing/managing-plans/#price-adjustments)
+// for details.
+func (r *CustomerPlanService) ListPriceAdjustmentsAutoPaging(ctx context.Context, customerID string, customerPlanID string, query CustomerPlanListPriceAdjustmentsParams, opts ...option.RequestOption) *shared.PageAutoPager[CustomerPlanListPriceAdjustmentsResponse] {
+	return shared.NewPageAutoPager(r.ListPriceAdjustments(ctx, customerID, customerPlanID, query, opts...))
 }
 
 type CustomerPlanListResponse struct {

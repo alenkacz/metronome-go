@@ -52,6 +52,12 @@ func (r *UsageService) List(ctx context.Context, params UsageListParams, opts ..
 	return res, nil
 }
 
+// Fetch aggregated usage data for multiple customers and billable-metrics, broken
+// into intervals of the specified length.
+func (r *UsageService) ListAutoPaging(ctx context.Context, params UsageListParams, opts ...option.RequestOption) *shared.PageAutoPager[UsageListResponse] {
+	return shared.NewPageAutoPager(r.List(ctx, params, opts...))
+}
+
 // Fetch aggregated usage data for the specified customer, billable-metric, and
 // optional group, broken into intervals of the specified length.
 func (r *UsageService) ListWithGroups(ctx context.Context, params UsageListWithGroupsParams, opts ...option.RequestOption) (res *shared.Page[UsageListWithGroupsResponse], err error) {
@@ -69,6 +75,12 @@ func (r *UsageService) ListWithGroups(ctx context.Context, params UsageListWithG
 	}
 	res.SetPageConfig(cfg, raw)
 	return res, nil
+}
+
+// Fetch aggregated usage data for the specified customer, billable-metric, and
+// optional group, broken into intervals of the specified length.
+func (r *UsageService) ListWithGroupsAutoPaging(ctx context.Context, params UsageListWithGroupsParams, opts ...option.RequestOption) *shared.PageAutoPager[UsageListWithGroupsResponse] {
+	return shared.NewPageAutoPager(r.ListWithGroups(ctx, params, opts...))
 }
 
 type UsageListResponse struct {

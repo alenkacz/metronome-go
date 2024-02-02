@@ -52,6 +52,11 @@ func (r *PlanService) List(ctx context.Context, query PlanListParams, opts ...op
 	return res, nil
 }
 
+// List all available plans.
+func (r *PlanService) ListAutoPaging(ctx context.Context, query PlanListParams, opts ...option.RequestOption) *shared.PageAutoPager[PlanListResponse] {
+	return shared.NewPageAutoPager(r.List(ctx, query, opts...))
+}
+
 // Fetch high level details of a specific plan.
 func (r *PlanService) GetDetails(ctx context.Context, planID string, opts ...option.RequestOption) (res *PlanGetDetailsResponse, err error) {
 	opts = append(r.Options[:], opts...)
@@ -78,6 +83,11 @@ func (r *PlanService) ListCharges(ctx context.Context, planID string, query Plan
 	return res, nil
 }
 
+// Fetches a list of charges of a specific plan.
+func (r *PlanService) ListChargesAutoPaging(ctx context.Context, planID string, query PlanListChargesParams, opts ...option.RequestOption) *shared.PageAutoPager[PlanListChargesResponse] {
+	return shared.NewPageAutoPager(r.ListCharges(ctx, planID, query, opts...))
+}
+
 // Fetches a list of customers on a specific plan (by default, only currently
 // active plans are included)
 func (r *PlanService) ListCustomers(ctx context.Context, planID string, query PlanListCustomersParams, opts ...option.RequestOption) (res *shared.Page[PlanListCustomersResponse], err error) {
@@ -95,6 +105,12 @@ func (r *PlanService) ListCustomers(ctx context.Context, planID string, query Pl
 	}
 	res.SetPageConfig(cfg, raw)
 	return res, nil
+}
+
+// Fetches a list of customers on a specific plan (by default, only currently
+// active plans are included)
+func (r *PlanService) ListCustomersAutoPaging(ctx context.Context, planID string, query PlanListCustomersParams, opts ...option.RequestOption) *shared.PageAutoPager[PlanListCustomersResponse] {
+	return shared.NewPageAutoPager(r.ListCustomers(ctx, planID, query, opts...))
 }
 
 type PlanListResponse struct {

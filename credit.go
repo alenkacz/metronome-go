@@ -69,6 +69,13 @@ func (r *CreditService) ListEntries(ctx context.Context, params CreditListEntrie
 	return res, nil
 }
 
+// Fetches a list of credit ledger entries. Returns lists of ledgers per customer.
+// Ledger entries are returned in reverse chronological order. Ledger entries
+// associated with voided credit grants are not included.
+func (r *CreditService) ListEntriesAutoPaging(ctx context.Context, params CreditListEntriesParams, opts ...option.RequestOption) *shared.PageAutoPager[CreditListEntriesResponse] {
+	return shared.NewPageAutoPager(r.ListEntries(ctx, params, opts...))
+}
+
 // List credit grants. This list does not included voided grants.
 func (r *CreditService) ListGrants(ctx context.Context, params CreditListGrantsParams, opts ...option.RequestOption) (res *shared.Page[CreditListGrantsResponse], err error) {
 	var raw *http.Response
@@ -85,6 +92,11 @@ func (r *CreditService) ListGrants(ctx context.Context, params CreditListGrantsP
 	}
 	res.SetPageConfig(cfg, raw)
 	return res, nil
+}
+
+// List credit grants. This list does not included voided grants.
+func (r *CreditService) ListGrantsAutoPaging(ctx context.Context, params CreditListGrantsParams, opts ...option.RequestOption) *shared.PageAutoPager[CreditListGrantsResponse] {
+	return shared.NewPageAutoPager(r.ListGrants(ctx, params, opts...))
 }
 
 // Void a credit grant

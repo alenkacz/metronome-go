@@ -70,6 +70,11 @@ func (r *CustomFieldService) ListKeys(ctx context.Context, params CustomFieldLis
 	return res, nil
 }
 
+// List all active custom field keys, optionally filtered by entity type.
+func (r *CustomFieldService) ListKeysAutoPaging(ctx context.Context, params CustomFieldListKeysParams, opts ...option.RequestOption) *shared.PageAutoPager[CustomFieldListKeysResponse] {
+	return shared.NewPageAutoPager(r.ListKeys(ctx, params, opts...))
+}
+
 // Remove a key from the allow list for a given entity.
 func (r *CustomFieldService) RemoveKey(ctx context.Context, body CustomFieldRemoveKeyParams, opts ...option.RequestOption) (err error) {
 	opts = append(r.Options[:], opts...)

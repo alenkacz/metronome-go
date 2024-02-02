@@ -61,6 +61,11 @@ func (r *CustomerAlertService) List(ctx context.Context, params CustomerAlertLis
 	return res, nil
 }
 
+// Fetch all customer alert statuses and alert information for a customer
+func (r *CustomerAlertService) ListAutoPaging(ctx context.Context, params CustomerAlertListParams, opts ...option.RequestOption) *shared.PageAutoPager[CustomerAlertListResponse] {
+	return shared.NewPageAutoPager(r.List(ctx, params, opts...))
+}
+
 type CustomerAlertGetResponse struct {
 	Data CustomerAlertGetResponseData `json:"data,required"`
 	JSON customerAlertGetResponseJSON `json:"-"`

@@ -62,6 +62,12 @@ func (r *CustomerInvoiceService) List(ctx context.Context, customerID string, qu
 	return res, nil
 }
 
+// List all invoices for a given customer, optionally filtered by status, date
+// range, and/or credit type.
+func (r *CustomerInvoiceService) ListAutoPaging(ctx context.Context, customerID string, query CustomerInvoiceListParams, opts ...option.RequestOption) *shared.PageAutoPager[CustomerInvoiceListResponse] {
+	return shared.NewPageAutoPager(r.List(ctx, customerID, query, opts...))
+}
+
 type CustomerInvoiceGetResponse struct {
 	Data CustomerInvoiceGetResponseData `json:"data,required"`
 	JSON customerInvoiceGetResponseJSON `json:"-"`
@@ -204,9 +210,12 @@ type CustomerInvoiceGetResponseDataLineItem struct {
 	NetsuiteItemID string `json:"netsuite_item_id"`
 	// only present for beta contract invoices
 	PostpaidCommit CustomerInvoiceGetResponseDataLineItemsPostpaidCommit `json:"postpaid_commit"`
-	ProductID      string                                                `json:"product_id" format:"uuid"`
-	Quantity       float64                                               `json:"quantity"`
-	ResellerType   CustomerInvoiceGetResponseDataLineItemsResellerType   `json:"reseller_type"`
+	// if pricing groups are used, this will contain the values used to calculate the
+	// price
+	PricingGroupValues map[string]string                                   `json:"pricing_group_values"`
+	ProductID          string                                              `json:"product_id" format:"uuid"`
+	Quantity           float64                                             `json:"quantity"`
+	ResellerType       CustomerInvoiceGetResponseDataLineItemsResellerType `json:"reseller_type"`
 	// only present for beta contract invoices
 	StartingAt   time.Time                                            `json:"starting_at" format:"date-time"`
 	SubLineItems []CustomerInvoiceGetResponseDataLineItemsSubLineItem `json:"sub_line_items"`
@@ -233,6 +242,7 @@ type customerInvoiceGetResponseDataLineItemJSON struct {
 	IsProrated                 apijson.Field
 	NetsuiteItemID             apijson.Field
 	PostpaidCommit             apijson.Field
+	PricingGroupValues         apijson.Field
 	ProductID                  apijson.Field
 	Quantity                   apijson.Field
 	ResellerType               apijson.Field
@@ -716,9 +726,12 @@ type CustomerInvoiceListResponseLineItem struct {
 	NetsuiteItemID string `json:"netsuite_item_id"`
 	// only present for beta contract invoices
 	PostpaidCommit CustomerInvoiceListResponseLineItemsPostpaidCommit `json:"postpaid_commit"`
-	ProductID      string                                             `json:"product_id" format:"uuid"`
-	Quantity       float64                                            `json:"quantity"`
-	ResellerType   CustomerInvoiceListResponseLineItemsResellerType   `json:"reseller_type"`
+	// if pricing groups are used, this will contain the values used to calculate the
+	// price
+	PricingGroupValues map[string]string                                `json:"pricing_group_values"`
+	ProductID          string                                           `json:"product_id" format:"uuid"`
+	Quantity           float64                                          `json:"quantity"`
+	ResellerType       CustomerInvoiceListResponseLineItemsResellerType `json:"reseller_type"`
 	// only present for beta contract invoices
 	StartingAt   time.Time                                         `json:"starting_at" format:"date-time"`
 	SubLineItems []CustomerInvoiceListResponseLineItemsSubLineItem `json:"sub_line_items"`
@@ -745,6 +758,7 @@ type customerInvoiceListResponseLineItemJSON struct {
 	IsProrated                 apijson.Field
 	NetsuiteItemID             apijson.Field
 	PostpaidCommit             apijson.Field
+	PricingGroupValues         apijson.Field
 	ProductID                  apijson.Field
 	Quantity                   apijson.Field
 	ResellerType               apijson.Field

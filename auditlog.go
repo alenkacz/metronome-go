@@ -54,6 +54,14 @@ func (r *AuditLogService) List(ctx context.Context, query AuditLogListParams, op
 	return res, nil
 }
 
+// Retrieves a range of audit logs. If no further audit logs are currently
+// available, the data array will be empty. As new audit logs are created,
+// subsequent requests using the same next_page value will be in the returned data
+// array, ensuring a continuous and uninterrupted reading of audit logs.
+func (r *AuditLogService) ListAutoPaging(ctx context.Context, query AuditLogListParams, opts ...option.RequestOption) *shared.PageAutoPager[AuditLogListResponse] {
+	return shared.NewPageAutoPager(r.List(ctx, query, opts...))
+}
+
 type AuditLogListResponse struct {
 	ID           string                     `json:"id,required"`
 	Timestamp    time.Time                  `json:"timestamp,required" format:"date-time"`

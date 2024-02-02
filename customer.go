@@ -74,6 +74,11 @@ func (r *CustomerService) List(ctx context.Context, query CustomerListParams, op
 	return res, nil
 }
 
+// List all customers.
+func (r *CustomerService) ListAutoPaging(ctx context.Context, query CustomerListParams, opts ...option.RequestOption) *shared.PageAutoPager[CustomerListResponse] {
+	return shared.NewPageAutoPager(r.List(ctx, query, opts...))
+}
+
 // Archive a customer
 func (r *CustomerService) Archive(ctx context.Context, body CustomerArchiveParams, opts ...option.RequestOption) (res *CustomerArchiveResponse, err error) {
 	opts = append(r.Options[:], opts...)
@@ -100,6 +105,11 @@ func (r *CustomerService) ListBillableMetrics(ctx context.Context, customerID st
 	return res, nil
 }
 
+// List all billable metrics.
+func (r *CustomerService) ListBillableMetricsAutoPaging(ctx context.Context, customerID string, query CustomerListBillableMetricsParams, opts ...option.RequestOption) *shared.PageAutoPager[CustomerListBillableMetricsResponse] {
+	return shared.NewPageAutoPager(r.ListBillableMetrics(ctx, customerID, query, opts...))
+}
+
 // Fetch daily pending costs for the specified customer, broken down by credit type
 // and line items. Note: this is not supported for customers whose plan includes a
 // UNIQUE-type billable metric.
@@ -118,6 +128,13 @@ func (r *CustomerService) ListCosts(ctx context.Context, customerID string, quer
 	}
 	res.SetPageConfig(cfg, raw)
 	return res, nil
+}
+
+// Fetch daily pending costs for the specified customer, broken down by credit type
+// and line items. Note: this is not supported for customers whose plan includes a
+// UNIQUE-type billable metric.
+func (r *CustomerService) ListCostsAutoPaging(ctx context.Context, customerID string, query CustomerListCostsParams, opts ...option.RequestOption) *shared.PageAutoPager[CustomerListCostsResponse] {
+	return shared.NewPageAutoPager(r.ListCosts(ctx, customerID, query, opts...))
 }
 
 // Sets the ingest aliases for a customer. Ingest aliases can be used in the

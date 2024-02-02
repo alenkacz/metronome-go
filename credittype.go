@@ -50,6 +50,11 @@ func (r *CreditTypeService) List(ctx context.Context, query CreditTypeListParams
 	return res, nil
 }
 
+// List all pricing units (known in the API by the legacy term "credit types").
+func (r *CreditTypeService) ListAutoPaging(ctx context.Context, query CreditTypeListParams, opts ...option.RequestOption) *shared.PageAutoPager[CreditTypeListResponse] {
+	return shared.NewPageAutoPager(r.List(ctx, query, opts...))
+}
+
 type CreditTypeListResponse struct {
 	ID         string                     `json:"id" format:"uuid"`
 	IsCurrency bool                       `json:"is_currency"`
