@@ -12,7 +12,6 @@ import (
 	"github.com/Metronome-Industries/metronome-go/internal/apiquery"
 	"github.com/Metronome-Industries/metronome-go/internal/param"
 	"github.com/Metronome-Industries/metronome-go/internal/requestconfig"
-	"github.com/Metronome-Industries/metronome-go/internal/shared"
 	"github.com/Metronome-Industries/metronome-go/option"
 )
 
@@ -37,45 +36,46 @@ func NewAuditLogService(opts ...option.RequestOption) (r *AuditLogService) {
 // available, the data array will be empty. As new audit logs are created,
 // subsequent requests using the same next_page value will be in the returned data
 // array, ensuring a continuous and uninterrupted reading of audit logs.
-func (r *AuditLogService) List(ctx context.Context, query AuditLogListParams, opts ...option.RequestOption) (res *shared.Page[AuditLogListResponse], err error) {
-	var raw *http.Response
-	opts = append(r.Options, opts...)
-	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
+func (r *AuditLogService) List(ctx context.Context, query AuditLogListParams, opts ...option.RequestOption) (res *AuditLogListResponse, err error) {
+	opts = append(r.Options[:], opts...)
 	path := "auditLogs"
-	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
-	if err != nil {
-		return nil, err
-	}
-	err = cfg.Execute()
-	if err != nil {
-		return nil, err
-	}
-	res.SetPageConfig(cfg, raw)
-	return res, nil
-}
-
-// Retrieves a range of audit logs. If no further audit logs are currently
-// available, the data array will be empty. As new audit logs are created,
-// subsequent requests using the same next_page value will be in the returned data
-// array, ensuring a continuous and uninterrupted reading of audit logs.
-func (r *AuditLogService) ListAutoPaging(ctx context.Context, query AuditLogListParams, opts ...option.RequestOption) *shared.PageAutoPager[AuditLogListResponse] {
-	return shared.NewPageAutoPager(r.List(ctx, query, opts...))
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, query, &res, opts...)
+	return
 }
 
 type AuditLogListResponse struct {
-	ID           string                     `json:"id,required"`
-	Timestamp    time.Time                  `json:"timestamp,required" format:"date-time"`
-	Action       string                     `json:"action"`
-	Actor        AuditLogListResponseActor  `json:"actor"`
-	ResourceID   string                     `json:"resource_id"`
-	ResourceType string                     `json:"resource_type"`
-	Status       AuditLogListResponseStatus `json:"status"`
-	JSON         auditLogListResponseJSON   `json:"-"`
+	Data     []AuditLogListResponseData `json:"data,required"`
+	NextPage string                     `json:"next_page,required,nullable"`
+	JSON     auditLogListResponseJSON   `json:"-"`
 }
 
 // auditLogListResponseJSON contains the JSON metadata for the struct
 // [AuditLogListResponse]
 type auditLogListResponseJSON struct {
+	Data        apijson.Field
+	NextPage    apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuditLogListResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type AuditLogListResponseData struct {
+	ID           string                         `json:"id,required"`
+	Timestamp    time.Time                      `json:"timestamp,required" format:"date-time"`
+	Action       string                         `json:"action"`
+	Actor        AuditLogListResponseDataActor  `json:"actor"`
+	ResourceID   string                         `json:"resource_id"`
+	ResourceType string                         `json:"resource_type"`
+	Status       AuditLogListResponseDataStatus `json:"status"`
+	JSON         auditLogListResponseDataJSON   `json:"-"`
+}
+
+// auditLogListResponseDataJSON contains the JSON metadata for the struct
+// [AuditLogListResponseData]
+type auditLogListResponseDataJSON struct {
 	ID           apijson.Field
 	Timestamp    apijson.Field
 	Action       apijson.Field
@@ -87,20 +87,20 @@ type auditLogListResponseJSON struct {
 	ExtraFields  map[string]apijson.Field
 }
 
-func (r *AuditLogListResponse) UnmarshalJSON(data []byte) (err error) {
+func (r *AuditLogListResponseData) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type AuditLogListResponseActor struct {
-	ID    string                        `json:"id,required"`
-	Name  string                        `json:"name,required"`
-	Email string                        `json:"email"`
-	JSON  auditLogListResponseActorJSON `json:"-"`
+type AuditLogListResponseDataActor struct {
+	ID    string                            `json:"id,required"`
+	Name  string                            `json:"name,required"`
+	Email string                            `json:"email"`
+	JSON  auditLogListResponseDataActorJSON `json:"-"`
 }
 
-// auditLogListResponseActorJSON contains the JSON metadata for the struct
-// [AuditLogListResponseActor]
-type auditLogListResponseActorJSON struct {
+// auditLogListResponseDataActorJSON contains the JSON metadata for the struct
+// [AuditLogListResponseDataActor]
+type auditLogListResponseDataActorJSON struct {
 	ID          apijson.Field
 	Name        apijson.Field
 	Email       apijson.Field
@@ -108,16 +108,16 @@ type auditLogListResponseActorJSON struct {
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *AuditLogListResponseActor) UnmarshalJSON(data []byte) (err error) {
+func (r *AuditLogListResponseDataActor) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type AuditLogListResponseStatus string
+type AuditLogListResponseDataStatus string
 
 const (
-	AuditLogListResponseStatusSuccess AuditLogListResponseStatus = "success"
-	AuditLogListResponseStatusFailure AuditLogListResponseStatus = "failure"
-	AuditLogListResponseStatusPending AuditLogListResponseStatus = "pending"
+	AuditLogListResponseDataStatusSuccess AuditLogListResponseDataStatus = "success"
+	AuditLogListResponseDataStatusFailure AuditLogListResponseDataStatus = "failure"
+	AuditLogListResponseDataStatusPending AuditLogListResponseDataStatus = "pending"
 )
 
 type AuditLogListParams struct {

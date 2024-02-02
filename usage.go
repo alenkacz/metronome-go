@@ -12,7 +12,6 @@ import (
 	"github.com/Metronome-Industries/metronome-go/internal/apiquery"
 	"github.com/Metronome-Industries/metronome-go/internal/param"
 	"github.com/Metronome-Industries/metronome-go/internal/requestconfig"
-	"github.com/Metronome-Industries/metronome-go/internal/shared"
 	"github.com/Metronome-Industries/metronome-go/option"
 )
 
@@ -35,55 +34,42 @@ func NewUsageService(opts ...option.RequestOption) (r *UsageService) {
 
 // Fetch aggregated usage data for multiple customers and billable-metrics, broken
 // into intervals of the specified length.
-func (r *UsageService) List(ctx context.Context, params UsageListParams, opts ...option.RequestOption) (res *shared.Page[UsageListResponse], err error) {
-	var raw *http.Response
-	opts = append(r.Options, opts...)
-	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
+func (r *UsageService) List(ctx context.Context, params UsageListParams, opts ...option.RequestOption) (res *UsageListResponse, err error) {
+	opts = append(r.Options[:], opts...)
 	path := "usage"
-	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodPost, path, params, &res, opts...)
-	if err != nil {
-		return nil, err
-	}
-	err = cfg.Execute()
-	if err != nil {
-		return nil, err
-	}
-	res.SetPageConfig(cfg, raw)
-	return res, nil
-}
-
-// Fetch aggregated usage data for multiple customers and billable-metrics, broken
-// into intervals of the specified length.
-func (r *UsageService) ListAutoPaging(ctx context.Context, params UsageListParams, opts ...option.RequestOption) *shared.PageAutoPager[UsageListResponse] {
-	return shared.NewPageAutoPager(r.List(ctx, params, opts...))
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, params, &res, opts...)
+	return
 }
 
 // Fetch aggregated usage data for the specified customer, billable-metric, and
 // optional group, broken into intervals of the specified length.
-func (r *UsageService) ListWithGroups(ctx context.Context, params UsageListWithGroupsParams, opts ...option.RequestOption) (res *shared.Page[UsageListWithGroupsResponse], err error) {
-	var raw *http.Response
-	opts = append(r.Options, opts...)
-	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
+func (r *UsageService) ListWithGroups(ctx context.Context, params UsageListWithGroupsParams, opts ...option.RequestOption) (res *UsageListWithGroupsResponse, err error) {
+	opts = append(r.Options[:], opts...)
 	path := "usage/groups"
-	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodPost, path, params, &res, opts...)
-	if err != nil {
-		return nil, err
-	}
-	err = cfg.Execute()
-	if err != nil {
-		return nil, err
-	}
-	res.SetPageConfig(cfg, raw)
-	return res, nil
-}
-
-// Fetch aggregated usage data for the specified customer, billable-metric, and
-// optional group, broken into intervals of the specified length.
-func (r *UsageService) ListWithGroupsAutoPaging(ctx context.Context, params UsageListWithGroupsParams, opts ...option.RequestOption) *shared.PageAutoPager[UsageListWithGroupsResponse] {
-	return shared.NewPageAutoPager(r.ListWithGroups(ctx, params, opts...))
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, params, &res, opts...)
+	return
 }
 
 type UsageListResponse struct {
+	Data     []UsageListResponseData `json:"data,required"`
+	NextPage string                  `json:"next_page,required,nullable"`
+	JSON     usageListResponseJSON   `json:"-"`
+}
+
+// usageListResponseJSON contains the JSON metadata for the struct
+// [UsageListResponse]
+type usageListResponseJSON struct {
+	Data        apijson.Field
+	NextPage    apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *UsageListResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type UsageListResponseData struct {
 	BillableMetricID   string    `json:"billable_metric_id,required" format:"uuid"`
 	BillableMetricName string    `json:"billable_metric_name,required"`
 	CustomerID         string    `json:"customer_id,required" format:"uuid"`
@@ -92,13 +78,13 @@ type UsageListResponse struct {
 	Value              float64   `json:"value,required,nullable"`
 	// Values will be either a number or null. Null indicates that there were no
 	// matches for the group_by value.
-	Groups map[string]float64    `json:"groups"`
-	JSON   usageListResponseJSON `json:"-"`
+	Groups map[string]float64        `json:"groups"`
+	JSON   usageListResponseDataJSON `json:"-"`
 }
 
-// usageListResponseJSON contains the JSON metadata for the struct
-// [UsageListResponse]
-type usageListResponseJSON struct {
+// usageListResponseDataJSON contains the JSON metadata for the struct
+// [UsageListResponseData]
+type usageListResponseDataJSON struct {
 	BillableMetricID   apijson.Field
 	BillableMetricName apijson.Field
 	CustomerID         apijson.Field
@@ -110,22 +96,41 @@ type usageListResponseJSON struct {
 	ExtraFields        map[string]apijson.Field
 }
 
-func (r *UsageListResponse) UnmarshalJSON(data []byte) (err error) {
+func (r *UsageListResponseData) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
 type UsageListWithGroupsResponse struct {
-	EndingBefore time.Time                       `json:"ending_before,required" format:"date-time"`
-	GroupKey     string                          `json:"group_key,required,nullable"`
-	GroupValue   string                          `json:"group_value,required,nullable"`
-	StartingOn   time.Time                       `json:"starting_on,required" format:"date-time"`
-	Value        float64                         `json:"value,required,nullable"`
-	JSON         usageListWithGroupsResponseJSON `json:"-"`
+	Data     []UsageListWithGroupsResponseData `json:"data,required"`
+	NextPage string                            `json:"next_page,required,nullable"`
+	JSON     usageListWithGroupsResponseJSON   `json:"-"`
 }
 
 // usageListWithGroupsResponseJSON contains the JSON metadata for the struct
 // [UsageListWithGroupsResponse]
 type usageListWithGroupsResponseJSON struct {
+	Data        apijson.Field
+	NextPage    apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *UsageListWithGroupsResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type UsageListWithGroupsResponseData struct {
+	EndingBefore time.Time                           `json:"ending_before,required" format:"date-time"`
+	GroupKey     string                              `json:"group_key,required,nullable"`
+	GroupValue   string                              `json:"group_value,required,nullable"`
+	StartingOn   time.Time                           `json:"starting_on,required" format:"date-time"`
+	Value        float64                             `json:"value,required,nullable"`
+	JSON         usageListWithGroupsResponseDataJSON `json:"-"`
+}
+
+// usageListWithGroupsResponseDataJSON contains the JSON metadata for the struct
+// [UsageListWithGroupsResponseData]
+type usageListWithGroupsResponseDataJSON struct {
 	EndingBefore apijson.Field
 	GroupKey     apijson.Field
 	GroupValue   apijson.Field
@@ -135,7 +140,7 @@ type usageListWithGroupsResponseJSON struct {
 	ExtraFields  map[string]apijson.Field
 }
 
-func (r *UsageListWithGroupsResponse) UnmarshalJSON(data []byte) (err error) {
+func (r *UsageListWithGroupsResponseData) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 

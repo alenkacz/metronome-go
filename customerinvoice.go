@@ -13,7 +13,6 @@ import (
 	"github.com/Metronome-Industries/metronome-go/internal/apiquery"
 	"github.com/Metronome-Industries/metronome-go/internal/param"
 	"github.com/Metronome-Industries/metronome-go/internal/requestconfig"
-	"github.com/Metronome-Industries/metronome-go/internal/shared"
 	"github.com/Metronome-Industries/metronome-go/option"
 )
 
@@ -45,27 +44,11 @@ func (r *CustomerInvoiceService) Get(ctx context.Context, customerID string, inv
 
 // List all invoices for a given customer, optionally filtered by status, date
 // range, and/or credit type.
-func (r *CustomerInvoiceService) List(ctx context.Context, customerID string, query CustomerInvoiceListParams, opts ...option.RequestOption) (res *shared.Page[CustomerInvoiceListResponse], err error) {
-	var raw *http.Response
-	opts = append(r.Options, opts...)
-	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
+func (r *CustomerInvoiceService) List(ctx context.Context, customerID string, query CustomerInvoiceListParams, opts ...option.RequestOption) (res *CustomerInvoiceListResponse, err error) {
+	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("customers/%s/invoices", customerID)
-	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
-	if err != nil {
-		return nil, err
-	}
-	err = cfg.Execute()
-	if err != nil {
-		return nil, err
-	}
-	res.SetPageConfig(cfg, raw)
-	return res, nil
-}
-
-// List all invoices for a given customer, optionally filtered by status, date
-// range, and/or credit type.
-func (r *CustomerInvoiceService) ListAutoPaging(ctx context.Context, customerID string, query CustomerInvoiceListParams, opts ...option.RequestOption) *shared.PageAutoPager[CustomerInvoiceListResponse] {
-	return shared.NewPageAutoPager(r.List(ctx, customerID, query, opts...))
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, query, &res, opts...)
+	return
 }
 
 type CustomerInvoiceGetResponse struct {
@@ -598,22 +581,41 @@ func (r *CustomerInvoiceGetResponseDataResellerRoyaltyGcpOptions) UnmarshalJSON(
 }
 
 type CustomerInvoiceListResponse struct {
-	ID               string                                      `json:"id,required" format:"uuid"`
-	BillableStatus   CustomerInvoiceListResponseBillableStatus   `json:"billable_status,required"`
-	CreditType       CustomerInvoiceListResponseCreditType       `json:"credit_type,required"`
-	CustomerID       string                                      `json:"customer_id,required" format:"uuid"`
-	LineItems        []CustomerInvoiceListResponseLineItem       `json:"line_items,required"`
-	Status           string                                      `json:"status,required"`
-	Total            float64                                     `json:"total,required"`
-	Type             string                                      `json:"type,required"`
-	AmendmentID      string                                      `json:"amendment_id" format:"uuid"`
-	ContractID       string                                      `json:"contract_id" format:"uuid"`
-	CorrectionRecord CustomerInvoiceListResponseCorrectionRecord `json:"correction_record"`
-	CustomFields     map[string]interface{}                      `json:"custom_fields"`
+	Data     []CustomerInvoiceListResponseData `json:"data,required"`
+	NextPage string                            `json:"next_page,required,nullable"`
+	JSON     customerInvoiceListResponseJSON   `json:"-"`
+}
+
+// customerInvoiceListResponseJSON contains the JSON metadata for the struct
+// [CustomerInvoiceListResponse]
+type customerInvoiceListResponseJSON struct {
+	Data        apijson.Field
+	NextPage    apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CustomerInvoiceListResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type CustomerInvoiceListResponseData struct {
+	ID               string                                          `json:"id,required" format:"uuid"`
+	BillableStatus   CustomerInvoiceListResponseDataBillableStatus   `json:"billable_status,required"`
+	CreditType       CustomerInvoiceListResponseDataCreditType       `json:"credit_type,required"`
+	CustomerID       string                                          `json:"customer_id,required" format:"uuid"`
+	LineItems        []CustomerInvoiceListResponseDataLineItem       `json:"line_items,required"`
+	Status           string                                          `json:"status,required"`
+	Total            float64                                         `json:"total,required"`
+	Type             string                                          `json:"type,required"`
+	AmendmentID      string                                          `json:"amendment_id" format:"uuid"`
+	ContractID       string                                          `json:"contract_id" format:"uuid"`
+	CorrectionRecord CustomerInvoiceListResponseDataCorrectionRecord `json:"correction_record"`
+	CustomFields     map[string]interface{}                          `json:"custom_fields"`
 	// End of the usage period this invoice covers (UTC)
-	EndTimestamp       time.Time                                      `json:"end_timestamp" format:"date-time"`
-	ExternalInvoice    CustomerInvoiceListResponseExternalInvoice     `json:"external_invoice,nullable"`
-	InvoiceAdjustments []CustomerInvoiceListResponseInvoiceAdjustment `json:"invoice_adjustments"`
+	EndTimestamp       time.Time                                          `json:"end_timestamp" format:"date-time"`
+	ExternalInvoice    CustomerInvoiceListResponseDataExternalInvoice     `json:"external_invoice,nullable"`
+	InvoiceAdjustments []CustomerInvoiceListResponseDataInvoiceAdjustment `json:"invoice_adjustments"`
 	// When the invoice was issued (UTC)
 	IssuedAt            time.Time `json:"issued_at" format:"date-time"`
 	NetPaymentTermsDays float64   `json:"net_payment_terms_days"`
@@ -623,18 +625,18 @@ type CustomerInvoiceListResponse struct {
 	PlanID               string            `json:"plan_id" format:"uuid"`
 	PlanName             string            `json:"plan_name"`
 	// only present for beta contract invoices with reseller royalties
-	ResellerRoyalty CustomerInvoiceListResponseResellerRoyalty `json:"reseller_royalty"`
+	ResellerRoyalty CustomerInvoiceListResponseDataResellerRoyalty `json:"reseller_royalty"`
 	// This field's availability is dependent on your client's configuration.
 	SalesforceOpportunityID string `json:"salesforce_opportunity_id"`
 	// Beginning of the usage period this invoice covers (UTC)
-	StartTimestamp time.Time                       `json:"start_timestamp" format:"date-time"`
-	Subtotal       float64                         `json:"subtotal"`
-	JSON           customerInvoiceListResponseJSON `json:"-"`
+	StartTimestamp time.Time                           `json:"start_timestamp" format:"date-time"`
+	Subtotal       float64                             `json:"subtotal"`
+	JSON           customerInvoiceListResponseDataJSON `json:"-"`
 }
 
-// customerInvoiceListResponseJSON contains the JSON metadata for the struct
-// [CustomerInvoiceListResponse]
-type customerInvoiceListResponseJSON struct {
+// customerInvoiceListResponseDataJSON contains the JSON metadata for the struct
+// [CustomerInvoiceListResponseData]
+type customerInvoiceListResponseDataJSON struct {
 	ID                      apijson.Field
 	BillableStatus          apijson.Field
 	CreditType              apijson.Field
@@ -664,40 +666,40 @@ type customerInvoiceListResponseJSON struct {
 	ExtraFields             map[string]apijson.Field
 }
 
-func (r *CustomerInvoiceListResponse) UnmarshalJSON(data []byte) (err error) {
+func (r *CustomerInvoiceListResponseData) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type CustomerInvoiceListResponseBillableStatus string
+type CustomerInvoiceListResponseDataBillableStatus string
 
 const (
-	CustomerInvoiceListResponseBillableStatusBillable   CustomerInvoiceListResponseBillableStatus = "billable"
-	CustomerInvoiceListResponseBillableStatusUnbillable CustomerInvoiceListResponseBillableStatus = "unbillable"
+	CustomerInvoiceListResponseDataBillableStatusBillable   CustomerInvoiceListResponseDataBillableStatus = "billable"
+	CustomerInvoiceListResponseDataBillableStatusUnbillable CustomerInvoiceListResponseDataBillableStatus = "unbillable"
 )
 
-type CustomerInvoiceListResponseCreditType struct {
-	ID   string                                    `json:"id,required" format:"uuid"`
-	Name string                                    `json:"name,required"`
-	JSON customerInvoiceListResponseCreditTypeJSON `json:"-"`
+type CustomerInvoiceListResponseDataCreditType struct {
+	ID   string                                        `json:"id,required" format:"uuid"`
+	Name string                                        `json:"name,required"`
+	JSON customerInvoiceListResponseDataCreditTypeJSON `json:"-"`
 }
 
-// customerInvoiceListResponseCreditTypeJSON contains the JSON metadata for the
-// struct [CustomerInvoiceListResponseCreditType]
-type customerInvoiceListResponseCreditTypeJSON struct {
+// customerInvoiceListResponseDataCreditTypeJSON contains the JSON metadata for the
+// struct [CustomerInvoiceListResponseDataCreditType]
+type customerInvoiceListResponseDataCreditTypeJSON struct {
 	ID          apijson.Field
 	Name        apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *CustomerInvoiceListResponseCreditType) UnmarshalJSON(data []byte) (err error) {
+func (r *CustomerInvoiceListResponseDataCreditType) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type CustomerInvoiceListResponseLineItem struct {
-	CreditType CustomerInvoiceListResponseLineItemsCreditType `json:"credit_type,required"`
-	Name       string                                         `json:"name,required"`
-	Total      float64                                        `json:"total,required"`
+type CustomerInvoiceListResponseDataLineItem struct {
+	CreditType CustomerInvoiceListResponseDataLineItemsCreditType `json:"credit_type,required"`
+	Name       string                                             `json:"name,required"`
+	Total      float64                                            `json:"total,required"`
 	// only present for beta contract invoices
 	CommitID string `json:"commit_id" format:"uuid"`
 	// only present for beta contract invoices. This field's availability is dependent
@@ -721,21 +723,21 @@ type CustomerInvoiceListResponseLineItem struct {
 	// on your client's configuration.
 	NetsuiteItemID string `json:"netsuite_item_id"`
 	// only present for beta contract invoices
-	PostpaidCommit CustomerInvoiceListResponseLineItemsPostpaidCommit `json:"postpaid_commit"`
-	ProductID      string                                             `json:"product_id" format:"uuid"`
-	Quantity       float64                                            `json:"quantity"`
-	ResellerType   CustomerInvoiceListResponseLineItemsResellerType   `json:"reseller_type"`
+	PostpaidCommit CustomerInvoiceListResponseDataLineItemsPostpaidCommit `json:"postpaid_commit"`
+	ProductID      string                                                 `json:"product_id" format:"uuid"`
+	Quantity       float64                                                `json:"quantity"`
+	ResellerType   CustomerInvoiceListResponseDataLineItemsResellerType   `json:"reseller_type"`
 	// only present for beta contract invoices
-	StartingAt   time.Time                                         `json:"starting_at" format:"date-time"`
-	SubLineItems []CustomerInvoiceListResponseLineItemsSubLineItem `json:"sub_line_items"`
+	StartingAt   time.Time                                             `json:"starting_at" format:"date-time"`
+	SubLineItems []CustomerInvoiceListResponseDataLineItemsSubLineItem `json:"sub_line_items"`
 	// only present for beta contract invoices
-	UnitPrice float64                                 `json:"unit_price"`
-	JSON      customerInvoiceListResponseLineItemJSON `json:"-"`
+	UnitPrice float64                                     `json:"unit_price"`
+	JSON      customerInvoiceListResponseDataLineItemJSON `json:"-"`
 }
 
-// customerInvoiceListResponseLineItemJSON contains the JSON metadata for the
-// struct [CustomerInvoiceListResponseLineItem]
-type customerInvoiceListResponseLineItemJSON struct {
+// customerInvoiceListResponseDataLineItemJSON contains the JSON metadata for the
+// struct [CustomerInvoiceListResponseDataLineItem]
+type customerInvoiceListResponseDataLineItemJSON struct {
 	CreditType                 apijson.Field
 	Name                       apijson.Field
 	Total                      apijson.Field
@@ -761,55 +763,55 @@ type customerInvoiceListResponseLineItemJSON struct {
 	ExtraFields                map[string]apijson.Field
 }
 
-func (r *CustomerInvoiceListResponseLineItem) UnmarshalJSON(data []byte) (err error) {
+func (r *CustomerInvoiceListResponseDataLineItem) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type CustomerInvoiceListResponseLineItemsCreditType struct {
-	ID   string                                             `json:"id,required" format:"uuid"`
-	Name string                                             `json:"name,required"`
-	JSON customerInvoiceListResponseLineItemsCreditTypeJSON `json:"-"`
+type CustomerInvoiceListResponseDataLineItemsCreditType struct {
+	ID   string                                                 `json:"id,required" format:"uuid"`
+	Name string                                                 `json:"name,required"`
+	JSON customerInvoiceListResponseDataLineItemsCreditTypeJSON `json:"-"`
 }
 
-// customerInvoiceListResponseLineItemsCreditTypeJSON contains the JSON metadata
-// for the struct [CustomerInvoiceListResponseLineItemsCreditType]
-type customerInvoiceListResponseLineItemsCreditTypeJSON struct {
+// customerInvoiceListResponseDataLineItemsCreditTypeJSON contains the JSON
+// metadata for the struct [CustomerInvoiceListResponseDataLineItemsCreditType]
+type customerInvoiceListResponseDataLineItemsCreditTypeJSON struct {
 	ID          apijson.Field
 	Name        apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *CustomerInvoiceListResponseLineItemsCreditType) UnmarshalJSON(data []byte) (err error) {
+func (r *CustomerInvoiceListResponseDataLineItemsCreditType) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
 // only present for beta contract invoices
-type CustomerInvoiceListResponseLineItemsPostpaidCommit struct {
-	ID   string                                                 `json:"id,required" format:"uuid"`
-	JSON customerInvoiceListResponseLineItemsPostpaidCommitJSON `json:"-"`
+type CustomerInvoiceListResponseDataLineItemsPostpaidCommit struct {
+	ID   string                                                     `json:"id,required" format:"uuid"`
+	JSON customerInvoiceListResponseDataLineItemsPostpaidCommitJSON `json:"-"`
 }
 
-// customerInvoiceListResponseLineItemsPostpaidCommitJSON contains the JSON
-// metadata for the struct [CustomerInvoiceListResponseLineItemsPostpaidCommit]
-type customerInvoiceListResponseLineItemsPostpaidCommitJSON struct {
+// customerInvoiceListResponseDataLineItemsPostpaidCommitJSON contains the JSON
+// metadata for the struct [CustomerInvoiceListResponseDataLineItemsPostpaidCommit]
+type customerInvoiceListResponseDataLineItemsPostpaidCommitJSON struct {
 	ID          apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *CustomerInvoiceListResponseLineItemsPostpaidCommit) UnmarshalJSON(data []byte) (err error) {
+func (r *CustomerInvoiceListResponseDataLineItemsPostpaidCommit) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type CustomerInvoiceListResponseLineItemsResellerType string
+type CustomerInvoiceListResponseDataLineItemsResellerType string
 
 const (
-	CustomerInvoiceListResponseLineItemsResellerTypeAws CustomerInvoiceListResponseLineItemsResellerType = "AWS"
-	CustomerInvoiceListResponseLineItemsResellerTypeGcp CustomerInvoiceListResponseLineItemsResellerType = "GCP"
+	CustomerInvoiceListResponseDataLineItemsResellerTypeAws CustomerInvoiceListResponseDataLineItemsResellerType = "AWS"
+	CustomerInvoiceListResponseDataLineItemsResellerTypeGcp CustomerInvoiceListResponseDataLineItemsResellerType = "GCP"
 )
 
-type CustomerInvoiceListResponseLineItemsSubLineItem struct {
+type CustomerInvoiceListResponseDataLineItemsSubLineItem struct {
 	CustomFields  map[string]string `json:"custom_fields,required"`
 	Name          string            `json:"name,required"`
 	Quantity      float64           `json:"quantity,required"`
@@ -818,14 +820,14 @@ type CustomerInvoiceListResponseLineItemsSubLineItem struct {
 	CreditGrantID string            `json:"credit_grant_id" format:"uuid"`
 	// the unit price for this charge, present only if the charge is not tiered and the
 	// quantity is nonzero
-	Price float64                                                `json:"price"`
-	Tiers []CustomerInvoiceListResponseLineItemsSubLineItemsTier `json:"tiers"`
-	JSON  customerInvoiceListResponseLineItemsSubLineItemJSON    `json:"-"`
+	Price float64                                                    `json:"price"`
+	Tiers []CustomerInvoiceListResponseDataLineItemsSubLineItemsTier `json:"tiers"`
+	JSON  customerInvoiceListResponseDataLineItemsSubLineItemJSON    `json:"-"`
 }
 
-// customerInvoiceListResponseLineItemsSubLineItemJSON contains the JSON metadata
-// for the struct [CustomerInvoiceListResponseLineItemsSubLineItem]
-type customerInvoiceListResponseLineItemsSubLineItemJSON struct {
+// customerInvoiceListResponseDataLineItemsSubLineItemJSON contains the JSON
+// metadata for the struct [CustomerInvoiceListResponseDataLineItemsSubLineItem]
+type customerInvoiceListResponseDataLineItemsSubLineItemJSON struct {
 	CustomFields  apijson.Field
 	Name          apijson.Field
 	Quantity      apijson.Field
@@ -838,22 +840,23 @@ type customerInvoiceListResponseLineItemsSubLineItemJSON struct {
 	ExtraFields   map[string]apijson.Field
 }
 
-func (r *CustomerInvoiceListResponseLineItemsSubLineItem) UnmarshalJSON(data []byte) (err error) {
+func (r *CustomerInvoiceListResponseDataLineItemsSubLineItem) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type CustomerInvoiceListResponseLineItemsSubLineItemsTier struct {
+type CustomerInvoiceListResponseDataLineItemsSubLineItemsTier struct {
 	Price    float64 `json:"price,required"`
 	Quantity float64 `json:"quantity,required"`
 	// at what metric amount this tier begins
-	StartingAt float64                                                  `json:"starting_at,required"`
-	Subtotal   float64                                                  `json:"subtotal,required"`
-	JSON       customerInvoiceListResponseLineItemsSubLineItemsTierJSON `json:"-"`
+	StartingAt float64                                                      `json:"starting_at,required"`
+	Subtotal   float64                                                      `json:"subtotal,required"`
+	JSON       customerInvoiceListResponseDataLineItemsSubLineItemsTierJSON `json:"-"`
 }
 
-// customerInvoiceListResponseLineItemsSubLineItemsTierJSON contains the JSON
-// metadata for the struct [CustomerInvoiceListResponseLineItemsSubLineItemsTier]
-type customerInvoiceListResponseLineItemsSubLineItemsTierJSON struct {
+// customerInvoiceListResponseDataLineItemsSubLineItemsTierJSON contains the JSON
+// metadata for the struct
+// [CustomerInvoiceListResponseDataLineItemsSubLineItemsTier]
+type customerInvoiceListResponseDataLineItemsSubLineItemsTierJSON struct {
 	Price       apijson.Field
 	Quantity    apijson.Field
 	StartingAt  apijson.Field
@@ -862,21 +865,21 @@ type customerInvoiceListResponseLineItemsSubLineItemsTierJSON struct {
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *CustomerInvoiceListResponseLineItemsSubLineItemsTier) UnmarshalJSON(data []byte) (err error) {
+func (r *CustomerInvoiceListResponseDataLineItemsSubLineItemsTier) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type CustomerInvoiceListResponseCorrectionRecord struct {
-	CorrectedInvoiceID       string                                                              `json:"corrected_invoice_id,required" format:"uuid"`
-	Memo                     string                                                              `json:"memo,required"`
-	Reason                   string                                                              `json:"reason,required"`
-	CorrectedExternalInvoice CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoice `json:"corrected_external_invoice"`
-	JSON                     customerInvoiceListResponseCorrectionRecordJSON                     `json:"-"`
+type CustomerInvoiceListResponseDataCorrectionRecord struct {
+	CorrectedInvoiceID       string                                                                  `json:"corrected_invoice_id,required" format:"uuid"`
+	Memo                     string                                                                  `json:"memo,required"`
+	Reason                   string                                                                  `json:"reason,required"`
+	CorrectedExternalInvoice CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoice `json:"corrected_external_invoice"`
+	JSON                     customerInvoiceListResponseDataCorrectionRecordJSON                     `json:"-"`
 }
 
-// customerInvoiceListResponseCorrectionRecordJSON contains the JSON metadata for
-// the struct [CustomerInvoiceListResponseCorrectionRecord]
-type customerInvoiceListResponseCorrectionRecordJSON struct {
+// customerInvoiceListResponseDataCorrectionRecordJSON contains the JSON metadata
+// for the struct [CustomerInvoiceListResponseDataCorrectionRecord]
+type customerInvoiceListResponseDataCorrectionRecordJSON struct {
 	CorrectedInvoiceID       apijson.Field
 	Memo                     apijson.Field
 	Reason                   apijson.Field
@@ -885,22 +888,22 @@ type customerInvoiceListResponseCorrectionRecordJSON struct {
 	ExtraFields              map[string]apijson.Field
 }
 
-func (r *CustomerInvoiceListResponseCorrectionRecord) UnmarshalJSON(data []byte) (err error) {
+func (r *CustomerInvoiceListResponseDataCorrectionRecord) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoice struct {
-	BillingProviderType CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceBillingProviderType `json:"billing_provider_type,required"`
-	ExternalStatus      CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceExternalStatus      `json:"external_status"`
-	InvoiceID           string                                                                                 `json:"invoice_id"`
-	IssuedAtTimestamp   time.Time                                                                              `json:"issued_at_timestamp" format:"date-time"`
-	JSON                customerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceJSON                `json:"-"`
+type CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoice struct {
+	BillingProviderType CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceBillingProviderType `json:"billing_provider_type,required"`
+	ExternalStatus      CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceExternalStatus      `json:"external_status"`
+	InvoiceID           string                                                                                     `json:"invoice_id"`
+	IssuedAtTimestamp   time.Time                                                                                  `json:"issued_at_timestamp" format:"date-time"`
+	JSON                customerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceJSON                `json:"-"`
 }
 
-// customerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceJSON contains
-// the JSON metadata for the struct
-// [CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoice]
-type customerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceJSON struct {
+// customerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceJSON
+// contains the JSON metadata for the struct
+// [CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoice]
+type customerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceJSON struct {
 	BillingProviderType apijson.Field
 	ExternalStatus      apijson.Field
 	InvoiceID           apijson.Field
@@ -909,48 +912,48 @@ type customerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceJSON str
 	ExtraFields         map[string]apijson.Field
 }
 
-func (r *CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoice) UnmarshalJSON(data []byte) (err error) {
+func (r *CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoice) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceBillingProviderType string
+type CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceBillingProviderType string
 
 const (
-	CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceBillingProviderTypeAwsMarketplace   CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceBillingProviderType = "aws_marketplace"
-	CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceBillingProviderTypeStripe           CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceBillingProviderType = "stripe"
-	CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceBillingProviderTypeNetsuite         CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceBillingProviderType = "netsuite"
-	CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceBillingProviderTypeCustom           CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceBillingProviderType = "custom"
-	CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceBillingProviderTypeAzureMarketplace CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceBillingProviderType = "azure_marketplace"
-	CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceBillingProviderTypeQuickbooksOnline CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceBillingProviderType = "quickbooks_online"
+	CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceBillingProviderTypeAwsMarketplace   CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceBillingProviderType = "aws_marketplace"
+	CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceBillingProviderTypeStripe           CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceBillingProviderType = "stripe"
+	CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceBillingProviderTypeNetsuite         CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceBillingProviderType = "netsuite"
+	CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceBillingProviderTypeCustom           CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceBillingProviderType = "custom"
+	CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceBillingProviderTypeAzureMarketplace CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceBillingProviderType = "azure_marketplace"
+	CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceBillingProviderTypeQuickbooksOnline CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceBillingProviderType = "quickbooks_online"
 )
 
-type CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceExternalStatus string
+type CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceExternalStatus string
 
 const (
-	CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceExternalStatusDraft               CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceExternalStatus = "DRAFT"
-	CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceExternalStatusFinalized           CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceExternalStatus = "FINALIZED"
-	CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceExternalStatusPaid                CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceExternalStatus = "PAID"
-	CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceExternalStatusUncollectible       CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceExternalStatus = "UNCOLLECTIBLE"
-	CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceExternalStatusVoid                CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceExternalStatus = "VOID"
-	CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceExternalStatusDeleted             CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceExternalStatus = "DELETED"
-	CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceExternalStatusPaymentFailed       CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceExternalStatus = "PAYMENT_FAILED"
-	CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceExternalStatusInvalidRequestError CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceExternalStatus = "INVALID_REQUEST_ERROR"
-	CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceExternalStatusSkipped             CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceExternalStatus = "SKIPPED"
-	CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceExternalStatusSent                CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceExternalStatus = "SENT"
-	CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceExternalStatusQueued              CustomerInvoiceListResponseCorrectionRecordCorrectedExternalInvoiceExternalStatus = "QUEUED"
+	CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceExternalStatusDraft               CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceExternalStatus = "DRAFT"
+	CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceExternalStatusFinalized           CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceExternalStatus = "FINALIZED"
+	CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceExternalStatusPaid                CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceExternalStatus = "PAID"
+	CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceExternalStatusUncollectible       CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceExternalStatus = "UNCOLLECTIBLE"
+	CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceExternalStatusVoid                CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceExternalStatus = "VOID"
+	CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceExternalStatusDeleted             CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceExternalStatus = "DELETED"
+	CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceExternalStatusPaymentFailed       CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceExternalStatus = "PAYMENT_FAILED"
+	CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceExternalStatusInvalidRequestError CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceExternalStatus = "INVALID_REQUEST_ERROR"
+	CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceExternalStatusSkipped             CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceExternalStatus = "SKIPPED"
+	CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceExternalStatusSent                CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceExternalStatus = "SENT"
+	CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceExternalStatusQueued              CustomerInvoiceListResponseDataCorrectionRecordCorrectedExternalInvoiceExternalStatus = "QUEUED"
 )
 
-type CustomerInvoiceListResponseExternalInvoice struct {
-	BillingProviderType CustomerInvoiceListResponseExternalInvoiceBillingProviderType `json:"billing_provider_type,required"`
-	ExternalStatus      CustomerInvoiceListResponseExternalInvoiceExternalStatus      `json:"external_status"`
-	InvoiceID           string                                                        `json:"invoice_id"`
-	IssuedAtTimestamp   time.Time                                                     `json:"issued_at_timestamp" format:"date-time"`
-	JSON                customerInvoiceListResponseExternalInvoiceJSON                `json:"-"`
+type CustomerInvoiceListResponseDataExternalInvoice struct {
+	BillingProviderType CustomerInvoiceListResponseDataExternalInvoiceBillingProviderType `json:"billing_provider_type,required"`
+	ExternalStatus      CustomerInvoiceListResponseDataExternalInvoiceExternalStatus      `json:"external_status"`
+	InvoiceID           string                                                            `json:"invoice_id"`
+	IssuedAtTimestamp   time.Time                                                         `json:"issued_at_timestamp" format:"date-time"`
+	JSON                customerInvoiceListResponseDataExternalInvoiceJSON                `json:"-"`
 }
 
-// customerInvoiceListResponseExternalInvoiceJSON contains the JSON metadata for
-// the struct [CustomerInvoiceListResponseExternalInvoice]
-type customerInvoiceListResponseExternalInvoiceJSON struct {
+// customerInvoiceListResponseDataExternalInvoiceJSON contains the JSON metadata
+// for the struct [CustomerInvoiceListResponseDataExternalInvoice]
+type customerInvoiceListResponseDataExternalInvoiceJSON struct {
 	BillingProviderType apijson.Field
 	ExternalStatus      apijson.Field
 	InvoiceID           apijson.Field
@@ -959,48 +962,48 @@ type customerInvoiceListResponseExternalInvoiceJSON struct {
 	ExtraFields         map[string]apijson.Field
 }
 
-func (r *CustomerInvoiceListResponseExternalInvoice) UnmarshalJSON(data []byte) (err error) {
+func (r *CustomerInvoiceListResponseDataExternalInvoice) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type CustomerInvoiceListResponseExternalInvoiceBillingProviderType string
+type CustomerInvoiceListResponseDataExternalInvoiceBillingProviderType string
 
 const (
-	CustomerInvoiceListResponseExternalInvoiceBillingProviderTypeAwsMarketplace   CustomerInvoiceListResponseExternalInvoiceBillingProviderType = "aws_marketplace"
-	CustomerInvoiceListResponseExternalInvoiceBillingProviderTypeStripe           CustomerInvoiceListResponseExternalInvoiceBillingProviderType = "stripe"
-	CustomerInvoiceListResponseExternalInvoiceBillingProviderTypeNetsuite         CustomerInvoiceListResponseExternalInvoiceBillingProviderType = "netsuite"
-	CustomerInvoiceListResponseExternalInvoiceBillingProviderTypeCustom           CustomerInvoiceListResponseExternalInvoiceBillingProviderType = "custom"
-	CustomerInvoiceListResponseExternalInvoiceBillingProviderTypeAzureMarketplace CustomerInvoiceListResponseExternalInvoiceBillingProviderType = "azure_marketplace"
-	CustomerInvoiceListResponseExternalInvoiceBillingProviderTypeQuickbooksOnline CustomerInvoiceListResponseExternalInvoiceBillingProviderType = "quickbooks_online"
+	CustomerInvoiceListResponseDataExternalInvoiceBillingProviderTypeAwsMarketplace   CustomerInvoiceListResponseDataExternalInvoiceBillingProviderType = "aws_marketplace"
+	CustomerInvoiceListResponseDataExternalInvoiceBillingProviderTypeStripe           CustomerInvoiceListResponseDataExternalInvoiceBillingProviderType = "stripe"
+	CustomerInvoiceListResponseDataExternalInvoiceBillingProviderTypeNetsuite         CustomerInvoiceListResponseDataExternalInvoiceBillingProviderType = "netsuite"
+	CustomerInvoiceListResponseDataExternalInvoiceBillingProviderTypeCustom           CustomerInvoiceListResponseDataExternalInvoiceBillingProviderType = "custom"
+	CustomerInvoiceListResponseDataExternalInvoiceBillingProviderTypeAzureMarketplace CustomerInvoiceListResponseDataExternalInvoiceBillingProviderType = "azure_marketplace"
+	CustomerInvoiceListResponseDataExternalInvoiceBillingProviderTypeQuickbooksOnline CustomerInvoiceListResponseDataExternalInvoiceBillingProviderType = "quickbooks_online"
 )
 
-type CustomerInvoiceListResponseExternalInvoiceExternalStatus string
+type CustomerInvoiceListResponseDataExternalInvoiceExternalStatus string
 
 const (
-	CustomerInvoiceListResponseExternalInvoiceExternalStatusDraft               CustomerInvoiceListResponseExternalInvoiceExternalStatus = "DRAFT"
-	CustomerInvoiceListResponseExternalInvoiceExternalStatusFinalized           CustomerInvoiceListResponseExternalInvoiceExternalStatus = "FINALIZED"
-	CustomerInvoiceListResponseExternalInvoiceExternalStatusPaid                CustomerInvoiceListResponseExternalInvoiceExternalStatus = "PAID"
-	CustomerInvoiceListResponseExternalInvoiceExternalStatusUncollectible       CustomerInvoiceListResponseExternalInvoiceExternalStatus = "UNCOLLECTIBLE"
-	CustomerInvoiceListResponseExternalInvoiceExternalStatusVoid                CustomerInvoiceListResponseExternalInvoiceExternalStatus = "VOID"
-	CustomerInvoiceListResponseExternalInvoiceExternalStatusDeleted             CustomerInvoiceListResponseExternalInvoiceExternalStatus = "DELETED"
-	CustomerInvoiceListResponseExternalInvoiceExternalStatusPaymentFailed       CustomerInvoiceListResponseExternalInvoiceExternalStatus = "PAYMENT_FAILED"
-	CustomerInvoiceListResponseExternalInvoiceExternalStatusInvalidRequestError CustomerInvoiceListResponseExternalInvoiceExternalStatus = "INVALID_REQUEST_ERROR"
-	CustomerInvoiceListResponseExternalInvoiceExternalStatusSkipped             CustomerInvoiceListResponseExternalInvoiceExternalStatus = "SKIPPED"
-	CustomerInvoiceListResponseExternalInvoiceExternalStatusSent                CustomerInvoiceListResponseExternalInvoiceExternalStatus = "SENT"
-	CustomerInvoiceListResponseExternalInvoiceExternalStatusQueued              CustomerInvoiceListResponseExternalInvoiceExternalStatus = "QUEUED"
+	CustomerInvoiceListResponseDataExternalInvoiceExternalStatusDraft               CustomerInvoiceListResponseDataExternalInvoiceExternalStatus = "DRAFT"
+	CustomerInvoiceListResponseDataExternalInvoiceExternalStatusFinalized           CustomerInvoiceListResponseDataExternalInvoiceExternalStatus = "FINALIZED"
+	CustomerInvoiceListResponseDataExternalInvoiceExternalStatusPaid                CustomerInvoiceListResponseDataExternalInvoiceExternalStatus = "PAID"
+	CustomerInvoiceListResponseDataExternalInvoiceExternalStatusUncollectible       CustomerInvoiceListResponseDataExternalInvoiceExternalStatus = "UNCOLLECTIBLE"
+	CustomerInvoiceListResponseDataExternalInvoiceExternalStatusVoid                CustomerInvoiceListResponseDataExternalInvoiceExternalStatus = "VOID"
+	CustomerInvoiceListResponseDataExternalInvoiceExternalStatusDeleted             CustomerInvoiceListResponseDataExternalInvoiceExternalStatus = "DELETED"
+	CustomerInvoiceListResponseDataExternalInvoiceExternalStatusPaymentFailed       CustomerInvoiceListResponseDataExternalInvoiceExternalStatus = "PAYMENT_FAILED"
+	CustomerInvoiceListResponseDataExternalInvoiceExternalStatusInvalidRequestError CustomerInvoiceListResponseDataExternalInvoiceExternalStatus = "INVALID_REQUEST_ERROR"
+	CustomerInvoiceListResponseDataExternalInvoiceExternalStatusSkipped             CustomerInvoiceListResponseDataExternalInvoiceExternalStatus = "SKIPPED"
+	CustomerInvoiceListResponseDataExternalInvoiceExternalStatusSent                CustomerInvoiceListResponseDataExternalInvoiceExternalStatus = "SENT"
+	CustomerInvoiceListResponseDataExternalInvoiceExternalStatusQueued              CustomerInvoiceListResponseDataExternalInvoiceExternalStatus = "QUEUED"
 )
 
-type CustomerInvoiceListResponseInvoiceAdjustment struct {
-	CreditType    CustomerInvoiceListResponseInvoiceAdjustmentsCreditType `json:"credit_type,required"`
-	Name          string                                                  `json:"name,required"`
-	Total         float64                                                 `json:"total,required"`
-	CreditGrantID string                                                  `json:"credit_grant_id"`
-	JSON          customerInvoiceListResponseInvoiceAdjustmentJSON        `json:"-"`
+type CustomerInvoiceListResponseDataInvoiceAdjustment struct {
+	CreditType    CustomerInvoiceListResponseDataInvoiceAdjustmentsCreditType `json:"credit_type,required"`
+	Name          string                                                      `json:"name,required"`
+	Total         float64                                                     `json:"total,required"`
+	CreditGrantID string                                                      `json:"credit_grant_id"`
+	JSON          customerInvoiceListResponseDataInvoiceAdjustmentJSON        `json:"-"`
 }
 
-// customerInvoiceListResponseInvoiceAdjustmentJSON contains the JSON metadata for
-// the struct [CustomerInvoiceListResponseInvoiceAdjustment]
-type customerInvoiceListResponseInvoiceAdjustmentJSON struct {
+// customerInvoiceListResponseDataInvoiceAdjustmentJSON contains the JSON metadata
+// for the struct [CustomerInvoiceListResponseDataInvoiceAdjustment]
+type customerInvoiceListResponseDataInvoiceAdjustmentJSON struct {
 	CreditType    apijson.Field
 	Name          apijson.Field
 	Total         apijson.Field
@@ -1009,43 +1012,43 @@ type customerInvoiceListResponseInvoiceAdjustmentJSON struct {
 	ExtraFields   map[string]apijson.Field
 }
 
-func (r *CustomerInvoiceListResponseInvoiceAdjustment) UnmarshalJSON(data []byte) (err error) {
+func (r *CustomerInvoiceListResponseDataInvoiceAdjustment) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type CustomerInvoiceListResponseInvoiceAdjustmentsCreditType struct {
-	ID   string                                                      `json:"id,required" format:"uuid"`
-	Name string                                                      `json:"name,required"`
-	JSON customerInvoiceListResponseInvoiceAdjustmentsCreditTypeJSON `json:"-"`
+type CustomerInvoiceListResponseDataInvoiceAdjustmentsCreditType struct {
+	ID   string                                                          `json:"id,required" format:"uuid"`
+	Name string                                                          `json:"name,required"`
+	JSON customerInvoiceListResponseDataInvoiceAdjustmentsCreditTypeJSON `json:"-"`
 }
 
-// customerInvoiceListResponseInvoiceAdjustmentsCreditTypeJSON contains the JSON
-// metadata for the struct
-// [CustomerInvoiceListResponseInvoiceAdjustmentsCreditType]
-type customerInvoiceListResponseInvoiceAdjustmentsCreditTypeJSON struct {
+// customerInvoiceListResponseDataInvoiceAdjustmentsCreditTypeJSON contains the
+// JSON metadata for the struct
+// [CustomerInvoiceListResponseDataInvoiceAdjustmentsCreditType]
+type customerInvoiceListResponseDataInvoiceAdjustmentsCreditTypeJSON struct {
 	ID          apijson.Field
 	Name        apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *CustomerInvoiceListResponseInvoiceAdjustmentsCreditType) UnmarshalJSON(data []byte) (err error) {
+func (r *CustomerInvoiceListResponseDataInvoiceAdjustmentsCreditType) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
 // only present for beta contract invoices with reseller royalties
-type CustomerInvoiceListResponseResellerRoyalty struct {
-	Fraction           string                                                 `json:"fraction,required"`
-	NetsuiteResellerID string                                                 `json:"netsuite_reseller_id,required"`
-	ResellerType       CustomerInvoiceListResponseResellerRoyaltyResellerType `json:"reseller_type,required"`
-	AwsOptions         CustomerInvoiceListResponseResellerRoyaltyAwsOptions   `json:"aws_options"`
-	GcpOptions         CustomerInvoiceListResponseResellerRoyaltyGcpOptions   `json:"gcp_options"`
-	JSON               customerInvoiceListResponseResellerRoyaltyJSON         `json:"-"`
+type CustomerInvoiceListResponseDataResellerRoyalty struct {
+	Fraction           string                                                     `json:"fraction,required"`
+	NetsuiteResellerID string                                                     `json:"netsuite_reseller_id,required"`
+	ResellerType       CustomerInvoiceListResponseDataResellerRoyaltyResellerType `json:"reseller_type,required"`
+	AwsOptions         CustomerInvoiceListResponseDataResellerRoyaltyAwsOptions   `json:"aws_options"`
+	GcpOptions         CustomerInvoiceListResponseDataResellerRoyaltyGcpOptions   `json:"gcp_options"`
+	JSON               customerInvoiceListResponseDataResellerRoyaltyJSON         `json:"-"`
 }
 
-// customerInvoiceListResponseResellerRoyaltyJSON contains the JSON metadata for
-// the struct [CustomerInvoiceListResponseResellerRoyalty]
-type customerInvoiceListResponseResellerRoyaltyJSON struct {
+// customerInvoiceListResponseDataResellerRoyaltyJSON contains the JSON metadata
+// for the struct [CustomerInvoiceListResponseDataResellerRoyalty]
+type customerInvoiceListResponseDataResellerRoyaltyJSON struct {
 	Fraction           apijson.Field
 	NetsuiteResellerID apijson.Field
 	ResellerType       apijson.Field
@@ -1055,27 +1058,28 @@ type customerInvoiceListResponseResellerRoyaltyJSON struct {
 	ExtraFields        map[string]apijson.Field
 }
 
-func (r *CustomerInvoiceListResponseResellerRoyalty) UnmarshalJSON(data []byte) (err error) {
+func (r *CustomerInvoiceListResponseDataResellerRoyalty) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type CustomerInvoiceListResponseResellerRoyaltyResellerType string
+type CustomerInvoiceListResponseDataResellerRoyaltyResellerType string
 
 const (
-	CustomerInvoiceListResponseResellerRoyaltyResellerTypeAws CustomerInvoiceListResponseResellerRoyaltyResellerType = "AWS"
-	CustomerInvoiceListResponseResellerRoyaltyResellerTypeGcp CustomerInvoiceListResponseResellerRoyaltyResellerType = "GCP"
+	CustomerInvoiceListResponseDataResellerRoyaltyResellerTypeAws CustomerInvoiceListResponseDataResellerRoyaltyResellerType = "AWS"
+	CustomerInvoiceListResponseDataResellerRoyaltyResellerTypeGcp CustomerInvoiceListResponseDataResellerRoyaltyResellerType = "GCP"
 )
 
-type CustomerInvoiceListResponseResellerRoyaltyAwsOptions struct {
-	AwsAccountNumber    string                                                   `json:"aws_account_number"`
-	AwsOfferID          string                                                   `json:"aws_offer_id"`
-	AwsPayerReferenceID string                                                   `json:"aws_payer_reference_id"`
-	JSON                customerInvoiceListResponseResellerRoyaltyAwsOptionsJSON `json:"-"`
+type CustomerInvoiceListResponseDataResellerRoyaltyAwsOptions struct {
+	AwsAccountNumber    string                                                       `json:"aws_account_number"`
+	AwsOfferID          string                                                       `json:"aws_offer_id"`
+	AwsPayerReferenceID string                                                       `json:"aws_payer_reference_id"`
+	JSON                customerInvoiceListResponseDataResellerRoyaltyAwsOptionsJSON `json:"-"`
 }
 
-// customerInvoiceListResponseResellerRoyaltyAwsOptionsJSON contains the JSON
-// metadata for the struct [CustomerInvoiceListResponseResellerRoyaltyAwsOptions]
-type customerInvoiceListResponseResellerRoyaltyAwsOptionsJSON struct {
+// customerInvoiceListResponseDataResellerRoyaltyAwsOptionsJSON contains the JSON
+// metadata for the struct
+// [CustomerInvoiceListResponseDataResellerRoyaltyAwsOptions]
+type customerInvoiceListResponseDataResellerRoyaltyAwsOptionsJSON struct {
 	AwsAccountNumber    apijson.Field
 	AwsOfferID          apijson.Field
 	AwsPayerReferenceID apijson.Field
@@ -1083,26 +1087,27 @@ type customerInvoiceListResponseResellerRoyaltyAwsOptionsJSON struct {
 	ExtraFields         map[string]apijson.Field
 }
 
-func (r *CustomerInvoiceListResponseResellerRoyaltyAwsOptions) UnmarshalJSON(data []byte) (err error) {
+func (r *CustomerInvoiceListResponseDataResellerRoyaltyAwsOptions) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type CustomerInvoiceListResponseResellerRoyaltyGcpOptions struct {
-	GcpAccountID string                                                   `json:"gcp_account_id"`
-	GcpOfferID   string                                                   `json:"gcp_offer_id"`
-	JSON         customerInvoiceListResponseResellerRoyaltyGcpOptionsJSON `json:"-"`
+type CustomerInvoiceListResponseDataResellerRoyaltyGcpOptions struct {
+	GcpAccountID string                                                       `json:"gcp_account_id"`
+	GcpOfferID   string                                                       `json:"gcp_offer_id"`
+	JSON         customerInvoiceListResponseDataResellerRoyaltyGcpOptionsJSON `json:"-"`
 }
 
-// customerInvoiceListResponseResellerRoyaltyGcpOptionsJSON contains the JSON
-// metadata for the struct [CustomerInvoiceListResponseResellerRoyaltyGcpOptions]
-type customerInvoiceListResponseResellerRoyaltyGcpOptionsJSON struct {
+// customerInvoiceListResponseDataResellerRoyaltyGcpOptionsJSON contains the JSON
+// metadata for the struct
+// [CustomerInvoiceListResponseDataResellerRoyaltyGcpOptions]
+type customerInvoiceListResponseDataResellerRoyaltyGcpOptionsJSON struct {
 	GcpAccountID apijson.Field
 	GcpOfferID   apijson.Field
 	raw          string
 	ExtraFields  map[string]apijson.Field
 }
 
-func (r *CustomerInvoiceListResponseResellerRoyaltyGcpOptions) UnmarshalJSON(data []byte) (err error) {
+func (r *CustomerInvoiceListResponseDataResellerRoyaltyGcpOptions) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 

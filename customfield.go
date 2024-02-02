@@ -11,7 +11,6 @@ import (
 	"github.com/Metronome-Industries/metronome-go/internal/apiquery"
 	"github.com/Metronome-Industries/metronome-go/internal/param"
 	"github.com/Metronome-Industries/metronome-go/internal/requestconfig"
-	"github.com/Metronome-Industries/metronome-go/internal/shared"
 	"github.com/Metronome-Industries/metronome-go/option"
 )
 
@@ -53,26 +52,11 @@ func (r *CustomFieldService) DeleteValues(ctx context.Context, body CustomFieldD
 }
 
 // List all active custom field keys, optionally filtered by entity type.
-func (r *CustomFieldService) ListKeys(ctx context.Context, params CustomFieldListKeysParams, opts ...option.RequestOption) (res *shared.Page[CustomFieldListKeysResponse], err error) {
-	var raw *http.Response
-	opts = append(r.Options, opts...)
-	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
+func (r *CustomFieldService) ListKeys(ctx context.Context, params CustomFieldListKeysParams, opts ...option.RequestOption) (res *CustomFieldListKeysResponse, err error) {
+	opts = append(r.Options[:], opts...)
 	path := "customFields/listKeys"
-	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodPost, path, params, &res, opts...)
-	if err != nil {
-		return nil, err
-	}
-	err = cfg.Execute()
-	if err != nil {
-		return nil, err
-	}
-	res.SetPageConfig(cfg, raw)
-	return res, nil
-}
-
-// List all active custom field keys, optionally filtered by entity type.
-func (r *CustomFieldService) ListKeysAutoPaging(ctx context.Context, params CustomFieldListKeysParams, opts ...option.RequestOption) *shared.PageAutoPager[CustomFieldListKeysResponse] {
-	return shared.NewPageAutoPager(r.ListKeys(ctx, params, opts...))
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, params, &res, opts...)
+	return
 }
 
 // Remove a key from the allow list for a given entity.
@@ -100,15 +84,34 @@ func (r *CustomFieldService) SetValues(ctx context.Context, body CustomFieldSetV
 }
 
 type CustomFieldListKeysResponse struct {
-	EnforceUniqueness bool                              `json:"enforce_uniqueness,required"`
-	Entity            CustomFieldListKeysResponseEntity `json:"entity,required"`
-	Key               string                            `json:"key,required"`
-	JSON              customFieldListKeysResponseJSON   `json:"-"`
+	Data     []CustomFieldListKeysResponseData `json:"data,required"`
+	NextPage string                            `json:"next_page,required,nullable"`
+	JSON     customFieldListKeysResponseJSON   `json:"-"`
 }
 
 // customFieldListKeysResponseJSON contains the JSON metadata for the struct
 // [CustomFieldListKeysResponse]
 type customFieldListKeysResponseJSON struct {
+	Data        apijson.Field
+	NextPage    apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CustomFieldListKeysResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type CustomFieldListKeysResponseData struct {
+	EnforceUniqueness bool                                  `json:"enforce_uniqueness,required"`
+	Entity            CustomFieldListKeysResponseDataEntity `json:"entity,required"`
+	Key               string                                `json:"key,required"`
+	JSON              customFieldListKeysResponseDataJSON   `json:"-"`
+}
+
+// customFieldListKeysResponseDataJSON contains the JSON metadata for the struct
+// [CustomFieldListKeysResponseData]
+type customFieldListKeysResponseDataJSON struct {
 	EnforceUniqueness apijson.Field
 	Entity            apijson.Field
 	Key               apijson.Field
@@ -116,21 +119,21 @@ type customFieldListKeysResponseJSON struct {
 	ExtraFields       map[string]apijson.Field
 }
 
-func (r *CustomFieldListKeysResponse) UnmarshalJSON(data []byte) (err error) {
+func (r *CustomFieldListKeysResponseData) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type CustomFieldListKeysResponseEntity string
+type CustomFieldListKeysResponseDataEntity string
 
 const (
-	CustomFieldListKeysResponseEntityCharge         CustomFieldListKeysResponseEntity = "charge"
-	CustomFieldListKeysResponseEntityCreditGrant    CustomFieldListKeysResponseEntity = "credit_grant"
-	CustomFieldListKeysResponseEntityCustomer       CustomFieldListKeysResponseEntity = "customer"
-	CustomFieldListKeysResponseEntityCustomerPlan   CustomFieldListKeysResponseEntity = "customer_plan"
-	CustomFieldListKeysResponseEntityPlan           CustomFieldListKeysResponseEntity = "plan"
-	CustomFieldListKeysResponseEntityProduct        CustomFieldListKeysResponseEntity = "product"
-	CustomFieldListKeysResponseEntityBillableMetric CustomFieldListKeysResponseEntity = "billable_metric"
-	CustomFieldListKeysResponseEntityCommit         CustomFieldListKeysResponseEntity = "commit"
+	CustomFieldListKeysResponseDataEntityCharge         CustomFieldListKeysResponseDataEntity = "charge"
+	CustomFieldListKeysResponseDataEntityCreditGrant    CustomFieldListKeysResponseDataEntity = "credit_grant"
+	CustomFieldListKeysResponseDataEntityCustomer       CustomFieldListKeysResponseDataEntity = "customer"
+	CustomFieldListKeysResponseDataEntityCustomerPlan   CustomFieldListKeysResponseDataEntity = "customer_plan"
+	CustomFieldListKeysResponseDataEntityPlan           CustomFieldListKeysResponseDataEntity = "plan"
+	CustomFieldListKeysResponseDataEntityProduct        CustomFieldListKeysResponseDataEntity = "product"
+	CustomFieldListKeysResponseDataEntityBillableMetric CustomFieldListKeysResponseDataEntity = "billable_metric"
+	CustomFieldListKeysResponseDataEntityCommit         CustomFieldListKeysResponseDataEntity = "commit"
 )
 
 type CustomFieldAddKeyParams struct {

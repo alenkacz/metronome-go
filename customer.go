@@ -13,7 +13,6 @@ import (
 	"github.com/Metronome-Industries/metronome-go/internal/apiquery"
 	"github.com/Metronome-Industries/metronome-go/internal/param"
 	"github.com/Metronome-Industries/metronome-go/internal/requestconfig"
-	"github.com/Metronome-Industries/metronome-go/internal/shared"
 	"github.com/Metronome-Industries/metronome-go/option"
 )
 
@@ -57,26 +56,11 @@ func (r *CustomerService) Get(ctx context.Context, customerID string, opts ...op
 }
 
 // List all customers.
-func (r *CustomerService) List(ctx context.Context, query CustomerListParams, opts ...option.RequestOption) (res *shared.Page[CustomerListResponse], err error) {
-	var raw *http.Response
-	opts = append(r.Options, opts...)
-	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
+func (r *CustomerService) List(ctx context.Context, query CustomerListParams, opts ...option.RequestOption) (res *CustomerListResponse, err error) {
+	opts = append(r.Options[:], opts...)
 	path := "customers"
-	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
-	if err != nil {
-		return nil, err
-	}
-	err = cfg.Execute()
-	if err != nil {
-		return nil, err
-	}
-	res.SetPageConfig(cfg, raw)
-	return res, nil
-}
-
-// List all customers.
-func (r *CustomerService) ListAutoPaging(ctx context.Context, query CustomerListParams, opts ...option.RequestOption) *shared.PageAutoPager[CustomerListResponse] {
-	return shared.NewPageAutoPager(r.List(ctx, query, opts...))
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, query, &res, opts...)
+	return
 }
 
 // Archive a customer
@@ -88,53 +72,21 @@ func (r *CustomerService) Archive(ctx context.Context, body CustomerArchiveParam
 }
 
 // List all billable metrics.
-func (r *CustomerService) ListBillableMetrics(ctx context.Context, customerID string, query CustomerListBillableMetricsParams, opts ...option.RequestOption) (res *shared.Page[CustomerListBillableMetricsResponse], err error) {
-	var raw *http.Response
-	opts = append(r.Options, opts...)
-	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
+func (r *CustomerService) ListBillableMetrics(ctx context.Context, customerID string, query CustomerListBillableMetricsParams, opts ...option.RequestOption) (res *CustomerListBillableMetricsResponse, err error) {
+	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("customers/%s/billable-metrics", customerID)
-	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
-	if err != nil {
-		return nil, err
-	}
-	err = cfg.Execute()
-	if err != nil {
-		return nil, err
-	}
-	res.SetPageConfig(cfg, raw)
-	return res, nil
-}
-
-// List all billable metrics.
-func (r *CustomerService) ListBillableMetricsAutoPaging(ctx context.Context, customerID string, query CustomerListBillableMetricsParams, opts ...option.RequestOption) *shared.PageAutoPager[CustomerListBillableMetricsResponse] {
-	return shared.NewPageAutoPager(r.ListBillableMetrics(ctx, customerID, query, opts...))
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, query, &res, opts...)
+	return
 }
 
 // Fetch daily pending costs for the specified customer, broken down by credit type
 // and line items. Note: this is not supported for customers whose plan includes a
 // UNIQUE-type billable metric.
-func (r *CustomerService) ListCosts(ctx context.Context, customerID string, query CustomerListCostsParams, opts ...option.RequestOption) (res *shared.Page[CustomerListCostsResponse], err error) {
-	var raw *http.Response
-	opts = append(r.Options, opts...)
-	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
+func (r *CustomerService) ListCosts(ctx context.Context, customerID string, query CustomerListCostsParams, opts ...option.RequestOption) (res *CustomerListCostsResponse, err error) {
+	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("customers/%s/costs", customerID)
-	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
-	if err != nil {
-		return nil, err
-	}
-	err = cfg.Execute()
-	if err != nil {
-		return nil, err
-	}
-	res.SetPageConfig(cfg, raw)
-	return res, nil
-}
-
-// Fetch daily pending costs for the specified customer, broken down by credit type
-// and line items. Note: this is not supported for customers whose plan includes a
-// UNIQUE-type billable metric.
-func (r *CustomerService) ListCostsAutoPaging(ctx context.Context, customerID string, query CustomerListCostsParams, opts ...option.RequestOption) *shared.PageAutoPager[CustomerListCostsResponse] {
-	return shared.NewPageAutoPager(r.ListCosts(ctx, customerID, query, opts...))
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, query, &res, opts...)
+	return
 }
 
 // Sets the ingest aliases for a customer. Ingest aliases can be used in the
@@ -308,24 +260,43 @@ func (r *CustomerGetResponseDataCustomerConfig) UnmarshalJSON(data []byte) (err 
 }
 
 type CustomerListResponse struct {
-	// the Metronome ID of the customer
-	ID                    string                                    `json:"id,required" format:"uuid"`
-	CurrentBillableStatus CustomerListResponseCurrentBillableStatus `json:"current_billable_status,required"`
-	CustomFields          map[string]string                         `json:"custom_fields,required"`
-	CustomerConfig        CustomerListResponseCustomerConfig        `json:"customer_config,required"`
-	// (deprecated, use ingest_aliases instead) the first ID (Metronome or ingest
-	// alias) that can be used in usage events
-	ExternalID string `json:"external_id,required"`
-	// aliases for this customer that can be used instead of the Metronome customer ID
-	// in usage events
-	IngestAliases []string                 `json:"ingest_aliases,required"`
-	Name          string                   `json:"name,required"`
-	JSON          customerListResponseJSON `json:"-"`
+	Data     []CustomerListResponseData `json:"data,required"`
+	NextPage string                     `json:"next_page,required,nullable"`
+	JSON     customerListResponseJSON   `json:"-"`
 }
 
 // customerListResponseJSON contains the JSON metadata for the struct
 // [CustomerListResponse]
 type customerListResponseJSON struct {
+	Data        apijson.Field
+	NextPage    apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CustomerListResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type CustomerListResponseData struct {
+	// the Metronome ID of the customer
+	ID                    string                                        `json:"id,required" format:"uuid"`
+	CurrentBillableStatus CustomerListResponseDataCurrentBillableStatus `json:"current_billable_status,required"`
+	CustomFields          map[string]string                             `json:"custom_fields,required"`
+	CustomerConfig        CustomerListResponseDataCustomerConfig        `json:"customer_config,required"`
+	// (deprecated, use ingest_aliases instead) the first ID (Metronome or ingest
+	// alias) that can be used in usage events
+	ExternalID string `json:"external_id,required"`
+	// aliases for this customer that can be used instead of the Metronome customer ID
+	// in usage events
+	IngestAliases []string                     `json:"ingest_aliases,required"`
+	Name          string                       `json:"name,required"`
+	JSON          customerListResponseDataJSON `json:"-"`
+}
+
+// customerListResponseDataJSON contains the JSON metadata for the struct
+// [CustomerListResponseData]
+type customerListResponseDataJSON struct {
 	ID                    apijson.Field
 	CurrentBillableStatus apijson.Field
 	CustomFields          apijson.Field
@@ -337,51 +308,51 @@ type customerListResponseJSON struct {
 	ExtraFields           map[string]apijson.Field
 }
 
-func (r *CustomerListResponse) UnmarshalJSON(data []byte) (err error) {
+func (r *CustomerListResponseData) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type CustomerListResponseCurrentBillableStatus struct {
-	Value       CustomerListResponseCurrentBillableStatusValue `json:"value,required"`
-	EffectiveAt time.Time                                      `json:"effective_at,nullable" format:"date-time"`
-	JSON        customerListResponseCurrentBillableStatusJSON  `json:"-"`
+type CustomerListResponseDataCurrentBillableStatus struct {
+	Value       CustomerListResponseDataCurrentBillableStatusValue `json:"value,required"`
+	EffectiveAt time.Time                                          `json:"effective_at,nullable" format:"date-time"`
+	JSON        customerListResponseDataCurrentBillableStatusJSON  `json:"-"`
 }
 
-// customerListResponseCurrentBillableStatusJSON contains the JSON metadata for the
-// struct [CustomerListResponseCurrentBillableStatus]
-type customerListResponseCurrentBillableStatusJSON struct {
+// customerListResponseDataCurrentBillableStatusJSON contains the JSON metadata for
+// the struct [CustomerListResponseDataCurrentBillableStatus]
+type customerListResponseDataCurrentBillableStatusJSON struct {
 	Value       apijson.Field
 	EffectiveAt apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *CustomerListResponseCurrentBillableStatus) UnmarshalJSON(data []byte) (err error) {
+func (r *CustomerListResponseDataCurrentBillableStatus) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type CustomerListResponseCurrentBillableStatusValue string
+type CustomerListResponseDataCurrentBillableStatusValue string
 
 const (
-	CustomerListResponseCurrentBillableStatusValueBillable   CustomerListResponseCurrentBillableStatusValue = "billable"
-	CustomerListResponseCurrentBillableStatusValueUnbillable CustomerListResponseCurrentBillableStatusValue = "unbillable"
+	CustomerListResponseDataCurrentBillableStatusValueBillable   CustomerListResponseDataCurrentBillableStatusValue = "billable"
+	CustomerListResponseDataCurrentBillableStatusValueUnbillable CustomerListResponseDataCurrentBillableStatusValue = "unbillable"
 )
 
-type CustomerListResponseCustomerConfig struct {
+type CustomerListResponseDataCustomerConfig struct {
 	// The Salesforce account ID for the customer
-	SalesforceAccountID string                                 `json:"salesforce_account_id,required,nullable"`
-	JSON                customerListResponseCustomerConfigJSON `json:"-"`
+	SalesforceAccountID string                                     `json:"salesforce_account_id,required,nullable"`
+	JSON                customerListResponseDataCustomerConfigJSON `json:"-"`
 }
 
-// customerListResponseCustomerConfigJSON contains the JSON metadata for the struct
-// [CustomerListResponseCustomerConfig]
-type customerListResponseCustomerConfigJSON struct {
+// customerListResponseDataCustomerConfigJSON contains the JSON metadata for the
+// struct [CustomerListResponseDataCustomerConfig]
+type customerListResponseDataCustomerConfigJSON struct {
 	SalesforceAccountID apijson.Field
 	raw                 string
 	ExtraFields         map[string]apijson.Field
 }
 
-func (r *CustomerListResponseCustomerConfig) UnmarshalJSON(data []byte) (err error) {
+func (r *CustomerListResponseDataCustomerConfig) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
@@ -420,18 +391,16 @@ func (r *CustomerArchiveResponseData) UnmarshalJSON(data []byte) (err error) {
 }
 
 type CustomerListBillableMetricsResponse struct {
-	ID      string                                  `json:"id,required" format:"uuid"`
-	Name    string                                  `json:"name,required"`
-	GroupBy []string                                `json:"group_by"`
-	JSON    customerListBillableMetricsResponseJSON `json:"-"`
+	Data     []CustomerListBillableMetricsResponseData `json:"data,required"`
+	NextPage string                                    `json:"next_page,required,nullable"`
+	JSON     customerListBillableMetricsResponseJSON   `json:"-"`
 }
 
 // customerListBillableMetricsResponseJSON contains the JSON metadata for the
 // struct [CustomerListBillableMetricsResponse]
 type customerListBillableMetricsResponseJSON struct {
-	ID          apijson.Field
-	Name        apijson.Field
-	GroupBy     apijson.Field
+	Data        apijson.Field
+	NextPage    apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
@@ -440,16 +409,56 @@ func (r *CustomerListBillableMetricsResponse) UnmarshalJSON(data []byte) (err er
 	return apijson.UnmarshalRoot(data, r)
 }
 
+type CustomerListBillableMetricsResponseData struct {
+	ID      string                                      `json:"id,required" format:"uuid"`
+	Name    string                                      `json:"name,required"`
+	GroupBy []string                                    `json:"group_by"`
+	JSON    customerListBillableMetricsResponseDataJSON `json:"-"`
+}
+
+// customerListBillableMetricsResponseDataJSON contains the JSON metadata for the
+// struct [CustomerListBillableMetricsResponseData]
+type customerListBillableMetricsResponseDataJSON struct {
+	ID          apijson.Field
+	Name        apijson.Field
+	GroupBy     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CustomerListBillableMetricsResponseData) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
 type CustomerListCostsResponse struct {
-	CreditTypes    map[string]CustomerListCostsResponseCreditType `json:"credit_types,required"`
-	EndTimestamp   time.Time                                      `json:"end_timestamp,required" format:"date-time"`
-	StartTimestamp time.Time                                      `json:"start_timestamp,required" format:"date-time"`
-	JSON           customerListCostsResponseJSON                  `json:"-"`
+	Data     []CustomerListCostsResponseData `json:"data,required"`
+	NextPage string                          `json:"next_page,required,nullable"`
+	JSON     customerListCostsResponseJSON   `json:"-"`
 }
 
 // customerListCostsResponseJSON contains the JSON metadata for the struct
 // [CustomerListCostsResponse]
 type customerListCostsResponseJSON struct {
+	Data        apijson.Field
+	NextPage    apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CustomerListCostsResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type CustomerListCostsResponseData struct {
+	CreditTypes    map[string]CustomerListCostsResponseDataCreditType `json:"credit_types,required"`
+	EndTimestamp   time.Time                                          `json:"end_timestamp,required" format:"date-time"`
+	StartTimestamp time.Time                                          `json:"start_timestamp,required" format:"date-time"`
+	JSON           customerListCostsResponseDataJSON                  `json:"-"`
+}
+
+// customerListCostsResponseDataJSON contains the JSON metadata for the struct
+// [CustomerListCostsResponseData]
+type customerListCostsResponseDataJSON struct {
 	CreditTypes    apijson.Field
 	EndTimestamp   apijson.Field
 	StartTimestamp apijson.Field
@@ -457,20 +466,20 @@ type customerListCostsResponseJSON struct {
 	ExtraFields    map[string]apijson.Field
 }
 
-func (r *CustomerListCostsResponse) UnmarshalJSON(data []byte) (err error) {
+func (r *CustomerListCostsResponseData) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type CustomerListCostsResponseCreditType struct {
-	Cost              float64                                                 `json:"cost"`
-	LineItemBreakdown []CustomerListCostsResponseCreditTypesLineItemBreakdown `json:"line_item_breakdown"`
-	Name              string                                                  `json:"name"`
-	JSON              customerListCostsResponseCreditTypeJSON                 `json:"-"`
+type CustomerListCostsResponseDataCreditType struct {
+	Cost              float64                                                     `json:"cost"`
+	LineItemBreakdown []CustomerListCostsResponseDataCreditTypesLineItemBreakdown `json:"line_item_breakdown"`
+	Name              string                                                      `json:"name"`
+	JSON              customerListCostsResponseDataCreditTypeJSON                 `json:"-"`
 }
 
-// customerListCostsResponseCreditTypeJSON contains the JSON metadata for the
-// struct [CustomerListCostsResponseCreditType]
-type customerListCostsResponseCreditTypeJSON struct {
+// customerListCostsResponseDataCreditTypeJSON contains the JSON metadata for the
+// struct [CustomerListCostsResponseDataCreditType]
+type customerListCostsResponseDataCreditTypeJSON struct {
 	Cost              apijson.Field
 	LineItemBreakdown apijson.Field
 	Name              apijson.Field
@@ -478,21 +487,22 @@ type customerListCostsResponseCreditTypeJSON struct {
 	ExtraFields       map[string]apijson.Field
 }
 
-func (r *CustomerListCostsResponseCreditType) UnmarshalJSON(data []byte) (err error) {
+func (r *CustomerListCostsResponseDataCreditType) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type CustomerListCostsResponseCreditTypesLineItemBreakdown struct {
-	Cost       float64                                                   `json:"cost,required"`
-	Name       string                                                    `json:"name,required"`
-	GroupKey   string                                                    `json:"group_key"`
-	GroupValue string                                                    `json:"group_value,nullable"`
-	JSON       customerListCostsResponseCreditTypesLineItemBreakdownJSON `json:"-"`
+type CustomerListCostsResponseDataCreditTypesLineItemBreakdown struct {
+	Cost       float64                                                       `json:"cost,required"`
+	Name       string                                                        `json:"name,required"`
+	GroupKey   string                                                        `json:"group_key"`
+	GroupValue string                                                        `json:"group_value,nullable"`
+	JSON       customerListCostsResponseDataCreditTypesLineItemBreakdownJSON `json:"-"`
 }
 
-// customerListCostsResponseCreditTypesLineItemBreakdownJSON contains the JSON
-// metadata for the struct [CustomerListCostsResponseCreditTypesLineItemBreakdown]
-type customerListCostsResponseCreditTypesLineItemBreakdownJSON struct {
+// customerListCostsResponseDataCreditTypesLineItemBreakdownJSON contains the JSON
+// metadata for the struct
+// [CustomerListCostsResponseDataCreditTypesLineItemBreakdown]
+type customerListCostsResponseDataCreditTypesLineItemBreakdownJSON struct {
 	Cost        apijson.Field
 	Name        apijson.Field
 	GroupKey    apijson.Field
@@ -501,7 +511,7 @@ type customerListCostsResponseCreditTypesLineItemBreakdownJSON struct {
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *CustomerListCostsResponseCreditTypesLineItemBreakdown) UnmarshalJSON(data []byte) (err error) {
+func (r *CustomerListCostsResponseDataCreditTypesLineItemBreakdown) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 

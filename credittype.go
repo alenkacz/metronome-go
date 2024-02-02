@@ -11,7 +11,6 @@ import (
 	"github.com/Metronome-Industries/metronome-go/internal/apiquery"
 	"github.com/Metronome-Industries/metronome-go/internal/param"
 	"github.com/Metronome-Industries/metronome-go/internal/requestconfig"
-	"github.com/Metronome-Industries/metronome-go/internal/shared"
 	"github.com/Metronome-Industries/metronome-go/option"
 )
 
@@ -33,38 +32,42 @@ func NewCreditTypeService(opts ...option.RequestOption) (r *CreditTypeService) {
 }
 
 // List all pricing units (known in the API by the legacy term "credit types").
-func (r *CreditTypeService) List(ctx context.Context, query CreditTypeListParams, opts ...option.RequestOption) (res *shared.Page[CreditTypeListResponse], err error) {
-	var raw *http.Response
-	opts = append(r.Options, opts...)
-	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
+func (r *CreditTypeService) List(ctx context.Context, query CreditTypeListParams, opts ...option.RequestOption) (res *CreditTypeListResponse, err error) {
+	opts = append(r.Options[:], opts...)
 	path := "credit-types/list"
-	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
-	if err != nil {
-		return nil, err
-	}
-	err = cfg.Execute()
-	if err != nil {
-		return nil, err
-	}
-	res.SetPageConfig(cfg, raw)
-	return res, nil
-}
-
-// List all pricing units (known in the API by the legacy term "credit types").
-func (r *CreditTypeService) ListAutoPaging(ctx context.Context, query CreditTypeListParams, opts ...option.RequestOption) *shared.PageAutoPager[CreditTypeListResponse] {
-	return shared.NewPageAutoPager(r.List(ctx, query, opts...))
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, query, &res, opts...)
+	return
 }
 
 type CreditTypeListResponse struct {
-	ID         string                     `json:"id" format:"uuid"`
-	IsCurrency bool                       `json:"is_currency"`
-	Name       string                     `json:"name"`
-	JSON       creditTypeListResponseJSON `json:"-"`
+	Data     []CreditTypeListResponseData `json:"data,required"`
+	NextPage string                       `json:"next_page,required,nullable"`
+	JSON     creditTypeListResponseJSON   `json:"-"`
 }
 
 // creditTypeListResponseJSON contains the JSON metadata for the struct
 // [CreditTypeListResponse]
 type creditTypeListResponseJSON struct {
+	Data        apijson.Field
+	NextPage    apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CreditTypeListResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type CreditTypeListResponseData struct {
+	ID         string                         `json:"id" format:"uuid"`
+	IsCurrency bool                           `json:"is_currency"`
+	Name       string                         `json:"name"`
+	JSON       creditTypeListResponseDataJSON `json:"-"`
+}
+
+// creditTypeListResponseDataJSON contains the JSON metadata for the struct
+// [CreditTypeListResponseData]
+type creditTypeListResponseDataJSON struct {
 	ID          apijson.Field
 	IsCurrency  apijson.Field
 	Name        apijson.Field
@@ -72,7 +75,7 @@ type creditTypeListResponseJSON struct {
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *CreditTypeListResponse) UnmarshalJSON(data []byte) (err error) {
+func (r *CreditTypeListResponseData) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
