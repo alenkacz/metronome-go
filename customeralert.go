@@ -12,6 +12,7 @@ import (
 	"github.com/Metronome-Industries/metronome-go/internal/apiquery"
 	"github.com/Metronome-Industries/metronome-go/internal/param"
 	"github.com/Metronome-Industries/metronome-go/internal/requestconfig"
+	"github.com/Metronome-Industries/metronome-go/internal/shared"
 	"github.com/Metronome-Industries/metronome-go/option"
 )
 
@@ -43,11 +44,21 @@ func (r *CustomerAlertService) Get(ctx context.Context, body CustomerAlertGetPar
 }
 
 // Fetch all customer alert statuses and alert information for a customer
-func (r *CustomerAlertService) List(ctx context.Context, params CustomerAlertListParams, opts ...option.RequestOption) (res *CustomerAlertListResponse, err error) {
-	opts = append(r.Options[:], opts...)
+func (r *CustomerAlertService) List(ctx context.Context, params CustomerAlertListParams, opts ...option.RequestOption) (res *shared.Page[CustomerAlertListResponse], err error) {
+	var raw *http.Response
+	opts = append(r.Options, opts...)
+	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "customer-alerts/list"
-	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, params, &res, opts...)
-	return
+	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodPost, path, params, &res, opts...)
+	if err != nil {
+		return nil, err
+	}
+	err = cfg.Execute()
+	if err != nil {
+		return nil, err
+	}
+	res.SetPageConfig(cfg, raw)
+	return res, nil
 }
 
 type CustomerAlertGetResponse struct {
@@ -174,65 +185,46 @@ const (
 )
 
 type CustomerAlertListResponse struct {
-	Data     []CustomerAlertListResponseData `json:"data,required"`
-	NextPage string                          `json:"next_page,required,nullable"`
-	JSON     customerAlertListResponseJSON   `json:"-"`
+	Alert CustomerAlertListResponseAlert `json:"alert,required"`
+	// The status of the customer alert. If the alert is archived, null will be
+	// returned.
+	CustomerStatus CustomerAlertListResponseCustomerStatus `json:"customer_status,required,nullable"`
+	JSON           customerAlertListResponseJSON           `json:"-"`
 }
 
 // customerAlertListResponseJSON contains the JSON metadata for the struct
 // [CustomerAlertListResponse]
 type customerAlertListResponseJSON struct {
-	Data        apijson.Field
-	NextPage    apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *CustomerAlertListResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-type CustomerAlertListResponseData struct {
-	Alert CustomerAlertListResponseDataAlert `json:"alert,required"`
-	// The status of the customer alert. If the alert is archived, null will be
-	// returned.
-	CustomerStatus CustomerAlertListResponseDataCustomerStatus `json:"customer_status,required,nullable"`
-	JSON           customerAlertListResponseDataJSON           `json:"-"`
-}
-
-// customerAlertListResponseDataJSON contains the JSON metadata for the struct
-// [CustomerAlertListResponseData]
-type customerAlertListResponseDataJSON struct {
 	Alert          apijson.Field
 	CustomerStatus apijson.Field
 	raw            string
 	ExtraFields    map[string]apijson.Field
 }
 
-func (r *CustomerAlertListResponseData) UnmarshalJSON(data []byte) (err error) {
+func (r *CustomerAlertListResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type CustomerAlertListResponseDataAlert struct {
+type CustomerAlertListResponseAlert struct {
 	// the Metronome ID of the alert
-	ID         string                                       `json:"id,required"`
-	CreditType CustomerAlertListResponseDataAlertCreditType `json:"credit_type,required,nullable"`
+	ID         string                                   `json:"id,required"`
+	CreditType CustomerAlertListResponseAlertCreditType `json:"credit_type,required,nullable"`
 	// Name of the alert
 	Name string `json:"name,required"`
 	// Status of the alert
-	Status CustomerAlertListResponseDataAlertStatus `json:"status,required"`
+	Status CustomerAlertListResponseAlertStatus `json:"status,required"`
 	// Threshold value of the alert policy
 	Threshold float64 `json:"threshold,required"`
 	// Type of the alert
-	Type CustomerAlertListResponseDataAlertType `json:"type,required"`
+	Type CustomerAlertListResponseAlertType `json:"type,required"`
 	// Timestamp for when the alert was last updated
-	UpdatedAt time.Time                              `json:"updated_at,required" format:"date-time"`
-	JSON      customerAlertListResponseDataAlertJSON `json:"-"`
+	UpdatedAt time.Time                          `json:"updated_at,required" format:"date-time"`
+	JSON      customerAlertListResponseAlertJSON `json:"-"`
 }
 
-// customerAlertListResponseDataAlertJSON contains the JSON metadata for the struct
-// [CustomerAlertListResponseDataAlert]
-type customerAlertListResponseDataAlertJSON struct {
+// customerAlertListResponseAlertJSON contains the JSON metadata for the struct
+// [CustomerAlertListResponseAlert]
+type customerAlertListResponseAlertJSON struct {
 	ID          apijson.Field
 	CreditType  apijson.Field
 	Name        apijson.Field
@@ -244,58 +236,58 @@ type customerAlertListResponseDataAlertJSON struct {
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *CustomerAlertListResponseDataAlert) UnmarshalJSON(data []byte) (err error) {
+func (r *CustomerAlertListResponseAlert) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type CustomerAlertListResponseDataAlertCreditType struct {
-	ID   string                                           `json:"id,required" format:"uuid"`
-	Name string                                           `json:"name,required"`
-	JSON customerAlertListResponseDataAlertCreditTypeJSON `json:"-"`
+type CustomerAlertListResponseAlertCreditType struct {
+	ID   string                                       `json:"id,required" format:"uuid"`
+	Name string                                       `json:"name,required"`
+	JSON customerAlertListResponseAlertCreditTypeJSON `json:"-"`
 }
 
-// customerAlertListResponseDataAlertCreditTypeJSON contains the JSON metadata for
-// the struct [CustomerAlertListResponseDataAlertCreditType]
-type customerAlertListResponseDataAlertCreditTypeJSON struct {
+// customerAlertListResponseAlertCreditTypeJSON contains the JSON metadata for the
+// struct [CustomerAlertListResponseAlertCreditType]
+type customerAlertListResponseAlertCreditTypeJSON struct {
 	ID          apijson.Field
 	Name        apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *CustomerAlertListResponseDataAlertCreditType) UnmarshalJSON(data []byte) (err error) {
+func (r *CustomerAlertListResponseAlertCreditType) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
 // Status of the alert
-type CustomerAlertListResponseDataAlertStatus string
+type CustomerAlertListResponseAlertStatus string
 
 const (
-	CustomerAlertListResponseDataAlertStatusEnabled  CustomerAlertListResponseDataAlertStatus = "enabled"
-	CustomerAlertListResponseDataAlertStatusArchived CustomerAlertListResponseDataAlertStatus = "archived"
-	CustomerAlertListResponseDataAlertStatusDisabled CustomerAlertListResponseDataAlertStatus = "disabled"
+	CustomerAlertListResponseAlertStatusEnabled  CustomerAlertListResponseAlertStatus = "enabled"
+	CustomerAlertListResponseAlertStatusArchived CustomerAlertListResponseAlertStatus = "archived"
+	CustomerAlertListResponseAlertStatusDisabled CustomerAlertListResponseAlertStatus = "disabled"
 )
 
 // Type of the alert
-type CustomerAlertListResponseDataAlertType string
+type CustomerAlertListResponseAlertType string
 
 const (
-	CustomerAlertListResponseDataAlertTypeLowCreditBalanceReached                  CustomerAlertListResponseDataAlertType = "low_credit_balance_reached"
-	CustomerAlertListResponseDataAlertTypeSpendThresholdReached                    CustomerAlertListResponseDataAlertType = "spend_threshold_reached"
-	CustomerAlertListResponseDataAlertTypeMonthlyInvoiceTotalSpendThresholdReached CustomerAlertListResponseDataAlertType = "monthly_invoice_total_spend_threshold_reached"
-	CustomerAlertListResponseDataAlertTypeLowRemainingDaysInPlanReached            CustomerAlertListResponseDataAlertType = "low_remaining_days_in_plan_reached"
-	CustomerAlertListResponseDataAlertTypeLowRemainingCreditPercentageReached      CustomerAlertListResponseDataAlertType = "low_remaining_credit_percentage_reached"
-	CustomerAlertListResponseDataAlertTypeUsageThresholdReached                    CustomerAlertListResponseDataAlertType = "usage_threshold_reached"
+	CustomerAlertListResponseAlertTypeLowCreditBalanceReached                  CustomerAlertListResponseAlertType = "low_credit_balance_reached"
+	CustomerAlertListResponseAlertTypeSpendThresholdReached                    CustomerAlertListResponseAlertType = "spend_threshold_reached"
+	CustomerAlertListResponseAlertTypeMonthlyInvoiceTotalSpendThresholdReached CustomerAlertListResponseAlertType = "monthly_invoice_total_spend_threshold_reached"
+	CustomerAlertListResponseAlertTypeLowRemainingDaysInPlanReached            CustomerAlertListResponseAlertType = "low_remaining_days_in_plan_reached"
+	CustomerAlertListResponseAlertTypeLowRemainingCreditPercentageReached      CustomerAlertListResponseAlertType = "low_remaining_credit_percentage_reached"
+	CustomerAlertListResponseAlertTypeUsageThresholdReached                    CustomerAlertListResponseAlertType = "usage_threshold_reached"
 )
 
 // The status of the customer alert. If the alert is archived, null will be
 // returned.
-type CustomerAlertListResponseDataCustomerStatus string
+type CustomerAlertListResponseCustomerStatus string
 
 const (
-	CustomerAlertListResponseDataCustomerStatusOk         CustomerAlertListResponseDataCustomerStatus = "ok"
-	CustomerAlertListResponseDataCustomerStatusInAlarm    CustomerAlertListResponseDataCustomerStatus = "in_alarm"
-	CustomerAlertListResponseDataCustomerStatusEvaluating CustomerAlertListResponseDataCustomerStatus = "evaluating"
+	CustomerAlertListResponseCustomerStatusOk         CustomerAlertListResponseCustomerStatus = "ok"
+	CustomerAlertListResponseCustomerStatusInAlarm    CustomerAlertListResponseCustomerStatus = "in_alarm"
+	CustomerAlertListResponseCustomerStatusEvaluating CustomerAlertListResponseCustomerStatus = "evaluating"
 )
 
 type CustomerAlertGetParams struct {
