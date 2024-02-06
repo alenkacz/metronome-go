@@ -186,6 +186,7 @@ const (
 	CustomerBillingConfigNewParamsBillingProviderTypeCustom           CustomerBillingConfigNewParamsBillingProviderType = "custom"
 	CustomerBillingConfigNewParamsBillingProviderTypeAzureMarketplace CustomerBillingConfigNewParamsBillingProviderType = "azure_marketplace"
 	CustomerBillingConfigNewParamsBillingProviderTypeQuickbooksOnline CustomerBillingConfigNewParamsBillingProviderType = "quickbooks_online"
+	CustomerBillingConfigNewParamsBillingProviderTypeWorkday          CustomerBillingConfigNewParamsBillingProviderType = "workday"
 )
 
 type CustomerBillingConfigNewParamsAwsRegion string
@@ -234,6 +235,7 @@ const (
 	CustomerBillingConfigGetParamsBillingProviderTypeCustom           CustomerBillingConfigGetParamsBillingProviderType = "custom"
 	CustomerBillingConfigGetParamsBillingProviderTypeAzureMarketplace CustomerBillingConfigGetParamsBillingProviderType = "azure_marketplace"
 	CustomerBillingConfigGetParamsBillingProviderTypeQuickbooksOnline CustomerBillingConfigGetParamsBillingProviderType = "quickbooks_online"
+	CustomerBillingConfigGetParamsBillingProviderTypeWorkday          CustomerBillingConfigGetParamsBillingProviderType = "workday"
 )
 
 type CustomerBillingConfigDeleteParamsBillingProviderType string
@@ -245,4 +247,5 @@ const (
 	CustomerBillingConfigDeleteParamsBillingProviderTypeCustom           CustomerBillingConfigDeleteParamsBillingProviderType = "custom"
 	CustomerBillingConfigDeleteParamsBillingProviderTypeAzureMarketplace CustomerBillingConfigDeleteParamsBillingProviderType = "azure_marketplace"
 	CustomerBillingConfigDeleteParamsBillingProviderTypeQuickbooksOnline CustomerBillingConfigDeleteParamsBillingProviderType = "quickbooks_online"
+	CustomerBillingConfigDeleteParamsBillingProviderTypeWorkday          CustomerBillingConfigDeleteParamsBillingProviderType = "workday"
 )

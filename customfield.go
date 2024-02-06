@@ -123,14 +123,17 @@ func (r *CustomFieldListKeysResponse) UnmarshalJSON(data []byte) (err error) {
 type CustomFieldListKeysResponseEntity string
 
 const (
-	CustomFieldListKeysResponseEntityCharge         CustomFieldListKeysResponseEntity = "charge"
-	CustomFieldListKeysResponseEntityCreditGrant    CustomFieldListKeysResponseEntity = "credit_grant"
-	CustomFieldListKeysResponseEntityCustomer       CustomFieldListKeysResponseEntity = "customer"
-	CustomFieldListKeysResponseEntityCustomerPlan   CustomFieldListKeysResponseEntity = "customer_plan"
-	CustomFieldListKeysResponseEntityPlan           CustomFieldListKeysResponseEntity = "plan"
-	CustomFieldListKeysResponseEntityProduct        CustomFieldListKeysResponseEntity = "product"
-	CustomFieldListKeysResponseEntityBillableMetric CustomFieldListKeysResponseEntity = "billable_metric"
-	CustomFieldListKeysResponseEntityCommit         CustomFieldListKeysResponseEntity = "commit"
+	CustomFieldListKeysResponseEntityCharge          CustomFieldListKeysResponseEntity = "charge"
+	CustomFieldListKeysResponseEntityCreditGrant     CustomFieldListKeysResponseEntity = "credit_grant"
+	CustomFieldListKeysResponseEntityCustomer        CustomFieldListKeysResponseEntity = "customer"
+	CustomFieldListKeysResponseEntityCustomerPlan    CustomFieldListKeysResponseEntity = "customer_plan"
+	CustomFieldListKeysResponseEntityPlan            CustomFieldListKeysResponseEntity = "plan"
+	CustomFieldListKeysResponseEntityProduct         CustomFieldListKeysResponseEntity = "product"
+	CustomFieldListKeysResponseEntityBillableMetric  CustomFieldListKeysResponseEntity = "billable_metric"
+	CustomFieldListKeysResponseEntityCommit          CustomFieldListKeysResponseEntity = "commit"
+	CustomFieldListKeysResponseEntityContract        CustomFieldListKeysResponseEntity = "contract"
+	CustomFieldListKeysResponseEntityContractProduct CustomFieldListKeysResponseEntity = "contract_product"
+	CustomFieldListKeysResponseEntityRateCard        CustomFieldListKeysResponseEntity = "rate_card"
 )
 
 type CustomFieldAddKeyParams struct {
@@ -146,14 +149,17 @@ func (r CustomFieldAddKeyParams) MarshalJSON() (data []byte, err error) {
 type CustomFieldAddKeyParamsEntity string
 
 const (
-	CustomFieldAddKeyParamsEntityCharge         CustomFieldAddKeyParamsEntity = "charge"
-	CustomFieldAddKeyParamsEntityCreditGrant    CustomFieldAddKeyParamsEntity = "credit_grant"
-	CustomFieldAddKeyParamsEntityCustomer       CustomFieldAddKeyParamsEntity = "customer"
-	CustomFieldAddKeyParamsEntityCustomerPlan   CustomFieldAddKeyParamsEntity = "customer_plan"
-	CustomFieldAddKeyParamsEntityPlan           CustomFieldAddKeyParamsEntity = "plan"
-	CustomFieldAddKeyParamsEntityProduct        CustomFieldAddKeyParamsEntity = "product"
-	CustomFieldAddKeyParamsEntityBillableMetric CustomFieldAddKeyParamsEntity = "billable_metric"
-	CustomFieldAddKeyParamsEntityCommit         CustomFieldAddKeyParamsEntity = "commit"
+	CustomFieldAddKeyParamsEntityCharge          CustomFieldAddKeyParamsEntity = "charge"
+	CustomFieldAddKeyParamsEntityCreditGrant     CustomFieldAddKeyParamsEntity = "credit_grant"
+	CustomFieldAddKeyParamsEntityCustomer        CustomFieldAddKeyParamsEntity = "customer"
+	CustomFieldAddKeyParamsEntityCustomerPlan    CustomFieldAddKeyParamsEntity = "customer_plan"
+	CustomFieldAddKeyParamsEntityPlan            CustomFieldAddKeyParamsEntity = "plan"
+	CustomFieldAddKeyParamsEntityProduct         CustomFieldAddKeyParamsEntity = "product"
+	CustomFieldAddKeyParamsEntityBillableMetric  CustomFieldAddKeyParamsEntity = "billable_metric"
+	CustomFieldAddKeyParamsEntityCommit          CustomFieldAddKeyParamsEntity = "commit"
+	CustomFieldAddKeyParamsEntityContract        CustomFieldAddKeyParamsEntity = "contract"
+	CustomFieldAddKeyParamsEntityContractProduct CustomFieldAddKeyParamsEntity = "contract_product"
+	CustomFieldAddKeyParamsEntityRateCard        CustomFieldAddKeyParamsEntity = "rate_card"
 )
 
 type CustomFieldDeleteValuesParams struct {
@@ -169,14 +175,17 @@ func (r CustomFieldDeleteValuesParams) MarshalJSON() (data []byte, err error) {
 type CustomFieldDeleteValuesParamsEntity string
 
 const (
-	CustomFieldDeleteValuesParamsEntityCharge         CustomFieldDeleteValuesParamsEntity = "charge"
-	CustomFieldDeleteValuesParamsEntityCreditGrant    CustomFieldDeleteValuesParamsEntity = "credit_grant"
-	CustomFieldDeleteValuesParamsEntityCustomer       CustomFieldDeleteValuesParamsEntity = "customer"
-	CustomFieldDeleteValuesParamsEntityCustomerPlan   CustomFieldDeleteValuesParamsEntity = "customer_plan"
-	CustomFieldDeleteValuesParamsEntityPlan           CustomFieldDeleteValuesParamsEntity = "plan"
-	CustomFieldDeleteValuesParamsEntityProduct        CustomFieldDeleteValuesParamsEntity = "product"
-	CustomFieldDeleteValuesParamsEntityBillableMetric CustomFieldDeleteValuesParamsEntity = "billable_metric"
-	CustomFieldDeleteValuesParamsEntityCommit         CustomFieldDeleteValuesParamsEntity = "commit"
+	CustomFieldDeleteValuesParamsEntityCharge          CustomFieldDeleteValuesParamsEntity = "charge"
+	CustomFieldDeleteValuesParamsEntityCreditGrant     CustomFieldDeleteValuesParamsEntity = "credit_grant"
+	CustomFieldDeleteValuesParamsEntityCustomer        CustomFieldDeleteValuesParamsEntity = "customer"
+	CustomFieldDeleteValuesParamsEntityCustomerPlan    CustomFieldDeleteValuesParamsEntity = "customer_plan"
+	CustomFieldDeleteValuesParamsEntityPlan            CustomFieldDeleteValuesParamsEntity = "plan"
+	CustomFieldDeleteValuesParamsEntityProduct         CustomFieldDeleteValuesParamsEntity = "product"
+	CustomFieldDeleteValuesParamsEntityBillableMetric  CustomFieldDeleteValuesParamsEntity = "billable_metric"
+	CustomFieldDeleteValuesParamsEntityCommit          CustomFieldDeleteValuesParamsEntity = "commit"
+	CustomFieldDeleteValuesParamsEntityContract        CustomFieldDeleteValuesParamsEntity = "contract"
+	CustomFieldDeleteValuesParamsEntityContractProduct CustomFieldDeleteValuesParamsEntity = "contract_product"
+	CustomFieldDeleteValuesParamsEntityRateCard        CustomFieldDeleteValuesParamsEntity = "rate_card"
 )
 
 type CustomFieldListKeysParams struct {
@@ -202,14 +211,17 @@ func (r CustomFieldListKeysParams) URLQuery() (v url.Values) {
 type CustomFieldListKeysParamsEntity string
 
 const (
-	CustomFieldListKeysParamsEntityCharge         CustomFieldListKeysParamsEntity = "charge"
-	CustomFieldListKeysParamsEntityCreditGrant    CustomFieldListKeysParamsEntity = "credit_grant"
-	CustomFieldListKeysParamsEntityCustomer       CustomFieldListKeysParamsEntity = "customer"
-	CustomFieldListKeysParamsEntityCustomerPlan   CustomFieldListKeysParamsEntity = "customer_plan"
-	CustomFieldListKeysParamsEntityPlan           CustomFieldListKeysParamsEntity = "plan"
-	CustomFieldListKeysParamsEntityProduct        CustomFieldListKeysParamsEntity = "product"
-	CustomFieldListKeysParamsEntityBillableMetric CustomFieldListKeysParamsEntity = "billable_metric"
-	CustomFieldListKeysParamsEntityCommit         CustomFieldListKeysParamsEntity = "commit"
+	CustomFieldListKeysParamsEntityCharge          CustomFieldListKeysParamsEntity = "charge"
+	CustomFieldListKeysParamsEntityCreditGrant     CustomFieldListKeysParamsEntity = "credit_grant"
+	CustomFieldListKeysParamsEntityCustomer        CustomFieldListKeysParamsEntity = "customer"
+	CustomFieldListKeysParamsEntityCustomerPlan    CustomFieldListKeysParamsEntity = "customer_plan"
+	CustomFieldListKeysParamsEntityPlan            CustomFieldListKeysParamsEntity = "plan"
+	CustomFieldListKeysParamsEntityProduct         CustomFieldListKeysParamsEntity = "product"
+	CustomFieldListKeysParamsEntityBillableMetric  CustomFieldListKeysParamsEntity = "billable_metric"
+	CustomFieldListKeysParamsEntityCommit          CustomFieldListKeysParamsEntity = "commit"
+	CustomFieldListKeysParamsEntityContract        CustomFieldListKeysParamsEntity = "contract"
+	CustomFieldListKeysParamsEntityContractProduct CustomFieldListKeysParamsEntity = "contract_product"
+	CustomFieldListKeysParamsEntityRateCard        CustomFieldListKeysParamsEntity = "rate_card"
 )
 
 type CustomFieldRemoveKeyParams struct {
@@ -224,14 +236,17 @@ func (r CustomFieldRemoveKeyParams) MarshalJSON() (data []byte, err error) {
 type CustomFieldRemoveKeyParamsEntity string
 
 const (
-	CustomFieldRemoveKeyParamsEntityCharge         CustomFieldRemoveKeyParamsEntity = "charge"
-	CustomFieldRemoveKeyParamsEntityCreditGrant    CustomFieldRemoveKeyParamsEntity = "credit_grant"
-	CustomFieldRemoveKeyParamsEntityCustomer       CustomFieldRemoveKeyParamsEntity = "customer"
-	CustomFieldRemoveKeyParamsEntityCustomerPlan   CustomFieldRemoveKeyParamsEntity = "customer_plan"
-	CustomFieldRemoveKeyParamsEntityPlan           CustomFieldRemoveKeyParamsEntity = "plan"
-	CustomFieldRemoveKeyParamsEntityProduct        CustomFieldRemoveKeyParamsEntity = "product"
-	CustomFieldRemoveKeyParamsEntityBillableMetric CustomFieldRemoveKeyParamsEntity = "billable_metric"
-	CustomFieldRemoveKeyParamsEntityCommit         CustomFieldRemoveKeyParamsEntity = "commit"
+	CustomFieldRemoveKeyParamsEntityCharge          CustomFieldRemoveKeyParamsEntity = "charge"
+	CustomFieldRemoveKeyParamsEntityCreditGrant     CustomFieldRemoveKeyParamsEntity = "credit_grant"
+	CustomFieldRemoveKeyParamsEntityCustomer        CustomFieldRemoveKeyParamsEntity = "customer"
+	CustomFieldRemoveKeyParamsEntityCustomerPlan    CustomFieldRemoveKeyParamsEntity = "customer_plan"
+	CustomFieldRemoveKeyParamsEntityPlan            CustomFieldRemoveKeyParamsEntity = "plan"
+	CustomFieldRemoveKeyParamsEntityProduct         CustomFieldRemoveKeyParamsEntity = "product"
+	CustomFieldRemoveKeyParamsEntityBillableMetric  CustomFieldRemoveKeyParamsEntity = "billable_metric"
+	CustomFieldRemoveKeyParamsEntityCommit          CustomFieldRemoveKeyParamsEntity = "commit"
+	CustomFieldRemoveKeyParamsEntityContract        CustomFieldRemoveKeyParamsEntity = "contract"
+	CustomFieldRemoveKeyParamsEntityContractProduct CustomFieldRemoveKeyParamsEntity = "contract_product"
+	CustomFieldRemoveKeyParamsEntityRateCard        CustomFieldRemoveKeyParamsEntity = "rate_card"
 )
 
 type CustomFieldSetValuesParams struct {
@@ -247,12 +262,15 @@ func (r CustomFieldSetValuesParams) MarshalJSON() (data []byte, err error) {
 type CustomFieldSetValuesParamsEntity string
 
 const (
-	CustomFieldSetValuesParamsEntityCharge         CustomFieldSetValuesParamsEntity = "charge"
-	CustomFieldSetValuesParamsEntityCreditGrant    CustomFieldSetValuesParamsEntity = "credit_grant"
-	CustomFieldSetValuesParamsEntityCustomer       CustomFieldSetValuesParamsEntity = "customer"
-	CustomFieldSetValuesParamsEntityCustomerPlan   CustomFieldSetValuesParamsEntity = "customer_plan"
-	CustomFieldSetValuesParamsEntityPlan           CustomFieldSetValuesParamsEntity = "plan"
-	CustomFieldSetValuesParamsEntityProduct        CustomFieldSetValuesParamsEntity = "product"
-	CustomFieldSetValuesParamsEntityBillableMetric CustomFieldSetValuesParamsEntity = "billable_metric"
-	CustomFieldSetValuesParamsEntityCommit         CustomFieldSetValuesParamsEntity = "commit"
+	CustomFieldSetValuesParamsEntityCharge          CustomFieldSetValuesParamsEntity = "charge"
+	CustomFieldSetValuesParamsEntityCreditGrant     CustomFieldSetValuesParamsEntity = "credit_grant"
+	CustomFieldSetValuesParamsEntityCustomer        CustomFieldSetValuesParamsEntity = "customer"
+	CustomFieldSetValuesParamsEntityCustomerPlan    CustomFieldSetValuesParamsEntity = "customer_plan"
+	CustomFieldSetValuesParamsEntityPlan            CustomFieldSetValuesParamsEntity = "plan"
+	CustomFieldSetValuesParamsEntityProduct         CustomFieldSetValuesParamsEntity = "product"
+	CustomFieldSetValuesParamsEntityBillableMetric  CustomFieldSetValuesParamsEntity = "billable_metric"
+	CustomFieldSetValuesParamsEntityCommit          CustomFieldSetValuesParamsEntity = "commit"
+	CustomFieldSetValuesParamsEntityContract        CustomFieldSetValuesParamsEntity = "contract"
+	CustomFieldSetValuesParamsEntityContractProduct CustomFieldSetValuesParamsEntity = "contract_product"
+	CustomFieldSetValuesParamsEntityRateCard        CustomFieldSetValuesParamsEntity = "rate_card"
 )

@@ -588,6 +588,7 @@ const (
 	CustomerNewParamsBillingConfigBillingProviderTypeCustom           CustomerNewParamsBillingConfigBillingProviderType = "custom"
 	CustomerNewParamsBillingConfigBillingProviderTypeAzureMarketplace CustomerNewParamsBillingConfigBillingProviderType = "azure_marketplace"
 	CustomerNewParamsBillingConfigBillingProviderTypeQuickbooksOnline CustomerNewParamsBillingConfigBillingProviderType = "quickbooks_online"
+	CustomerNewParamsBillingConfigBillingProviderTypeWorkday          CustomerNewParamsBillingConfigBillingProviderType = "workday"
 )
 
 type CustomerNewParamsBillingConfigAwsRegion string
