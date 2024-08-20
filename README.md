@@ -1,11 +1,13 @@
 # Metronome Go API Library
 
+> [!WARNING]
+> This is prerelease software that is not ready for production use. There may be bugs and
+> there will be breaking changes version to version. Use at your own risk.
+
 <a href="https://pkg.go.dev/github.com/Metronome-Industries/metronome-go"><img src="https://pkg.go.dev/badge/github.com/Metronome-Industries/metronome-go.svg" alt="Go Reference"></a>
 
 The Metronome Go library provides convenient access to [the Metronome REST
 API](https://docs.metronome.com) from applications written in Go. The full API of this library can be found in [api.md](api.md).
-
-It is generated with [Stainless](https://www.stainlessapi.com/).
 
 ## Installation
 
