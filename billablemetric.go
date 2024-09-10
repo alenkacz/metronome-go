@@ -301,7 +301,7 @@ type BillableMetricNewParams struct {
 	// Custom fields to attach to the billable metric.
 	CustomFields param.Field[map[string]string] `json:"custom_fields"`
 	// An optional filtering rule to match the 'event_type' property of an event.
-	EventTypeFilter param.Field[shared.EventTypeFilterParam] `json:"event_type_filter,omitempty"`
+	EventTypeFilter param.Field[shared.EventTypeFilterParam] `json:"event_type_filter"`
 	// Property names that are used to group usage costs on an invoice. Each entry
 	// represents a set of properties used to slice events into distinct buckets.
 	GroupKeys param.Field[[][]string] `json:"group_keys"`
