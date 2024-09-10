@@ -2053,7 +2053,7 @@ type PropertyFilter struct {
 	// pass the filter only if its property value is included in this list. If
 	// undefined, all property values will pass the filter. Must be non-empty if
 	// present.
-	InValues []string `json:"in_values"`
+	InValues []string `json:"in_values,omitempty"`
 	// Specifies the values that prevent an event from matching the filter. An event
 	// will not pass the filter if its property value is included in this list. If null
 	// or empty, all property values will pass the filter. Must be non-empty if
