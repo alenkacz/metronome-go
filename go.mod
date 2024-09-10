@@ -1,4 +1,4 @@
-module github.com/Metronome-Industries/metronome-go
+module github.com/alenkacz/metronome-go
 
 go 1.21
 
